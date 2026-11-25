@@ -1,0 +1,26 @@
+<!-- Generated from package/src/docs/composables/useDataTableQuery.mdx. Edit the source guide. -->
+
+# useDataTableQuery
+
+Connect search, sorting and pagination to your own loader or Inertia.
+
+```ts
+import { useDataTableQuery, type ListPayload } from '@rat.md/miru';
+
+// Inside <script setup>; your page supplies the server list.
+const props = defineProps<{ list: ListPayload<{ id: string; name: string }> }>();
+const query = useDataTableQuery({
+    list: () => props.list,
+    queryHandler: (state, filters) => console.log(state, filters),
+});
+function nextPage() {
+    query.visitPage(props.list.state.page + 1);
+}
+function search(term: string) {
+    query.visitFilters({ search: term });
+}
+```
+
+Replace the handler with your loader and update the list prop with its result. Without a handler, the composable uses the application’s navigation adapter: ordinary browser visits by default, or Inertia when its adapter is installed. Methods: `visitPage`, `visitPerPage`, `visitFilters`, `toggleSort`. `querySerializer` supports custom query formats. Backend normalisation and query conventions come from the application’s `dataTable` adapter or an explicit `dataFormat`.
+
+[DataTable guide](/reference/data-table-guide).

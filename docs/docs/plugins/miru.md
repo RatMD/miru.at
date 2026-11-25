@@ -1,0 +1,23 @@
+<!-- Generated from package/src/docs/plugins/miru.mdx. Edit the source guide. -->
+
+# miru
+
+Set up Miru once for each Vue app.
+
+```ts
+import { createApp } from 'vue';
+import { createMiru } from '@rat.md/miru';
+import '@rat.md/miru/style.css';
+import App from './App.vue';
+
+const miru = createMiru({ locale: 'en', currency: 'EUR' });
+createApp({ render: () => miru.wrap(App) })
+    .use(miru)
+    .mount('#app');
+```
+
+`wrap(App)` adds PageRoot and toast hosting. Use PageRoot manually if your app already owns the root layout. `createMiru` installs app-local options, i18n, validation factories and directives. `createMiruConfig` installs configuration only.
+
+Use `configure({ app, options })` for app-specific setup. `plugins: false` disables automatic plugins; individual i18n/validation/directives flags are also supported. Import CSS once.
+
+Transport and backend conventions are independent: use `adapter: inertiaAdapter()` for Inertia forms and navigation, and `dataTable: adonisAdapter()` or `laravelAdapter()` for list payloads. See [AJAX & Inertia](/docs/guide/adapters) and [Adonis & Laravel](/docs/guide/backends).

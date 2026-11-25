@@ -1,0 +1,30 @@
+<!-- Generated from package/src/docs/composables/useForm.mdx. Edit the source guide. -->
+
+# useForm
+
+Create form state, validate with Zod and submit through JSON or Inertia. Call this in component setup.
+
+```ts
+import { z } from 'zod';
+import { useForm } from '@rat.md/miru/composables';
+
+const { form, loading, formError, submitForm } = useForm({
+    schema: z.object({ name: z.string().min(1, 'Enter a name.') }),
+    initialValues: { name: '' },
+    submit: { method: 'post', url: '/api/projects' },
+    adapter: 'ajax',
+});
+// Call submitForm() from your submit handler.
+```
+
+Replace the endpoint with your own. Validation runs before the request; invalid fields stop submission. Bind `loading` and `formError` to Form. `submitForm()` uses the configured target; `onSubmit(method, url)` overrides it once.
+
+AJAX through the plain request helper is the default. Import `inertiaAdapter` from
+`@rat.md/miru/adapters/inertia` and use `createMiru({ adapter: inertiaAdapter() })` to enable
+Inertia forms and navigation. This also registers the named `adapter: 'inertia'` for page visits.
+Alternatively, pass an explicitly imported
+`createInertiaFormAdapter()` as the form's adapter. Custom adapters implement the same submit
+contract. Legacy `mode: 'json'` selects AJAX. See the [Submission adapters guide](/docs/forms/adapters)
+for configuration, error mapping, uploads and migration from the old Inertia HTTP client.
+
+[Complete form example](/docs/forms/validation) · [Generator](/docs/forms/generator).

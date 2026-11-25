@@ -1,0 +1,17 @@
+<!-- Generated from package/src/docs/support/dayjs.mdx. Edit the source guide. -->
+
+# dayjs
+
+The shared Day.js instance with advancedFormat, duration, isoWeek, relativeTime, UTC and timezone plugins, plus the German locale.
+
+**Runtime:** Universal.
+
+## Example
+
+```ts
+import { dayjs } from '@rat.md/miru/support';
+dayjs('2026-11-17').locale('de').format('D MMMM YYYY');
+dayjs.tz('2026-11-17 09:00', 'Europe/Berlin').utc().format();
+```
+
+Dependency: dayjs. No application timezone is selected automatically. Configure a default timezone explicitly in the host when required.

@@ -1,0 +1,14 @@
+<!-- Generated from package/src/docs/plugins/directives.mdx. Edit the source guide. -->
+
+# directives
+
+Register the shared Vue directives, or import only the directives you use.
+
+```ts
+import { createMiruDirectives } from '@rat.md/miru/plugins/directives';
+
+// After createApp(...), before mount():
+app.use(createMiruDirectives({ locale: 'en', currency: 'EUR' }));
+```
+
+`createMiru()` already installs this plugin unless disabled. It registers `v-click-outside`, `v-dayjs`, `v-filesize` / `v-file-size`, `v-price`, `v-number-format`, `v-resize` and `v-tinymce`. Each has a local `vName` export for script setup. Browser work starts in directive lifecycle hooks.

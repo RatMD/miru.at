@@ -1,0 +1,17 @@
+<!-- Generated from package/src/docs/support/version.mdx. Edit the source guide. -->
+
+# version
+
+Compare dotted versions with prerelease aliases and optional comparison operators.
+
+**Runtime:** Universal.
+
+## Example
+
+```ts
+import { versionCompare } from '@rat.md/miru/support';
+versionCompare('1.2.0', '1.1.0'); // 1
+versionCompare('1.0.0-rc1', '1.0.0', '<'); // true
+```
+
+Retains the original PHP-style prerelease ranking (dev, alpha/a, beta/b, RC/rc, p/pl). Build metadata is ignored. Unknown operators return null; this is not a general SemVer range parser.

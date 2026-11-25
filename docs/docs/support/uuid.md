@@ -1,0 +1,18 @@
+<!-- Generated from package/src/docs/support/uuid.mdx. Edit the source guide. -->
+
+# uuid
+
+Generate crypto-backed UUID v4 values, optionally cached by a string or symbol key.
+
+**Runtime:** Crypto-capable runtime.
+
+## Example
+
+```ts
+import { uuid } from '@rat.md/miru/support';
+const fresh = uuid();
+const stable = uuid('example');
+uuid('example') === stable; // true
+```
+
+Uses randomUUID when available, otherwise getRandomValues. Keyed identifiers are cached for the module's lifetime.

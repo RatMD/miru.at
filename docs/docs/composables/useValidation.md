@@ -1,0 +1,20 @@
+<!-- Generated from package/src/docs/composables/useValidation.mdx. Edit the source guide. -->
+
+# useValidation
+
+Get translated, chainable Zod validators. Add custom factories in your app or for one form.
+
+```ts
+import { z } from 'zod';
+import { useValidation } from '@rat.md/miru/composables';
+
+const { validators } = useValidation({
+    sku: ({ z }) => z.string().min(3),
+});
+const schema = z.object({
+    email: validators.mailAddress(),
+    sku: validators.sku(),
+});
+```
+
+Built-ins: `mailAddress`, `gtin`, `iban` and `creditCard`. Call in setup; custom factories receive `{ z, locale, t, tc }` and must return a Zod schema. Put this schema into `useForm`. Use `parseAsync` / `safeParseAsync` when a rule is async.

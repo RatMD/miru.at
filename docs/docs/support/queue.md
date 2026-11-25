@@ -1,0 +1,18 @@
+<!-- Generated from package/src/docs/support/queue.mdx. Edit the source guide. -->
+
+# queue
+
+Run asynchronous work with bounded concurrency, retries and processing/success/error/done events.
+
+**Runtime:** Universal.
+
+## Example
+
+```ts
+import { Queue } from '@rat.md/miru/support';
+const queue = new Queue([1, 2, 3], async (value) => value * 2, 2, 1);
+queue.on('error', (item, error) => console.log(item, error));
+const result = await queue.start();
+```
+
+maxRetries counts additional attempts. Final results contain each successful item once and only exhausted failures; error events also report failed retry attempts.

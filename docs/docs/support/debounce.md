@@ -1,0 +1,18 @@
+<!-- Generated from package/src/docs/support/debounce.mdx. Edit the source guide. -->
+
+# debounce
+
+Invoke a callback after calls have stopped for a configured interval, preserving this and the latest arguments.
+
+**Runtime:** Universal.
+
+## Example
+
+```ts
+import { debounce } from '@rat.md/miru/support';
+const search = debounce((term: string) => console.log(term), 250);
+search('first');
+search('last'); // only this value is delivered
+```
+
+Uses global timers and is import-safe outside the browser. The wrapper returns void.

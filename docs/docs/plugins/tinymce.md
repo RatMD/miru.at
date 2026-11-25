@@ -1,0 +1,19 @@
+<!-- Generated from package/src/docs/plugins/tinymce.mdx. Edit the source guide. -->
+
+# tinymce
+
+Use Editor for an HTML v-model, or the local TinyMCE directive for a custom textarea.
+
+```vue
+<template><Editor v-model="html" label="Content" /></template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { Editor } from '@rat.md/miru';
+const html = ref('<p>Your next idea.</p>');
+</script>
+```
+
+Set a host license with `configureTinymce({ licenseKey: 'YOUR_LICENSE_KEY' })` from `@rat.md/miru/plugins/tinymce`, or pass `license-key` to Editor. The existing default is `gpl`; choose the license that applies to your app.
+
+TinyMCE loads when the editor mounts. Editor registers the directive locally, so global directive installation is optional. For a custom integration, import `vTinymce` and bind `{ value, label, update }`; `update` receives the edited HTML. `TinymcePlugin` supports global registration.

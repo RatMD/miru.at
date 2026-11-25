@@ -1,0 +1,19 @@
+<!-- Generated from package/src/docs/support/resize.mdx. Edit the source guide. -->
+
+# resize
+
+Resize a browser image data URL to fit maximum dimensions while preserving its aspect ratio.
+
+**Runtime:** Browser.
+
+## Example
+
+```ts
+import { reader, resize } from '@rat.md/miru/support';
+async function makePreview(file: File) {
+    const dataUrl = await reader<string>(file);
+    return resize(dataUrl, 1280, 720);
+}
+```
+
+Images already within the limits are returned unchanged. Portrait images can swap the supplied bounds as in the original helper; resized output uses the canvas PNG format.

@@ -1,0 +1,22 @@
+<!-- Generated from package/src/docs/support/request.mdx. Edit the source guide. -->
+
+# request
+
+A low-level fetch wrapper with GET/HEAD query parameters, JSON records and success/error envelopes.
+
+**Runtime:** Fetch-capable runtime.
+
+## Example
+
+```ts
+import { request } from '@rat.md/miru/support';
+const result = await request.get<{ items: string[] }>('/example/items', { page: '1' });
+if (result.status === 'success') console.log(result.result.items);
+```
+
+Available methods: get, head, post, put, patch and delete. Relative URLs require a browser/base-aware fetch. Records become JSON; FormData remains multipart. Use useForm for form handling.
+
+Pass `preserveErrorDetails: true` in request options to retain `httpStatus` and the JSON error body
+in `details` for non-envelope HTTP failures. Existing error envelopes keep their supplied details.
+The AJAX form adapter uses this option to recognize server validation errors; normal helper calls
+keep their existing result shape.

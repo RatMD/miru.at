@@ -1,0 +1,17 @@
+<!-- Generated from package/src/docs/composables/useI18n.mdx. Edit the source guide. -->
+
+# useI18n
+
+Read the current locale and translate Miru UI labels.
+
+```ts
+import { computed } from 'vue';
+import { useI18n } from '@rat.md/miru/composables';
+
+const { locale, t, tc } = useI18n();
+const closeLabel = computed(() => t('common.actions.close'));
+```
+
+English and German fallbacks are built in. Configure dictionaries and host adapters through `createMiru`. Use ContextProvider for a subtree override. Keep translated labels computed when the locale can change.
+
+[Configure i18n](/docs/plugins/i18n).

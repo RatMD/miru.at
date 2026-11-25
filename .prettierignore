@@ -1,0 +1,9 @@
+node_modules/
+.vitepress/cache/
+.vitepress/dist/
+.vitepress/theme/*-index.json
+.vitepress/theme/*catalogue.json
+.vitepress/theme/component-api.json
+.vitepress/theme/documentation-groups.json
+.vitepress/theme/colors/miru-defaults.ts
+.vitepress/theme/playground/formatted-examples.ts

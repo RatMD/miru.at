@@ -1,0 +1,18 @@
+<!-- Generated from package/src/docs/support/formdata.mdx. Edit the source guide. -->
+
+# formdata
+
+Serialize nested records and arrays to bracket-keyed FormData without dropping fields named id or name.
+
+**Runtime:** FormData-capable runtime.
+
+## Example
+
+```ts
+import { toFormData } from '@rat.md/miru/support';
+const body = toFormData({ profile: { id: '1', name: 'Ada' }, enabled: true, tags: ['ui'] });
+body.get('profile[name]'); // 'Ada'
+body.get('enabled'); // '1'
+```
+
+Files and blobs remain binary, dates become ISO strings, null/undefined become empty strings and booleans become 1/0. Circular structures reject. Use with useForm.transformValues.

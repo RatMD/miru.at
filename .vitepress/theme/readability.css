@@ -1,0 +1,186 @@
+/* Keep compact documentation and demo surfaces comfortable to read. */
+.prose {
+    font-size: 16px;
+}
+.primary-nav {
+    font-size: 14px;
+}
+.search-trigger {
+    font-size: 13px;
+}
+.workspace-label,
+.nav-group > a {
+    font-size: 14px;
+}
+.nav-group h2 {
+    font-size: 13px;
+}
+.sidebar-note p {
+    font-size: 13px;
+}
+.sidebar-note strong {
+    font-size: 14px;
+}
+.page-outline a {
+    font-size: 13px;
+}
+.page-outline a.nested {
+    font-size: 12px;
+}
+.page-outline h2 {
+    font-size: 13px;
+}
+.breadcrumb {
+    font-size: 13px;
+}
+.doc-banner p {
+    font-size: 14px;
+}
+.catalog-link span,
+.prose table:not([data-slot]) {
+    font-size: 14px;
+}
+.demo-panel p {
+    font-size: 13px;
+}
+.project-panel label,
+.project-panel [data-slot='input'] {
+    font-size: 14px;
+}
+.preference-row label,
+.task-list label {
+    font-size: 14px;
+}
+.preference-row p {
+    font-size: 12px;
+}
+.period-control {
+    font-size: 12px;
+}
+.panel-overline {
+    font-size: 10px;
+}
+.demo-controls > label,
+.demo-controls select,
+.demo-controls [data-slot='checkbox-field'] label {
+    font-size: 14px;
+}
+.demo-toolbar button {
+    font-size: 13px;
+}
+.input-examples > label,
+.selection-label,
+.selection-examples [data-slot='checkbox-field'] label {
+    font-size: 14px;
+}
+.feature-list p,
+.philosophy > div > p {
+    font-size: 15px;
+}
+.home-mobile-navigation {
+    display: none;
+}
+.sidebar-backdrop {
+    display: none;
+}
+.api-type {
+    max-width: 440px;
+    font-size: 12px;
+    line-height: 1.7;
+}
+.api-type summary {
+    cursor: pointer;
+    color: var(--site-muted);
+    font-family: Consolas, monospace;
+    overflow-wrap: anywhere;
+}
+.api-type code {
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    margin-top: 8px;
+}
+.prose td:not([data-slot]) {
+    min-width: 100px;
+    vertical-align: top;
+}
+@media (max-width: 1200px) {
+    .primary-nav {
+        font-size: 13px;
+    }
+    .activity-title {
+        gap: 12px;
+    }
+    .showcase-grid {
+        grid-template-columns: 1fr 1.12fr 1fr;
+    }
+    .period-control {
+        font-size: 11px;
+    }
+    .task-list label,
+    .preference-row label {
+        font-size: 13px;
+    }
+    .project-panel label,
+    .project-panel [data-slot='input'] {
+        font-size: 13px;
+    }
+}
+@media (max-width: 1050px) {
+    .primary-nav {
+        gap: 16px;
+    }
+    .primary-nav a:last-child {
+        display: none;
+    }
+}
+@media (max-width: 1000px) {
+    .showcase-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .embedded-showcase .showcase-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 760px) {
+    .sidebar-backdrop {
+        display: block;
+    }
+    .sidebar {
+        visibility: hidden;
+    }
+    .sidebar.is-open {
+        visibility: visible;
+    }
+    .home-mobile-navigation {
+        display: block;
+    }
+    .prose {
+        font-size: 16px;
+    }
+    .catalog-link span {
+        font-size: 14px;
+    }
+    .demo-panel p {
+        font-size: 13px;
+    }
+    .demo-controls {
+        gap: 12px;
+    }
+    .demo-controls select {
+        min-width: 100px;
+    }
+}
+@media (max-width: 500px) {
+    .showcase-grid {
+        grid-template-columns: 1fr;
+    }
+    .task-list label,
+    .preference-row label {
+        font-size: 14px;
+    }
+    .project-panel label,
+    .project-panel [data-slot='input'] {
+        font-size: 14px;
+    }
+}

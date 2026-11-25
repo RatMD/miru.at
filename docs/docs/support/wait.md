@@ -1,0 +1,17 @@
+<!-- Generated from package/src/docs/support/wait.mdx. Edit the source guide. -->
+
+# wait
+
+Wait for a delay or poll a synchronous/asynchronous predicate with a bounded attempt count.
+
+**Runtime:** Universal.
+
+## Example
+
+```ts
+import { wait, waitUntil } from '@rat.md/miru/support';
+await wait(100);
+await waitUntil(() => true, 50, 10);
+```
+
+Both resolve with null. waitUntil rejects on predicate errors or when its attempt limit is exhausted.

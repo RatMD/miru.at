@@ -1,0 +1,18 @@
+<!-- Generated from package/src/docs/support/now.mdx. Edit the source guide. -->
+
+# now
+
+Format the current runtime-local date/time, or request an ISO UTC timestamp.
+
+**Runtime:** Universal.
+
+## Example
+
+```ts
+import { now } from '@rat.md/miru/support';
+now(); // YYYY-MM-DD HH:mm:ss in runtime-local time
+now('date'); // YYYY-MM-DD
+now('iso'); // ISO UTC timestamp
+```
+
+Supported modes: full, date, time, iso, 8601 and iso-8601. This helper does not force Europe/Berlin.
