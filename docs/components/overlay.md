@@ -23,11 +23,11 @@ Overlay uses a dialog from 768px and a drawer below that width. Use OverlayTrigg
 
 ## Integration guide
 
-[Read the focused integration guide](/reference/overlay-guide).
+[Read the focused integration guide](/components/overlay).
 
 ## Dependencies
 
-- **UI:** [Dialog](/components/dialog), [DialogContent](/components/dialog/reference#dialog-content), [DialogDescription](/components/dialog/reference#dialog-description), [DialogTitle](/components/dialog/reference#dialog-title), [Drawer](/components/drawer), [DrawerContent](/components/drawer/reference#drawer-content), [DrawerDescription](/components/drawer/reference#drawer-description), [DrawerTitle](/components/drawer/reference#drawer-title), [ScrollArea](/components/api/scroll-area)
+- **UI:** [Dialog](/components/dialog), [DialogContent](/components/dialog/reference#dialog-content), [DialogDescription](/components/dialog/reference#dialog-description), [DialogTitle](/components/dialog/reference#dialog-title), [Drawer](/components/drawer), [DrawerContent](/components/drawer/reference#drawer-content), [DrawerDescription](/components/drawer/reference#drawer-description), [DrawerTitle](/components/drawer/reference#drawer-title), [ScrollArea](/components/scroll-area)
 - **Packages:** [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 - **Primitive:** [Reka UI Dialog](https://reka-ui.com/docs/components/dialog), [Reka UI Drawer](https://reka-ui.com/docs/components/drawer)
 

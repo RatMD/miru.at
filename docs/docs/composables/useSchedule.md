@@ -16,4 +16,4 @@ function today() {
 }
 ```
 
-`date`, `view`, `selectedDate` and `selectedEventId` are refs. `range` and `dates` are computed. Your app loads and saves events; reactive `weekStartsOn` and `timeZone` control navigation. See [Schedule](/reference/schedule).
+`date`, `view`, `selectedDate` and `selectedEventId` are refs. `range` and `dates` are computed. Your app loads and saves events; reactive `weekStartsOn` and `timeZone` control navigation. See [Schedule](/components/schedule/guide).

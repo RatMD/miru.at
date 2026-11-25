@@ -9,7 +9,7 @@
             :placeholder="`Filter ${section.toLowerCase()}…`"
             aria-label="Filter navigation"
             size="sm"
-            class="sidebar-search" />
+            wrapper-class="sidebar-search" />
         <ScrollArea class="sidebar-scroll">
             <Button
                 v-if="showOverview"

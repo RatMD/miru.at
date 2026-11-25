@@ -338,7 +338,7 @@ import {
 } from '@tabler/icons-vue';
 import { useData } from 'vitepress';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import { themeCss } from '../colors/engine';
+import { selectedThemeCss } from '../colors/styles';
 import { profile } from '../colors/store';
 import catalogue from '../component-catalogue.json';
 import SiteTooltip from '../components/SiteTooltip.vue';
@@ -439,7 +439,7 @@ const previewCss = computed(() => {
               : background.value === 'checker'
                 ? 'repeating-conic-gradient(#ffffff0a 0% 25%, #00000012 0% 50%) 50% / 16px 16px, var(--ui-background)'
                 : 'var(--ui-page, var(--ui-background))';
-    return `${themeCss(profile.value)}\n${starters.find((item) => item.id === preset.value)?.css || customCss.value}\n.preview-runtime, body { background: ${surface}; }\n${appliedThemeSource.value}`;
+    return `${selectedThemeCss(profile.value)}\n${starters.find((item) => item.id === preset.value)?.css || customCss.value}\n.preview-runtime, body { background: ${surface}; }\n${appliedThemeSource.value}`;
 });
 const title = computed(
     () => starters.find((item) => item.id === preset.value)?.title || customTitle.value,

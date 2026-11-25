@@ -29,4 +29,4 @@ const release = bar.push({
 release(); // Remove only this layer; safe to call twice.
 ```
 
-The controller exposes `current`, `transitionKey`, `depth`, `set`, `push`, `pop`, `clear` and `reset`. `useFloatingAppBar(source)` installs a page layer on mount and releases it on disposal. See [AppBar](/reference/floating-app-bar).
+The controller exposes `current`, `transitionKey`, `depth`, `set`, `push`, `pop`, `clear` and `reset`. `useFloatingAppBar(source)` installs a page layer on mount and releases it on disposal. See [AppBar](/layouts/app-bar).

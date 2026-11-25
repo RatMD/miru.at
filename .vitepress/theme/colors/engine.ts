@@ -1,3 +1,4 @@
+// Calculator for custom palettes in the documentation; library schemes are authored CSS.
 import { miruDefaults } from './miru-defaults.ts';
 export const roles = [
     'primary',
@@ -178,11 +179,24 @@ export function readable(color: string, background: string, minimum = 4.5): stri
     }
     return blend(color, target, high);
 }
-export function surfaceBase(profile: Profile, neutral = miruDefaults.neutral): string {
+export function surfaceBase(profile: Profile, neutral: string = miruDefaults.neutral): string {
     if (profile.preset === 'original' && !profile.surface) return neutral;
     return profile.surface || blend('#647080', profile.colors.accent, 0.3);
 }
-export function themeCss(profile: Profile, native = miruDefaults): string {
+export function themeCss(
+    profile: Profile,
+    native: {
+        light: Record<string, string>;
+        dark: Record<string, string>;
+        colors: Record<Role, string>;
+        neutral: string;
+        accent400: string;
+    } = miruDefaults,
+    schemes: Record<string, string> = {},
+): string {
+    if (profile.surface === null && Object.hasOwn(schemes, profile.preset)) {
+        return schemes[profile.preset];
+    }
     if (profile.preset === 'original') {
         const declarations = (values: Record<string, string>) =>
             Object.entries(values)
@@ -208,7 +222,7 @@ export function themeCss(profile: Profile, native = miruDefaults): string {
             Object.entries(shades[role])
                 .map(
                     ([step, value]) =>
-                        `--ui-${role}-${step}:${value};--miru-ink-${role}-${step}:${ink(value)};`,
+                        `--ui-${role}-${step}:${value};--ui-${role}-${step}-foreground:${ink(value)};--miru-ink-${role}-${step}:${ink(value)};`,
                 )
                 .join(''),
         )
@@ -216,7 +230,7 @@ export function themeCss(profile: Profile, native = miruDefaults): string {
     const aliases = names
         .map(
             (role) =>
-                `--ui-${role}:var(--ui-${role}-600);--ui-${role}-foreground:${role === 'warning' ? '#000000' : '#ffffff'};--ui-${role}-hover:var(--ui-${role}-700);--ui-${role}-active:var(--ui-${role}-800);`,
+                `--ui-${role}:var(--ui-${role}-600);--ui-${role}-foreground:${ink(shades[role][600])};--ui-${role}-hover:var(--ui-${role}-700);--ui-${role}-active:var(--ui-${role}-800);--ui-${role}-hover-foreground:${ink(shades[role][700])};--ui-${role}-active-foreground:${ink(shades[role][800])};`,
         )
         .join('');
     const base = surfaceBase(profile, native.neutral);
@@ -251,11 +265,11 @@ export function themeCss(profile: Profile, native = miruDefaults): string {
         const readableRoles = names
             .map((role) => `--ui-${role}-text:${readable(profile.colors[role], background)};`)
             .join('');
-        return `${readableRoles}--ui-ring:var(--ui-neutral-${dark ? 400 : 950});--ui-page:${dark ? neutral[950] : neutral[50]};--ui-background:${background};--ui-foreground:${foreground};--ui-muted:${raised};--ui-muted-foreground:${muted};--ui-subtle-foreground:${muted};--ui-surface-raised:${raised};--ui-border:${dark ? neutral[700] : neutral[300]};--ui-input:${dark ? neutral[600] : neutral[400]};--ui-surface-hover:${dark ? neutral[800] : neutral[100]};--ui-surface-hover-foreground:${foreground};--ui-accent:${accent};--ui-accent-foreground:#ffffff;--ui-secondary-text:${readable(profile.colors.secondary, background)};--ui-highlight:var(--ui-accent);--ui-highlight-background:color-mix(in srgb,var(--ui-accent-600) ${dark ? 15 : 10}%,var(--ui-background));--ui-default:${foreground};--ui-default-foreground:${background};--ui-default-hover:${dark ? neutral[300] : neutral[700]};--ui-default-active:${dark ? neutral[400] : neutral[600]};--ui-outline-hover:var(--ui-surface-hover);--ui-outline-active:var(--ui-muted);--ui-ghost-hover:var(--ui-surface-hover);--ui-ghost-active:var(--ui-neutral-${dark ? 600 : 200});--ui-ghostly:var(--ui-muted);--ui-ghostly-foreground:var(--ui-foreground);--ui-ghostly-hover:var(--ui-neutral-${dark ? 700 : 200});--ui-ghostly-active:var(--ui-neutral-${dark ? 600 : 300});--ui-editor-background:var(--ui-page);--ui-editor-selection:color-mix(in srgb,var(--ui-accent-500) 25%,transparent);`;
+        return `${readableRoles}--ui-ring:var(--ui-neutral-${dark ? 400 : 950});--ui-page:${dark ? neutral[950] : neutral[50]};--ui-background:${background};--ui-foreground:${foreground};--ui-muted:${raised};--ui-muted-foreground:${muted};--ui-subtle-foreground:${muted};--ui-surface-raised:${raised};--ui-border:${dark ? neutral[700] : neutral[300]};--ui-input:${dark ? neutral[600] : neutral[400]};--ui-surface-hover:${dark ? neutral[800] : neutral[100]};--ui-surface-hover-foreground:${foreground};--ui-accent:${accent};--ui-accent-foreground:${ink(accent)};--ui-secondary-text:${readable(profile.colors.secondary, background)};--ui-highlight:var(--ui-accent);--ui-highlight-background:color-mix(in srgb,var(--ui-accent-600) ${dark ? 15 : 10}%,var(--ui-background));--ui-default:${foreground};--ui-default-foreground:${background};--ui-default-hover:${dark ? neutral[300] : neutral[700]};--ui-default-active:${dark ? neutral[400] : neutral[600]};--ui-outline-hover:var(--ui-surface-hover);--ui-outline-active:var(--ui-muted);--ui-ghost-hover:var(--ui-surface-hover);--ui-ghost-active:var(--ui-neutral-${dark ? 600 : 200});--ui-ghostly:var(--ui-muted);--ui-ghostly-foreground:var(--ui-foreground);--ui-ghostly-hover:var(--ui-neutral-${dark ? 700 : 200});--ui-ghostly-active:var(--ui-neutral-${dark ? 600 : 300});--ui-editor-background:var(--ui-page);--ui-editor-selection:color-mix(in srgb,var(--ui-accent-500) 25%,transparent);`;
     }
     // Theme shared tokens; native components own their color and state recipes.
     return `:root,:root.dark{${paletteDeclarations}${neutralCss}${aliases}}:root{${surfaces(false)}}:root.dark{${surfaces(true)}}`;
 }
-export function bootstrapScript(): string {
-    return `(()=>{const normalizeHex=${normalizeHex.toString()};const validateProfile=${validateProfile.toString()};const blend=${blend.toString()};const palette=${palette.toString()};const contrast=${contrast.toString()};const ink=${ink.toString()};const readable=${readable.toString()};const surfaceBase=${surfaceBase.toString()};const themeCss=${themeCss.toString()};let profile=${JSON.stringify(presetProfile())};try{profile=validateProfile(JSON.parse(localStorage.getItem('${storageKey}')||'null'))||profile}catch{}const style=document.createElement('style');style.id='miru-color-theme';style.textContent=themeCss(profile,${JSON.stringify(miruDefaults)});document.head.appendChild(style);document.documentElement.dataset.miruColors=profile.preset})()`;
+export function bootstrapScript(schemes: Record<string, string> = {}): string {
+    return `(()=>{const normalizeHex=${normalizeHex.toString()};const validateProfile=${validateProfile.toString()};const blend=${blend.toString()};const palette=${palette.toString()};const contrast=${contrast.toString()};const ink=${ink.toString()};const readable=${readable.toString()};const surfaceBase=${surfaceBase.toString()};const themeCss=${themeCss.toString()};let profile=${JSON.stringify(presetProfile())};try{profile=validateProfile(JSON.parse(localStorage.getItem('${storageKey}')||'null'))||profile}catch{}const style=document.createElement('style');style.id='miru-color-theme';style.textContent=themeCss(profile,${JSON.stringify(miruDefaults)},${JSON.stringify(schemes)});document.head.appendChild(style);document.documentElement.dataset.miruColors=profile.preset})()`;
 }

@@ -1,35 +1,7 @@
-import { layoutApiCopy } from '../../package/src/stories/layout-documentation.ts';
-import { indicatorApiCopy } from '../../package/src/stories/indicator-documentation.ts';
-import {
-    overlayApiCopy,
-    overlayClassComponents,
-} from '../../package/src/stories/overlay-documentation.ts';
-import {
-    formFieldApiCopy,
-    formFieldClassComponents,
-} from '../../package/src/stories/form-fields-api-copy.ts';
-import { formComponentApiCopy } from '../../package/src/stories/form-components-documentation.ts';
-import { stepperApiCopy } from '../../package/src/stories/stepper-documentation.ts';
-import { extensionApiCopy } from '../../package/src/stories/extensions-documentation.ts';
-import {
-    utilityApiCopy,
-    utilityClassComponents,
-} from '../../package/src/stories/utilities-documentation.ts';
-import { tabsApiCopy } from '../../package/src/stories/tabs-documentation.ts';
-import { tableApiCopy } from '../../package/src/stories/table-documentation.ts';
-import { carouselApiCopy } from '../../package/src/stories/carousel-documentation.ts';
-import { spinnerApiCopy } from '../../package/src/stories/spinner-documentation.ts';
-import { skeletonApiCopy } from '../../package/src/stories/skeleton-documentation.ts';
-import { separatorApiCopy } from '../../package/src/stories/separator-documentation.ts';
-import { progressApiCopy } from '../../package/src/stories/progress-documentation.ts';
-import { paginationApiCopy } from '../../package/src/stories/pagination-documentation.ts';
-import { markerApiCopy } from '../../package/src/stories/marker-documentation.ts';
-import { kbdApiCopy } from '../../package/src/stories/kbd-documentation.ts';
-import { itemApiCopy } from '../../package/src/stories/item-documentation.ts';
-import { codeApiCopy } from '../../package/src/stories/code-documentation.ts';
-import { breadcrumbApiCopy } from '../../package/src/stories/breadcrumb-documentation.ts';
-import { cardApiCopy } from '../../package/src/stories/card-documentation.ts';
-import { buttonApiCopy } from '../../package/src/stories/button-documentation.ts';
+import { readFile, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
     accordionApiCopy,
     accordionCommonProps,
@@ -39,10 +11,38 @@ import { anchorApiCopy } from '../../package/src/stories/anchor-documentation.ts
 import { attachmentApiCopy } from '../../package/src/stories/attachment-documentation.ts';
 import { avatarApiCopy } from '../../package/src/stories/avatar-documentation.ts';
 import { badgeApiCopy } from '../../package/src/stories/badge-documentation.ts';
-import { readFile, writeFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { breadcrumbApiCopy } from '../../package/src/stories/breadcrumb-documentation.ts';
+import { buttonApiCopy } from '../../package/src/stories/button-documentation.ts';
+import { cardApiCopy } from '../../package/src/stories/card-documentation.ts';
+import { carouselApiCopy } from '../../package/src/stories/carousel-documentation.ts';
+import { codeApiCopy } from '../../package/src/stories/code-documentation.ts';
+import { extensionApiCopy } from '../../package/src/stories/extensions-documentation.ts';
+import { formComponentApiCopy } from '../../package/src/stories/form-components-documentation.ts';
+import {
+    formFieldApiCopy,
+    formFieldClassComponents,
+} from '../../package/src/stories/form-fields-api-copy.ts';
+import { indicatorApiCopy } from '../../package/src/stories/indicator-documentation.ts';
+import { itemApiCopy } from '../../package/src/stories/item-documentation.ts';
+import { kbdApiCopy } from '../../package/src/stories/kbd-documentation.ts';
+import { layoutApiCopy } from '../../package/src/stories/layout-documentation.ts';
+import { markerApiCopy } from '../../package/src/stories/marker-documentation.ts';
+import {
+    overlayApiCopy,
+    overlayClassComponents,
+} from '../../package/src/stories/overlay-documentation.ts';
+import { paginationApiCopy } from '../../package/src/stories/pagination-documentation.ts';
+import { progressApiCopy } from '../../package/src/stories/progress-documentation.ts';
+import { separatorApiCopy } from '../../package/src/stories/separator-documentation.ts';
+import { skeletonApiCopy } from '../../package/src/stories/skeleton-documentation.ts';
+import { spinnerApiCopy } from '../../package/src/stories/spinner-documentation.ts';
+import { stepperApiCopy } from '../../package/src/stories/stepper-documentation.ts';
+import { tableApiCopy } from '../../package/src/stories/table-documentation.ts';
+import { tabsApiCopy } from '../../package/src/stories/tabs-documentation.ts';
+import {
+    utilityApiCopy,
+    utilityClassComponents,
+} from '../../package/src/stories/utilities-documentation.ts';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const packageRoot = path.resolve(root, '../package');
 const require = createRequire(path.join(packageRoot, 'package.json'));

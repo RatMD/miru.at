@@ -4,13 +4,10 @@ build/
 dist/
 .vitepress/cache/
 .vitepress/dist/
-docs/reference/
 .vitepress/theme/component-api.json
-.vitepress/theme/catalogue.json
 .vitepress/theme/component-catalogue.json
 .vitepress/theme/documentation-groups.json
 docs/components/api/
-docs/layouts/api/
 .vitepress/theme/search-index.json
 .tmp/*
 tmp/*

@@ -38,7 +38,7 @@ Use `variant` to choose `default`, `primary`, `secondary`, `accent`, `info`, `su
 
 ## Dependencies
 
-- **UI:** [Badge](/components/badge), [Button](/components/button), [Drawer](/components/api/drawer), [Popover](/components/api/popover)
+- **UI:** [Badge](/components/badge), [Button](/components/button), [Drawer](/components/drawer), [Popover](/components/popover)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 - **Primitive:** [Reka UI Tabs](https://reka-ui.com/docs/components/tabs)
 

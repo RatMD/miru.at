@@ -21,7 +21,7 @@ The public export is `OverlayDetails`. Supply CodeSection records with a stable 
 
 ## Integration guide
 
-[Read the focused integration guide](/reference/overlay-guide).
+[Read the focused integration guide](/components/overlay).
 
 ## Dependencies
 

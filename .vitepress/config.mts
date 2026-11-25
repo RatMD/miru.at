@@ -1,6 +1,21 @@
 import { defineConfig } from 'vitepress';
+import { readFileSync } from 'node:fs';
 import websitePackage from '../package.json' with { type: 'json' };
 import { bootstrapScript } from './theme/colors/engine.ts';
+// Read authored CSS directly so the first paint matches the client-side scheme selector.
+const schemeStyles = Object.fromEntries(
+    Object.entries({
+        original: 'original',
+        miru: 'modern',
+        aurora: 'northern-lights',
+        lagoon: 'lagoon',
+        rose: 'rosewood',
+        citrus: 'golden-hour',
+    }).map(([id, name]) => [
+        id,
+        readFileSync(new URL(`../../package/src/themes/${name}.css`, import.meta.url), 'utf8'),
+    ]),
+);
 const miruDependency = websitePackage.dependencies['@rat.md/miru'];
 const localMiru = miruDependency.startsWith('file:');
 
@@ -14,7 +29,7 @@ export default defineConfig({
     cleanUrls: true,
     appearance: { initialValue: 'dark', disableTransition: false },
     head: [
-        ['script', { id: 'miru-color-bootstrap' }, bootstrapScript()],
+        ['script', { id: 'miru-color-bootstrap' }, bootstrapScript(schemeStyles)],
         ['meta', { name: 'theme-color', content: '#101113' }],
         [
             'link',
@@ -116,4 +131,3 @@ export default defineConfig({
         },
     },
 });
-

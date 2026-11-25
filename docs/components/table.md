@@ -6,7 +6,7 @@ componentPage: overview
 
 ## When to use Table
 
-Use Table for invoice lines, summaries, comparisons and other tables whose rows you compose directly. It provides presentation, specialised cells and optional local sorting through `useTableSort`. For larger data sources with column configuration, filtering, selection or pagination, use [DataTable](/components/api/data-table), which is built on [@tanstack/vue-table](https://www.npmjs.com/package/@tanstack/vue-table).
+Use Table for invoice lines, summaries, comparisons and other tables whose rows you compose directly. It provides presentation, specialised cells and optional local sorting through `useTableSort`. For larger data sources with column configuration, filtering, selection or pagination, use [DataTable](/components/data-table), which is built on [@tanstack/vue-table](https://www.npmjs.com/package/@tanstack/vue-table).
 
 ## Preview
 
@@ -30,7 +30,7 @@ Place each `TableCell*` directly inside TableRow. Use its content-only counterpa
 
 ## Dependencies
 
-- **UI:** [Badge](/components/badge), [Button](/components/button), [Copy](/components/api/copy), [Tooltip](/components/api/tooltip)
+- **UI:** [Badge](/components/badge), [Button](/components/button), [Copy](/components/copy), [Tooltip](/components/tooltip)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/table/reference) for the complete component contract.

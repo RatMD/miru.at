@@ -60,7 +60,7 @@ Set `maxHeight` on AccordionContent to a number of pixels or a CSS length, such 
 
 ## Dependencies
 
-- **UI:** [ButtonAction](/components/api/button-action), [ScrollArea](/components/api/scroll-area)
+- **UI:** [ButtonAction](/components/button-action), [ScrollArea](/components/scroll-area)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 - **Primitive:** [Reka UI Accordion](https://reka-ui.com/docs/components/accordion)
 

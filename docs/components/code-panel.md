@@ -22,7 +22,7 @@ Prettier and its parser plugins load on demand for JSON and HTML when `format` i
 
 ## Dependencies
 
-- **UI:** [ButtonAction](/components/button-action), [ScrollArea](/components/api/scroll-area), [Tooltip](/components/api/tooltip)
+- **UI:** [ButtonAction](/components/button-action), [ScrollArea](/components/scroll-area), [Tooltip](/components/tooltip)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [prettier](https://www.npmjs.com/package/prettier), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/code-panel/reference) for the complete component contract.

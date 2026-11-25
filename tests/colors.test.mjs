@@ -156,10 +156,22 @@ test('accent text and secondary text retain contrast on light and dark surfaces'
     for (const base of ['#ffffff', '#000000', '#ff00ff'])
         for (const bg of ['#fffefe', '#121215']) assert.ok(contrast(readable(base, bg), bg) >= 4.5);
 });
-test('bootstrap restores the selected scheme before the app mounts', () => {
+test('bootstrap restores authored schemes or a custom palette before the app mounts', () => {
+    const schemes = Object.fromEntries(
+        Object.entries({
+            original: 'original',
+            miru: 'modern',
+            aurora: 'northern-lights',
+            lagoon: 'lagoon',
+            rose: 'rosewood',
+            citrus: 'golden-hour',
+        }).map(([id, name]) => [
+            id,
+            readFileSync(new URL(`../../package/src/themes/${name}.css`, import.meta.url), 'utf8'),
+        ]),
+    );
     for (const raw of [
-        JSON.stringify(presetProfile('lagoon')),
-        JSON.stringify(presetProfile('original')),
+        ...presets.map((preset) => JSON.stringify(presetProfile(preset.id))),
         JSON.stringify({
             ...presetProfile(),
             preset: 'custom',
@@ -181,13 +193,14 @@ test('bootstrap restores the selected scheme before the app mounts', () => {
             },
             documentElement: { dataset: {} },
         };
-        vm.runInNewContext(bootstrapScript(), {
+        vm.runInNewContext(bootstrapScript(schemes), {
             document,
             localStorage: { getItem: () => raw },
         });
         const expected = raw?.startsWith('{') ? validateProfile(JSON.parse(raw)) : presetProfile();
         assert.equal(document.documentElement.dataset.miruColors, expected.preset);
-        assert.equal(style.textContent, themeCss(expected));
+        assert.equal(style.textContent, themeCss(expected, miruDefaults, schemes));
+        if (expected.preset !== 'custom') assert.equal(style.textContent, schemes[expected.preset]);
         for (const role of roles) assert.ok(style.textContent.includes(`--ui-${role}-950:`));
     }
 });

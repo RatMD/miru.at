@@ -96,7 +96,7 @@ Set `mobile` explicitly for an embedded preview, or leave it unset to follow the
 
 ## Dependencies
 
-- **UI:** [Button](/components/button), [ScrollArea](/components/api/scroll-area)
+- **UI:** [Button](/components/button), [ScrollArea](/components/scroll-area)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 - **Primitive:** [Reka UI Stepper](https://reka-ui.com/docs/components/stepper)
 

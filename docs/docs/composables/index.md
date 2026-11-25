@@ -1,6 +1,6 @@
 # Composables
 
-Focused references for the current public composables API.
+Small helpers with focused examples. Open a page to copy its import and usage.
 
 - [useBreakpoint](/docs/composables/useBreakpoint)
 - [useCalendarBooking](/docs/composables/useCalendarBooking)

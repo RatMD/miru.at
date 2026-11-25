@@ -24,7 +24,7 @@ See [Generator](/components/generator) for the section and field renderers.
 
 ## Dependencies
 
-- **UI:** [Button](/components/button), [Description](/components/api/description), [FieldError](/components/field/reference#field-error), [FormLocaleSwitcher](/components/form/reference#form-locale-switcher), [FormLayout](/components/form-layout), [FormSectionRenderer](/components/generator), [FormText](/components/form/reference#form-text)
+- **UI:** [Button](/components/button), [Description](/components/description), [FieldError](/components/field/reference#field-error), [FormLocaleSwitcher](/components/form/reference#form-locale-switcher), [FormLayout](/components/form-layout), [FormSectionRenderer](/components/generator), [FormText](/components/form/reference#form-text)
 - **Packages:** [@inertiajs/vue3](https://www.npmjs.com/package/@inertiajs/vue3), [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/form/reference) for the complete component contract.

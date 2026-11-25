@@ -248,7 +248,7 @@
     color: var(--ui-foreground);
     transition: border-color 160ms ease;
 }
-.color-preset[aria-pressed='true'] {
+.color-presets .color-preset[aria-pressed='true'] {
     border-color: var(--ui-accent-500);
     background: var(--ui-highlight-background);
 }
@@ -261,8 +261,9 @@
         box-shadow: 0 0 0 var(--mood-ring-width)
             color-mix(in srgb, var(--mood-ring-color) 65%, var(--ui-foreground));
     }
-    .color-preset:hover {
-        border-color: var(--ui-highlight);
+    .color-presets .color-preset:not([aria-pressed='true']):hover {
+        border-color: color-mix(in srgb, var(--ui-highlight) 45%, var(--ui-border));
+        background: var(--ui-surface-hover);
     }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -672,4 +673,13 @@
     .hero-action-glow > .hero-action {
         width: 100%;
     }
+}
+
+/* Preset selection is shown by its checked state, without a second pressed inset effect. */
+.color-presets .color-preset:active {
+    box-shadow: none;
+    transform: none;
+}
+.color-presets .color-preset:not([aria-pressed='true']):active {
+    background: var(--ui-surface-hover);
 }

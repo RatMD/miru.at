@@ -1,6 +1,6 @@
 # Plugins
 
-Focused references for the current public plugins API.
+Small helpers with focused examples. Open a page to copy its import and usage.
 
 - [click-outside](/docs/plugins/click-outside)
 - [dayjs](/docs/plugins/dayjs)

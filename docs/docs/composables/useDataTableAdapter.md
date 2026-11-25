@@ -1,3 +1,5 @@
+<!-- Generated from package/src/docs/composables/useDataTableAdapter.mdx. Edit the source guide. -->
+
 # useDataTableAdapter
 
 Resolve the backend conventions for a DataTable inside Vue setup. The result is a computed adapter containing its format, list normaliser and query serialiser; it does not load records or choose the navigation transport.

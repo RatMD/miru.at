@@ -49,7 +49,7 @@
                         <IconHeartFilled class="powered-heart" aria-label="love" role="img" />
                         by miru.
                     </span>
-                    <Anchor href="/components/api/carousel" animation="slide">
+                    <Anchor href="/components/carousel" animation="slide">
                         Discover Carousel ↗
                     </Anchor>
                 </div>
@@ -202,7 +202,7 @@
                                 Start with the pieces, then make them unmistakably yours.
                             </p>
                             <Anchor
-                                href="/components/api/accordion"
+                                href="/components/accordion"
                                 variant="accent"
                                 animation="slide">
                                 Take a closer look ↗
@@ -212,7 +212,7 @@
                 </Accordion>
                 <div class="gallery-footer">
                     <span aria-hidden="true" />
-                    <Anchor href="/components/api/accordion" animation="slide">
+                    <Anchor href="/components/accordion" animation="slide">
                         Discover Accordion ↗
                     </Anchor>
                 </div>
@@ -268,7 +268,7 @@
                 </div>
                 <div class="gallery-footer">
                     <span aria-hidden="true" />
-                    <Anchor href="/components/api/calendar" animation="slide">
+                    <Anchor href="/components/calendar" animation="slide">
                         Discover Calendar ↗
                     </Anchor>
                 </div>
@@ -338,7 +338,7 @@
                 </div>
                 <div class="gallery-footer">
                     <span aria-hidden="true" />
-                    <Anchor href="/components/api/attachment" animation="slide">
+                    <Anchor href="/components/attachment" animation="slide">
                         Discover Attachments ↗
                     </Anchor>
                 </div>

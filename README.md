@@ -73,3 +73,11 @@ npm run preview
 ```
 
 Deploy `.vitepress/dist` to static hosting with clean URL support. No deployment configuration or publication is performed by this setup. Once Miru is published to npm, the GitHub dependency can be replaced with the desired package version.
+
+## Documentation sources
+
+Current pages live in `docs/docs/` (general documentation), `docs/components/` and `docs/layouts/`. Component overviews, references and guides are kept together. The remaining top-level pages provide the home page, examples, themes and playground. `docs/public/` contains public assets.
+
+Old documentation URLs are kept centrally in `.vitepress/theme/legacy-routes.ts`, rather than as duplicate Markdown pages. They redirect in the browser, including when the host serves VitePress’s `404.html` for a legacy URL. Configure static hosting to serve that file for unknown paths.
+
+`docs:sync` refreshes public composable, plugin and support references, component metadata and search data. It leaves authored component pages alone and does not recreate the former `guide/`, `forms/`, `data-table/`, `component-guides/` or `reference/` documentation trees. `.qa/`, `.tmp/`, caches and build output are development artefacts, not documentation sources.

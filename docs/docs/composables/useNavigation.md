@@ -1,3 +1,5 @@
+<!-- Generated from package/src/docs/composables/useNavigation.mdx. Edit the source guide. -->
+
 # useNavigation
 
 Read the current application’s navigation adapter inside Vue setup. The returned service follows the configuration installed by `createMiru`; it falls back to ordinary browser navigation when no adapter is supplied.

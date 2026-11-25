@@ -1,4 +1,8 @@
 /* Miru's native design tokens are the source of truth for the website and demos. */
+/* The container owns the bottom edge, including with older compiled TableBody versions. */
+[data-slot='table-body'] > tr:last-child {
+    border-bottom-width: 0;
+}
 .prose .documentation-table {
     width: 100%;
     margin-block: 20px;
@@ -73,53 +77,14 @@
 .home-mobile-navigation {
     overflow: auto;
 }
+/* Code token colours belong to the site; palette and surface tokens belong to the selected scheme. */
 :root {
-    --ui-ring: var(--ui-neutral-950);
-    --ui-page: #fafafa;
-    --ui-background: #ffffff;
-    --ui-foreground: #222326;
-    --ui-muted: #f0f0f3;
-    --ui-muted-foreground: #686b75;
-    --ui-surface-hover: #ececf0;
-    --ui-surface-hover-foreground: #222326;
-    --ui-border: #e1e2e7;
-    --ui-input: #d8d9df;
-    --ui-surface-raised: #f3f3f5;
-    --ui-subtle-foreground: #777b86;
-    --ui-highlight: var(--ui-accent);
-    --ui-highlight-background: #fcebe7;
-    --ui-default: #222326;
-    --ui-default-foreground: #ffffff;
-    --ui-default-hover: #35363c;
-    --ui-default-active: #494b52;
-    --ui-editor-background: #ffffff;
-    --ui-editor-selection: #e8d7f6;
     --ui-code-keyword: #9a407f;
     --ui-code-string: #1f7b61;
     --ui-code-name: #b44c35;
     --ui-code-type: #4c58ac;
 }
 :root.dark {
-    --ui-ring: var(--ui-neutral-400);
-    --ui-page: #101113;
-    --ui-background: #161719;
-    --ui-foreground: #f1f0f2;
-    --ui-muted: #202125;
-    --ui-muted-foreground: #a1a2ac;
-    --ui-surface-hover: #25262b;
-    --ui-surface-hover-foreground: #f1f0f2;
-    --ui-border: #2d2e35;
-    --ui-input: #3a3c45;
-    --ui-surface-raised: #1f2024;
-    --ui-subtle-foreground: #888c98;
-    --ui-highlight: var(--ui-accent);
-    --ui-highlight-background: #30201e;
-    --ui-default: #f1f0f2;
-    --ui-default-foreground: #171719;
-    --ui-default-hover: #d5d6dd;
-    --ui-default-active: #bfc1cb;
-    --ui-editor-background: #131417;
-    --ui-editor-selection: #563c5266;
     --ui-code-keyword: #d8a0d6;
     --ui-code-string: #9bc6a0;
     --ui-code-name: #f1b49b;
@@ -127,21 +92,6 @@
 }
 :root,
 :root.dark {
-    --ui-primary-50: #fff3ef;
-    --ui-primary-100: #ffded5;
-    --ui-primary-200: #ffc4b5;
-    --ui-primary-300: #ffa58f;
-    --ui-primary-400: #f88b73;
-    --ui-primary-500: #e8755f;
-    --ui-primary-600: #df5d49;
-    --ui-primary-700: #c74b39;
-    --ui-primary-800: #ae3c2c;
-    --ui-primary-900: #773024;
-    --ui-primary-950: #421a15;
-    --ui-primary: var(--ui-primary-600);
-    --ui-primary-foreground: #ffffff;
-    --ui-primary-hover: var(--ui-primary-700);
-    --ui-primary-active: var(--ui-primary-800);
     --ui-radius: 0.65rem;
     --site-bg: var(--ui-page);
     --site-panel: var(--ui-background);
@@ -969,4 +919,9 @@
         height: calc(100dvh - 260px);
         min-height: 360px;
     }
+}
+
+/* Honour the authored thumb token with the currently compiled package as well. */
+.miru-switch[data-slot='switch']:is([data-variant='success'], [data-variant='danger-success']) {
+    --switch-thumb-on: var(--ui-switch-thumb-checked, #ffffff);
 }

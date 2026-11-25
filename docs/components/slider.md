@@ -21,7 +21,7 @@ The model is always a number array: use one value for one handle or two for a ra
 
 ## Integration guide
 
-[Read the focused integration guide](/reference/slider).
+[Read the focused integration guide](/components/slider).
 
 ## Dependencies
 

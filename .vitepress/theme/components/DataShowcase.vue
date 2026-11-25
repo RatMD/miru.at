@@ -67,7 +67,7 @@
                     <IconHeartFilled class="powered-heart" aria-label="love" role="img" />
                     by miru.
                 </span>
-                <Anchor href="/reference/data-table-guide" animation="slide">
+                <Anchor href="/docs/data-table/introduction" animation="slide">
                     Discover DataTable ↗
                 </Anchor>
             </div>
@@ -175,7 +175,7 @@
                         <IconHeartFilled class="powered-heart" aria-label="love" role="img" />
                         by miru.
                     </span>
-                    <Anchor href="/components/api/card-chart" animation="slide">
+                    <Anchor href="/components/card-chart" animation="slide">
                         Meet CardChart ↗
                     </Anchor>
                 </div>
@@ -213,7 +213,7 @@
                 </div>
                 <div class="powered-line">
                     <span>Small footprint. Proper event details.</span>
-                    <Anchor href="/components/api/schedule" animation="slide">
+                    <Anchor href="/components/schedule" animation="slide">
                         Explore Schedule ↗
                     </Anchor>
                 </div>

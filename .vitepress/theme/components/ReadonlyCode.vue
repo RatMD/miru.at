@@ -49,6 +49,7 @@
     </section>
 </template>
 <script setup lang="ts">
+import type { createReadonlyEditor } from '../code/readonly-editor';
 import {
     ButtonAction,
     ScrollArea,
@@ -60,7 +61,6 @@ import {
 import { IconClipboard, IconClipboardCheck } from '@tabler/icons-vue';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { copyCode } from '../../../../package/src/components/code-panel/clipboard';
-import type { createReadonlyEditor } from '../code/readonly-editor';
 const props = withDefaults(
     defineProps<{
         code: string;

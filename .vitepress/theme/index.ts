@@ -35,6 +35,10 @@ export default {
         );
         app.component('ReadonlyCode', (await import('./components/ReadonlyCode.vue')).default);
         app.component(
+            'ThemeTokenReference',
+            defineClientComponent(() => import('./components/ThemeTokenReference.vue')),
+        );
+        app.component(
             'ComponentDemo',
             defineClientComponent(() => import('./components/ComponentDemo.vue')),
         );

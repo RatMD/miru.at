@@ -22,7 +22,7 @@ Place InputGroupInput or InputGroupTextarea inside InputGroup and add InputGroup
 
 ## Dependencies
 
-- **UI:** [Button](/components/button), [Input](/components/api/input), [Textarea](/components/api/textarea)
+- **UI:** [Button](/components/button), [Input](/components/input), [Textarea](/components/textarea)
 - **Packages:** [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/input-group/reference) for the complete component contract.

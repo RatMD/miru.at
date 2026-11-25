@@ -18,7 +18,7 @@ componentPage: overview
 
 ## ApexCharts example
 
-The preview uses [ApexChart](/components/api/apex-chart), backed by [apexcharts](https://www.npmjs.com/package/apexcharts) and [vue3-apexcharts](https://www.npmjs.com/package/vue3-apexcharts). Supply your own series and options through ApexChart.
+The preview uses [ApexChart](/components/apexcharts), backed by [apexcharts](https://www.npmjs.com/package/apexcharts) and [vue3-apexcharts](https://www.npmjs.com/package/vue3-apexcharts). Supply your own series and options through ApexChart.
 
 ## Chart content and empty states
 

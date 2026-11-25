@@ -22,7 +22,7 @@ The default slot replaces `value`; copying uses the rendered code text and exclu
 
 ## Dependencies
 
-- **UI:** [Tooltip](/components/api/tooltip)
+- **UI:** [Tooltip](/components/tooltip)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/code/reference) for the complete component contract.

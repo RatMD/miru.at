@@ -23,7 +23,7 @@ DrawerContent keeps its header and footer outside the default ScrollArea. Set `s
 
 ## Dependencies
 
-- **UI:** [Button](/components/button), [ScrollArea](/components/api/scroll-area)
+- **UI:** [Button](/components/button), [ScrollArea](/components/scroll-area)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 - **Primitive:** [Reka UI Drawer](https://reka-ui.com/docs/components/drawer)
 

@@ -32,7 +32,7 @@ A header section for table headings and grouped column labels.
 
 ### Dependencies {#table-header-dependencies}
 
-- **UI:** [Badge](/components/badge), [Button](/components/button), [Copy](/components/api/copy), [Tooltip](/components/api/tooltip)
+- **UI:** [Badge](/components/badge), [Button](/components/button), [Copy](/components/copy), [Tooltip](/components/tooltip)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [@vueuse/core](https://www.npmjs.com/package/@vueuse/core), [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 ## TableBody {#table-body}

@@ -1,3 +1,4 @@
+import type { Extension } from '@codemirror/state';
 import { css } from '@codemirror/lang-css';
 import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
@@ -6,7 +7,6 @@ import { vue } from '@codemirror/lang-vue';
 import { HighlightStyle, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { shell } from '@codemirror/legacy-modes/mode/shell';
 import { Compartment, EditorState } from '@codemirror/state';
-import type { Extension } from '@codemirror/state';
 import { EditorView, lineNumbers } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 

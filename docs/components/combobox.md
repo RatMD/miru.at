@@ -21,7 +21,7 @@ ComboboxField selects a string value or null and supplies filtering, a visible t
 
 ## Integration guide
 
-[Read the focused integration guide](/reference/combobox-guide).
+[Read the focused integration guide](/components/combobox).
 
 ## Dependencies
 

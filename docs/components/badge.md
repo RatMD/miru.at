@@ -33,4 +33,4 @@ See the [reference](/components/badge/reference) for the complete component cont
 
 ## Further reading
 
-[Read the Badge guide](/reference/badge-guide) for additional composition examples.
+[Read the Badge guide](/components/badge) for additional composition examples.

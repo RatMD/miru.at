@@ -76,4 +76,4 @@ const localization = createFormLocalization(['en', 'de'], 'en');
 
 Pass `localization` to Form and set `localized: true` on the relevant fields. The default nested strategy uses paths such as `translations.en.name`; `fieldPath: 'locale_suffix'` uses `name_en`. Include the same shape in initial values and the schema. Switching locale changes the edited path rather than translating or submitting values automatically.
 
-Reference: [Generator](/components/api/form-section-renderer), [FormFieldRenderer](/components/api/form-field-renderer) and [FormRepeater](/components/api/form-repeater). Next: [Form layout](/docs/forms/layouts).
+Reference: [Generator](/components/generator), [FormFieldRenderer](/components/generator/reference#form-field-renderer) and [FormRepeater](/components/form/reference#form-repeater). Next: [Form layout](/docs/forms/layouts).

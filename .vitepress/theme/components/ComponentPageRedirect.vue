@@ -1,6 +1,6 @@
 <template>
     <p>
-        Opening the updated component documentation.
+        Opening the current documentation.
         <a :href="target">Continue to the page</a>
         .
     </p>

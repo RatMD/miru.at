@@ -6,7 +6,7 @@ componentPage: guide
 
 Table is intended for static content and small, locally managed collections: invoice lines, summaries, comparisons and detail views. You compose its rows directly and can add lightweight conveniences such as local sorting and specialised cells.
 
-For larger or more dynamic data sources, prefer [DataTable](/components/api/data-table), built on [@tanstack/vue-table](https://www.npmjs.com/package/@tanstack/vue-table). It provides configured columns, filtering, pagination, selection and data-driven actions. Table does not load data, manage server queries or sort rows that have not been loaded.
+For larger or more dynamic data sources, prefer [DataTable](/components/data-table), built on [@tanstack/vue-table](https://www.npmjs.com/package/@tanstack/vue-table). It provides configured columns, filtering, pagination, selection and data-driven actions. Table does not load data, manage server queries or sort rows that have not been loaded.
 
 ## Compose a table
 
@@ -161,4 +161,4 @@ Sorting cycles through ascending, descending and original order, without mutatin
 
 Render empty states explicitly with one row and a TableCell whose `colspan` matches the number of columns. Use `:hover="false"` for that row. Table has no automatic loading, empty-state or query model; use DataTable when those data-management requirements grow.
 
-Reference: [Table API](/components/table), [useTableSort](/docs/composables/useTableSort) and [DataTable](/components/api/data-table).
+Reference: [Table API](/components/table), [useTableSort](/docs/composables/useTableSort) and [DataTable](/components/data-table).

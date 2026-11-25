@@ -6,8 +6,12 @@ import { fileURLToPath } from 'node:url';
 export const packageSource = fileURLToPath(new URL('../../package/src/', import.meta.url));
 const require = createRequire(new URL('../../package/package.json', import.meta.url));
 import { componentSince } from '../../package/src/stories/component-documentation.ts';
+import {
+    componentPages,
+    componentPageOwner,
+    componentReferenceLink,
+} from '../.vitepress/theme/component-pages.ts';
 import { componentSummary } from './component-copy.mjs';
-import { componentPages } from '../.vitepress/theme/component-pages.ts';
 const ts = require('typescript');
 export const categoryOrder = [
     'Components',
@@ -177,7 +181,9 @@ export async function buildComponentCatalogue(api) {
             story: story?.title || null,
             link:
                 componentPages[component.name]?.base ??
-                `/${layout ? 'layouts' : 'components'}/api/${slug}`,
+                (componentPageOwner(component.name)
+                    ? componentReferenceLink(component.name)
+                    : `/${layout ? 'layouts' : 'components'}/api/${slug}`),
         };
     });
     catalogue.sort(

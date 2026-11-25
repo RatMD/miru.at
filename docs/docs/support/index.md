@@ -1,6 +1,6 @@
 # Support
 
-Focused references for the current public support API.
+Small helpers with focused examples. Open a page to copy its import and usage.
 
 - [boolean](/docs/support/boolean)
 - [classNames](/docs/support/classNames)

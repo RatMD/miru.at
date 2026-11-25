@@ -30,7 +30,7 @@ AttachmentList uses horizontal cards in `layout="list"` and vertical cards in `g
 
 ## Dependencies
 
-- **UI:** [Badge](/components/badge), [ButtonAction](/components/button-action), [Field](/components/api/field), [FieldError](/components/api/field-error), [FieldLabel](/components/api/field-label), [FormLocaleSwitcher](/components/api/form-locale-switcher), [Input](/components/api/input), [Progress](/components/progress), [Textarea](/components/api/textarea), [Tooltip](/components/api/tooltip), [TooltipContent](/components/api/tooltip-content), [TooltipProvider](/components/api/tooltip-provider), [TooltipTrigger](/components/api/tooltip-trigger)
+- **UI:** [Badge](/components/badge), [ButtonAction](/components/button-action), [Field](/components/field), [FieldError](/components/field/reference#field-error), [FieldLabel](/components/field/reference#field-label), [FormLocaleSwitcher](/components/form/reference#form-locale-switcher), [Input](/components/input), [Progress](/components/progress), [Textarea](/components/textarea), [Tooltip](/components/tooltip), [TooltipContent](/components/tooltip/reference#tooltip-content), [TooltipProvider](/components/tooltip/reference#tooltip-provider), [TooltipTrigger](/components/tooltip/reference#tooltip-trigger)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [clsx](https://www.npmjs.com/package/clsx), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/attachment/reference) for the complete component contract.

@@ -21,11 +21,11 @@ Date values use YYYY-MM-DD, date-time values use YYYY-MM-DDTHH:mm and time value
 
 ## Integration guide
 
-[Read the focused integration guide](/reference/input-date-time).
+[Read the focused integration guide](/components/input-date-time).
 
 ## Dependencies
 
-- **UI:** [Button](/components/button), [Calendar](/components/api/calendar), [Input](/components/input), [Popover](/components/api/popover)
+- **UI:** [Button](/components/button), [Calendar](/components/calendar), [Input](/components/input), [Popover](/components/popover)
 - **Packages:** [@internationalized/date](https://www.npmjs.com/package/@internationalized/date), [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [class-variance-authority](https://www.npmjs.com/package/class-variance-authority), [clsx](https://www.npmjs.com/package/clsx), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/input-date-time/reference) for the complete component contract.

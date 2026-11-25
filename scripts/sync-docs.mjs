@@ -1,64 +1,64 @@
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { accordionDependencyMarkdown } from '../../package/src/stories/accordion-documentation.ts';
+import { alertDependencyMarkdown } from '../../package/src/stories/alert-documentation.ts';
+import { anchorDependencyMarkdown } from '../../package/src/stories/anchor-documentation.ts';
 import {
-    componentPages,
-    componentPageOwner,
-    componentLegacyPage,
-    componentReferenceLink,
-} from '../.vitepress/theme/component-pages.ts';
-import {
-    overlayModules,
-    overlayDependencyMarkdown,
-} from '../../package/src/stories/overlay-documentation.ts';
-import {
-    formFieldModules,
-    formFieldDependencyMarkdown,
-} from '../../package/src/stories/form-fields-documentation.ts';
-import { componentGuideFor } from '../.vitepress/theme/component-guides.ts';
-import { formComponentDependencies } from '../../package/src/stories/form-components-documentation.ts';
-import { tabsDependencyMarkdown } from '../../package/src/stories/tabs-documentation.ts';
-import {
-    tableIntroduction,
-    tableDependencyMarkdown,
-} from '../../package/src/stories/table-documentation.ts';
-import { carouselDependencyMarkdown } from '../../package/src/stories/carousel-documentation.ts';
-import { spinnerDependencyMarkdown } from '../../package/src/stories/spinner-documentation.ts';
-import { skeletonDependencyMarkdown } from '../../package/src/stories/skeleton-documentation.ts';
-import { separatorDependencyMarkdown } from '../../package/src/stories/separator-documentation.ts';
-import { progressDependencyMarkdown } from '../../package/src/stories/progress-documentation.ts';
-import { paginationDependencyMarkdown } from '../../package/src/stories/pagination-documentation.ts';
-import { markerDependencyMarkdown } from '../../package/src/stories/marker-documentation.ts';
-import { kbdDependencyMarkdown } from '../../package/src/stories/kbd-documentation.ts';
-import { itemDependencyMarkdown } from '../../package/src/stories/item-documentation.ts';
-import { codeDependencyMarkdown } from '../../package/src/stories/code-documentation.ts';
-import { breadcrumbDependencyMarkdown } from '../../package/src/stories/breadcrumb-documentation.ts';
-import { cardDependencyMarkdown } from '../../package/src/stories/card-documentation.ts';
-import { buttonDependencyMarkdown } from '../../package/src/stories/button-documentation.ts';
-import {
-    badgeDependencyMarkdown,
-    badgeCopyDependencyMarkdown,
-} from '../../package/src/stories/badge-documentation.ts';
+    attachmentDependencyMarkdown,
+    attachmentListDependencyMarkdown,
+} from '../../package/src/stories/attachment-documentation.ts';
 import {
     avatarDependencyMarkdown,
     avatarStackDependencyMarkdown,
 } from '../../package/src/stories/avatar-documentation.ts';
 import {
-    attachmentDependencyMarkdown,
-    attachmentListDependencyMarkdown,
-} from '../../package/src/stories/attachment-documentation.ts';
-import { anchorDependencyMarkdown } from '../../package/src/stories/anchor-documentation.ts';
-import { alertDependencyMarkdown } from '../../package/src/stories/alert-documentation.ts';
-import { accordionDependencyMarkdown } from '../../package/src/stories/accordion-documentation.ts';
-import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+    badgeDependencyMarkdown,
+    badgeCopyDependencyMarkdown,
+} from '../../package/src/stories/badge-documentation.ts';
+import { breadcrumbDependencyMarkdown } from '../../package/src/stories/breadcrumb-documentation.ts';
+import { buttonDependencyMarkdown } from '../../package/src/stories/button-documentation.ts';
+import { cardDependencyMarkdown } from '../../package/src/stories/card-documentation.ts';
+import { carouselDependencyMarkdown } from '../../package/src/stories/carousel-documentation.ts';
+import { codeDependencyMarkdown } from '../../package/src/stories/code-documentation.ts';
 import { componentNotes } from '../../package/src/stories/component-documentation.ts';
+import { formComponentDependencies } from '../../package/src/stories/form-components-documentation.ts';
+import {
+    formFieldModules,
+    formFieldDependencyMarkdown,
+} from '../../package/src/stories/form-fields-documentation.ts';
+import { itemDependencyMarkdown } from '../../package/src/stories/item-documentation.ts';
+import { kbdDependencyMarkdown } from '../../package/src/stories/kbd-documentation.ts';
+import { markerDependencyMarkdown } from '../../package/src/stories/marker-documentation.ts';
+import {
+    overlayModules,
+    overlayDependencyMarkdown,
+} from '../../package/src/stories/overlay-documentation.ts';
+import { paginationDependencyMarkdown } from '../../package/src/stories/pagination-documentation.ts';
+import { progressDependencyMarkdown } from '../../package/src/stories/progress-documentation.ts';
+import { separatorDependencyMarkdown } from '../../package/src/stories/separator-documentation.ts';
+import { skeletonDependencyMarkdown } from '../../package/src/stories/skeleton-documentation.ts';
+import { spinnerDependencyMarkdown } from '../../package/src/stories/spinner-documentation.ts';
+import {
+    tableIntroduction,
+    tableDependencyMarkdown,
+} from '../../package/src/stories/table-documentation.ts';
+import { tabsDependencyMarkdown } from '../../package/src/stories/tabs-documentation.ts';
+import { componentGuideFor } from '../.vitepress/theme/component-guides.ts';
+import {
+    componentPages,
+    componentPageOwner,
+    componentReferenceLink,
+} from '../.vitepress/theme/component-pages.ts';
 import {
     examples,
     exampleSource,
     workspaceSource,
 } from '../.vitepress/theme/playground/examples.ts';
 import { componentCopy } from './component-copy.mjs';
+import { canonicalDocumentationUrl } from '../.vitepress/theme/legacy-routes.ts';
 import { createExampleFormatter } from './format-examples.mjs';
-import { buildComponentCatalogue, exportModules } from './package-inventory.mjs';
+import { buildComponentCatalogue } from './package-inventory.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const docs = path.join(root, 'docs');
@@ -99,10 +99,11 @@ function apiType(value) {
         : `<code>${escapeHtml(type || '—')}</code>`;
 }
 async function write(relative, content) {
-    // The documentation landing page is authored; refresh public references at their canonical URLs.
-    if (relative === 'reference/index.md') return;
-    relative = relative.replace(/^reference\/(composables|plugins|support)\//, 'docs/$1/');
-    content = content.replace(/\/reference\/(composables|plugins|support)\//g, '/docs/$1/');
+    // Link generated helper references directly to the authored documentation.
+    content = content.replace(
+        /\/(?:reference|components\/api|layouts\/api|guide|forms|data-table|component-guides|docs)\/[\w./-]*(?:#[\w-]+)?/g,
+        canonicalDocumentationUrl,
+    );
     const target = path.join(docs, relative);
     await mkdir(path.dirname(target), { recursive: true });
     await writeFile(target, content);
@@ -120,46 +121,14 @@ async function files(directory, extension) {
     );
     return lists.flat();
 }
-const legacyGuides = {
-    'status-dot-guide': '/components/indicator',
-    'auth-page': '/layouts/auth-page',
-    'dashboard-page': '/layouts/dashboard-page',
-    'floating-app-bar': '/layouts/app-bar',
-    'charts-guide': '/components/apexcharts/guide',
-    'data-table-guide': '/docs/data-table/introduction',
-    'data-table-adapters': '/docs/data-table/adapters',
-    'data-table-behavior': '/docs/data-table/actions',
-    'data-table-columns': '/docs/data-table/columns',
-    schedule: '/components/schedule/guide',
-    deferred: '/components/deferred',
-    backdrop: '/components/backdrop',
-    breakpoint: '/components/breakpoint',
-    'editor-frame': '/components/editor-frame/guide',
-    'editor-guide': '/components/editor-tinymce/guide',
-    'attachment-guide': '/components/attachment/guide',
-    'carousel-guide': '/components/carousel/guide',
-    'table-guide': '/components/table/guide',
-    'table-cells': '/components/table/guide',
-    'composition-guide': '/components/button-group',
-    'selection-variants': '/components/tabs#colours',
-    'tabs-guide': '/components/tabs',
-    'form-guide': '/docs/forms/validation',
-    'field-guide': '/docs/forms/fields',
-    'form-generator-guide': '/docs/forms/generator',
-    'form-page-layout': '/docs/forms/layouts',
-    'form-transports': '/docs/forms/adapters',
-};
-for (const [slug, target] of Object.entries(legacyGuides))
-    await write(
-        `reference/${slug}.md`,
-        `---\nsearch: false\n${target.startsWith('/components/') || target.startsWith('/data-table/') || target.startsWith('/layouts/') ? `redirectTo: ${JSON.stringify(target)}\n` : ''}---\n\n# Documentation\n\nThis guide has moved. [Continue to the current documentation](${target}).\n`,
-    );
 const guides = [];
 for (const file of await files(path.join(source, 'docs'), '.mdx')) {
     const relative = path
         .relative(path.join(source, 'docs'), file)
         .replaceAll('\\', '/')
         .replace(/\.mdx$/, '');
+    // Other guides have been migrated to authored website pages.
+    if (!/^(composables|plugins|support)\//.test(relative)) continue;
     const raw = await readFile(file, 'utf8');
     // Drop Storybook's ESM/Meta preamble, preserving imports inside fenced examples.
     const heading = raw.search(/^# /m);
@@ -181,58 +150,11 @@ for (const file of await files(path.join(source, 'docs'), '.mdx')) {
     const title = content.match(/^# (.+)$/m)?.[1] || relative;
     guides.push({ title, relative });
     await write(
-        `reference/${relative}.md`,
+        `docs/${relative}.md`,
         `<!-- Generated from package/src/docs/${relative}.mdx. Edit the source guide. -->\n\n${content}\n`,
     );
 }
-const groups = exportModules(
-    await readFile(path.join(source, 'index.ts'), 'utf8'),
-    './components/',
-);
-const catalogue = [];
-for (const group of groups) {
-    const barrel = await readFile(path.join(source, 'components', group, 'index.ts'), 'utf8');
-    const names = [...barrel.matchAll(/default as (\w+)/g)].map((match) => match[1]);
-    if (!names.length) continue;
-    const title = group
-        .split('-')
-        .map((word) => word[0].toUpperCase() + word.slice(1))
-        .join(' ');
-    catalogue.push({ title, group, names });
-    const related = guides.filter(
-        (guide) => guide.relative.startsWith(group) || guide.relative === `${group}-guide`,
-    );
-    let page = `# ${title}\n\nPublic components exported from Miru’s \`${group}\` module. Import the primitives you need and compose them in your application.\n\n## Import\n\n\`\`\`ts\nimport { ${names.join(', ')} } from '@rat.md/miru'\n\`\`\`\n\n## Available components\n\n${names.map((name) => `- \`${name}\``).join('\n')}\n`;
-    if (related.length)
-        page += `\n## Usage guides\n\n${related.map((guide) => `- [${guide.title}](/reference/${guide.relative})`).join('\n')}\n`;
-    if (['button', 'input'].includes(group))
-        page += `\n## Interactive example\n\n<ComponentDemo kind="${group}" />\n\n[View the detailed component page](/components/${group}).\n`;
-    for (const component of componentApi[group] || []) {
-        page += `\n## ${component.name} API\n\n`;
-        if (component.props.length)
-            page += `### Props\n\n| Prop | Type | Default | Required |\n| --- | --- | --- | --- |\n${component.props.map((prop) => `| <code>${escapeHtml(prop.name)}</code>${prop.description ? `<br/>${escapeHtml(prop.description)}` : ''} | ${apiType(prop.type)} | ${apiType(prop.default)} | ${prop.required ? 'Yes' : '—'} |`).join('\n')}\n`;
-        if (component.events.length)
-            page += `\n### Events\n\n| Event | Payload |\n| --- | --- |\n${component.events.map((event) => `| <code>${escapeHtml(event.name)}</code> | ${apiType(event.type)} |`).join('\n')}\n`;
-        if (component.slots.length)
-            page += `\n### Slots\n\n| Slot | Scope |\n| --- | --- |\n${component.slots.map((slot) => `| <code>${escapeHtml(slot.name)}</code> | ${apiType(slot.type)} |`).join('\n')}\n`;
-        if (!component.props.length && !component.events.length && !component.slots.length)
-            page +=
-                'This component exposes no statically extracted props, events or slots. See the related feature guide for its composition contract.\n';
-    }
-    page +=
-        '\n## Integration\n\n[Install Miru](/docs/guide/installation) and import its stylesheet once. The application owns data, routes and domain copy. See [theming](/docs/guide/theming) for shared visual tokens.\n';
-    await write(`reference/components/${group}.md`, `---\nsearch: false\n---\n\n${page}`);
-}
-await writeFile(
-    path.join(root, '.vitepress/theme/catalogue.json'),
-    JSON.stringify(catalogue, null, 2) + '\n',
-);
 const index = [];
-const oldCatalogue = JSON.parse(
-    await readFile(path.join(root, '.vitepress/theme/component-catalogue.json'), 'utf8').catch(
-        () => '[]',
-    ),
-);
 const componentCatalogue = await buildComponentCatalogue(componentApi);
 const documentationGroups = ['composables', 'plugins', 'support'].map((section, index) => ({
     title: ['Composables', 'Plugins', 'Support'][index],
@@ -254,61 +176,17 @@ for (const [section, group] of ['composables', 'plugins', 'support'].map((sectio
     documentationGroups[index],
 ])) {
     await write(
-        `reference/${section}/index.md`,
+        `docs/${section}/index.md`,
         `# ${group.title}\n\nSmall helpers with focused examples. Open a page to copy its import and usage.\n\n${group.items.map((item) => `- [${item.text}](${item.link})`).join('\n')}\n`,
-    );
-}
-await write(
-    'reference/index.md',
-    `# Documentation\n\nShort guides and copyable examples for the current Miru package.\n\n## Start here\n\n- [Installation](/docs/guide/installation)\n- [Forms introduction](/docs/forms/introduction)\n- [Components](/components/) and [layouts](/layouts/)\n\n## Forms\n\n- [Introduction](/docs/forms/introduction)\n- [Form validation](/docs/forms/validation)\n- [Field composition](/docs/forms/fields)\n- [Form generator](/docs/forms/generator)\n- [Form layout](/docs/forms/layouts)\n- [Submission adapters](/docs/forms/adapters)\n\n## DataTable\n\n- [Introduction](/docs/data-table/introduction)\n- [List contract](/docs/data-table/list-contract)\n- [Backend connection](/docs/data-table/backend)\n- [Response adapters](/docs/data-table/adapters)\n- [Column definitions](/docs/data-table/columns)\n- [Row operations](/docs/data-table/actions)\n\n## Feature guides\n\n${guides
-        .filter((guide) => !guide.relative.includes('/'))
-        .map((guide) => `- [${guide.title}](/reference/${guide.relative})`)
-        .join(
-            '\n',
-        )}\n\n${documentationGroups.map((group) => `## ${group.title}\n\n${group.items.map((item) => `- [${item.text}](${item.link})`).join('\n')}`).join('\n\n')}\n`,
-);
-const renamedComponents = {
-    InputOtp: 'InputPin',
-    InputOtpGroup: 'InputPinGroup',
-    InputOtpSlot: 'InputPinSlot',
-    InputOtpSeparator: 'InputPinSeparator',
-};
-for (const previous of oldCatalogue) {
-    const current = componentCatalogue.find(
-        (item) => item.name === (renamedComponents[previous.name] ?? previous.name),
-    );
-    if (current?.link === previous.link) continue;
-    await write(
-        previous.link.slice(1) + '.md',
-        `---\nsearch: false\n---\n\n# ${previous.title}\n\n[Open the current reference](${current?.link || '/components/'}).\n`,
     );
 }
 for (const item of componentCatalogue) {
     // Reviewed component overviews, references and guides are authored pages.
-    if (componentPageOwner(item.name)) {
-        const slug = item.name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-        await write('components/api/' + slug + '.md', componentLegacyPage(item.name));
-        if (item.layout) await write('layouts/api/' + slug + '.md', componentLegacyPage(item.name));
-        continue;
-    }
+    if (componentPageOwner(item.name)) continue;
     const api = componentApi[item.module].find((component) => component.name === item.name);
     const related = componentCatalogue.filter(
         (component) => component.module === item.module && component.name !== item.name,
     );
-    const guideNames = {
-        Form: 'forms-introduction',
-        FormSectionRenderer: 'forms-introduction',
-        FormLayout: 'forms-introduction',
-        Editor: 'editor-guide',
-        OverlayDetails: 'overlay-guide',
-        CalendarBooking: 'schedule',
-        FloatingAppBar: 'floating-app-bar',
-    };
-    const guide =
-        guideNames[item.name] ||
-        guides.find(
-            (guide) => guide.relative === `${item.module}-guide` || guide.relative === item.module,
-        )?.relative;
     let content = `---\ntitle: ${JSON.stringify(item.title)}\ncomponent: ${item.name}\n---\n\n# ${item.title}\n\n<ComponentMeta name="${item.name}" />\n\n${item.description}\n\n## Preview\n\n<ComponentExample name="${item.name}" />\n\n## API\n\nProps, emitted events and slots come from the current package source. Native attributes and inherited contracts also apply.\n`;
     if (item.name === 'Table')
         content = content.replace(
@@ -449,17 +327,13 @@ for (const item of componentCatalogue) {
         ? []
         : componentNotes[item.module] || [])
         content += `\n## ${note.title}\n\n${note.text}\n`;
-    if (
-        ['field', 'form', 'input-group', 'label'].includes(item.module) ||
-        guide === 'forms-introduction'
-    )
+    if (['field', 'form', 'input-group', 'label'].includes(item.module))
         content +=
             '\n## Forms documentation\n\n[Start with the Forms introduction](/docs/forms/introduction).\n';
     else if (componentGuideFor(item.name, item.module)) {
         const componentGuide = componentGuideFor(item.name, item.module);
         content += `\n## Component guide\n\n[Read the ${componentGuide.title} guide](${componentGuide.link}).\n`;
-    } else if (guide)
-        content += `\n## Integration guide\n\n[Read the focused integration guide](/reference/${guide}).\n`;
+    }
     if (related.length)
         content += `\n## Related primitives\n\n${related.map((component) => `- [${component.title}](${component.link})`).join('\n')}\n`;
     await write(item.link.slice(1) + '.md', content);
@@ -530,5 +404,5 @@ await writeFile(
     JSON.stringify(index) + '\n',
 );
 console.log(
-    `Miru docs: ${guides.length} guides, ${catalogue.length} component modules, ${index.length} searchable pages.`,
+    `Miru docs: ${guides.length} guides, ${Object.keys(componentPages).length} component pages, ${index.length} searchable pages.`,
 );

@@ -30,6 +30,7 @@ const quantity = ref(1234.5);
 </script>
 ```
 
+
 Miru registers `v-number-format` globally through its directives plugin. Global instances follow
 the app's locale, including reactive locale changes. Standalone `vNumberFormat` defaults to de-DE.
 For a local reactive locale, use `createNumberFormatDirective(() => locale.value)`.
@@ -45,6 +46,7 @@ content outside it. It formats on mount/update, watches the configured locale an
 when unmounted. It does not format text during server rendering; use the pure helper in interpolations
 when the server-rendered text must already be formatted.
 Changes to nested reactive binding options also refresh the output.
+
 
 ```ts
 import { formatNumber } from '@rat.md/miru/support/numberFormat';

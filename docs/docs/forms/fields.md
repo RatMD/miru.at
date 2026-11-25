@@ -71,4 +71,4 @@ Place InputGroupInput or InputGroupTextarea inside InputGroup, then add InputGro
 
 Use FieldSet and FieldLegend for a semantic control group, FieldGroup for spacing and responsive layout, and FieldContent when a horizontal field needs a text column.
 
-Reference: [Field](/components/api/field), [InputGroup](/components/api/input-group) and [Label](/components/api/label). Next: [Form generator](/docs/forms/generator).
+Reference: [Field](/components/field), [InputGroup](/components/input-group) and [Label](/components/label). Next: [Form generator](/docs/forms/generator).

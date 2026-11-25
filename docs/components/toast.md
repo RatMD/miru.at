@@ -23,7 +23,7 @@ Mount one Toast host in a persistent application layout, then create messages th
 
 ## Integration guide
 
-[Read the focused integration guide](/reference/toast-guide).
+[Read the focused integration guide](/components/toast).
 
 ## Sending notifications
 

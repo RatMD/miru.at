@@ -36,21 +36,7 @@
 :root:not(:has(.preview-runtime)) {
     --ui-font-sans: Inter, Geist, 'Segoe UI', Arial, sans-serif;
 }
-:root,
-:root.dark {
-    --ui-primary-600: #df5d49;
-    --ui-primary-700: #c74b39;
-    --ui-primary-800: #ae3c2c;
-    --ui-primary: #df5d49;
-    --ui-primary-hover: #c74b39;
-    --ui-primary-active: #ae3c2c;
-    --ui-primary-foreground: #fff;
-    --ui-ring: #df5d49;
-    --ui-background: var(--site-panel);
-    --ui-foreground: var(--site-text);
-    --ui-border: var(--site-line);
-    --ui-radius: 0.625rem;
-}
+
 * {
     box-sizing: border-box;
 }

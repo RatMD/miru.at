@@ -20,4 +20,4 @@ const { table, selectedRows, clearSelection, resetPreferences } = useDataTable({
 
 Import from the package root. `tableKey` separates stored column preferences. Configure `rowKey`, `selected`, `onSelectionChange` and `rowSelectable` when needed. Use the DataTable component unless you need your own rendering.
 
-[DataTable guide](/reference/data-table-guide).
+[DataTable guide](/docs/data-table/introduction).

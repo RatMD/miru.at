@@ -25,6 +25,6 @@ Install Miru and its stylesheet as described in [Installation](/docs/guide/insta
 
 ## Component reference
 
-[Field](/components/api/field) · [Form](/components/form) · [FormLayout](/components/form-layout) · [Generator](/components/api/form-section-renderer) · [InputGroup](/components/api/input-group) · [Label](/components/api/label)
+[Field](/components/field) · [Form](/components/form) · [FormLayout](/components/form-layout) · [Generator](/components/generator) · [InputGroup](/components/input-group) · [Label](/components/label)
 
 The component named **Form** in the navigation exports as `Form`. **Generator** describes the composition of `Form`, `FormSectionRenderer` and `FormFieldRenderer`; there is no separate `FormGenerator` export.

@@ -11,7 +11,7 @@
             bottom drawer.
             <span class="spectrum-demo-more">
                 There is much more you can do with Miru modals.
-                <a href="/reference/overlay-guide">Browse the documentation ↗</a>
+                <a href="/components/overlay">Browse the documentation ↗</a>
             </span>
         </template>
         <template #trigger>
@@ -32,7 +32,7 @@
             I open as a bottom drawer.
             <span class="spectrum-demo-more">
                 Custom content, actions and more are yours to explore.
-                <a href="/reference/overlay-guide">Browse the documentation ↗</a>
+                <a href="/components/overlay">Browse the documentation ↗</a>
             </span>
         </template>
         <template #trigger>

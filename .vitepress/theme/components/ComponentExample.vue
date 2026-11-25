@@ -126,8 +126,8 @@ import { exampleControls, controlledExample } from '../playground/example-contro
 import { examples, tokenStyles } from '../playground/examples';
 import PreviewFrame from '../playground/PreviewFrame.vue';
 import { exampleSource } from '../playground/source';
-import SiteTooltip from './SiteTooltip.vue';
 import ReadonlyCode from './ReadonlyCode.vue';
+import SiteTooltip from './SiteTooltip.vue';
 const props = withDefaults(
     defineProps<{ name: string; showPlayground?: boolean; code?: string }>(),
     {

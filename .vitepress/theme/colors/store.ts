@@ -1,10 +1,10 @@
 import type { Role } from './engine';
+import { selectedThemeCss } from './styles';
 import { computed, ref } from 'vue';
 import {
     presetProfile,
     presets,
     storageKey,
-    themeCss,
     surfaceBase,
     validateProfile,
     normalizeHex,
@@ -24,7 +24,7 @@ function apply() {
         style.id = 'miru-color-theme';
         document.head.appendChild(style);
     }
-    style.textContent = themeCss(profile.value);
+    style.textContent = selectedThemeCss(profile.value);
     // Explicit Playground edits stay after the shared theme.
     const previewOverrides = document.querySelector('[data-miru-preview-overrides]');
     if (previewOverrides) previewOverrides.before(style);

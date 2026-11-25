@@ -3,6 +3,11 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { componentPageOwner, componentReferenceLink } from '../.vitepress/theme/component-pages.ts';
+import {
+    canonicalDocumentationUrl,
+    legacyDocumentationRedirect,
+} from '../.vitepress/theme/legacy-routes.ts';
 import { examples } from '../.vitepress/theme/playground/examples.ts';
 import {
     buildComponentCatalogue,
@@ -14,6 +19,21 @@ import {
 } from '../scripts/package-inventory.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const json = async (file) => JSON.parse(await readFile(path.join(root, file), 'utf8'));
+
+test('retired documentation URLs resolve to current pages and preserve reference sections', () => {
+    assert.equal(canonicalDocumentationUrl('/guide/installation'), '/docs/guide/installation');
+    assert.equal(canonicalDocumentationUrl('/reference/theming'), '/docs/guide/theming');
+    assert.equal(
+        canonicalDocumentationUrl('/components/api/accordion-content#props'),
+        componentReferenceLink('AccordionContent') + '-props',
+    );
+    assert.equal(
+        canonicalDocumentationUrl('/guide/installation?from=bookmark#requirements'),
+        '/docs/guide/installation?from=bookmark#requirements',
+    );
+    assert.equal(legacyDocumentationRedirect('/components/accordion'), undefined);
+    assert.equal(legacyDocumentationRedirect('/unknown-page'), undefined);
+});
 
 test('Storybook metadata ignores nested example titles and unwraps typed components', () => {
     assert.deepEqual(
@@ -43,10 +63,7 @@ test('the catalogue covers public exports and follows each current Storybook cat
         assert.equal(entry.category, story.category, story.title);
         assert.ok(entry.primary, story.title);
     }
-    assert.equal(
-        catalogue.find((item) => item.name === 'FormSectionRenderer').category,
-        'Forms',
-    );
+    assert.equal(catalogue.find((item) => item.name === 'FormSectionRenderer').category, 'Forms');
     for (const name of ['AuthPage', 'DashboardPage', 'PageRoot', 'FloatingAppBar'])
         assert.ok(catalogue.find((item) => item.name === name)?.layout, name);
 });
@@ -59,9 +76,18 @@ test('every primary component and layout has a complete composition example', as
             item.name,
         );
         const page = await readFile(path.join(root, 'docs', item.link + '.md'), 'utf8');
-        assert.match(page, new RegExp(`<ComponentMeta name="${item.name}"`), item.name);
-        assert.match(page, new RegExp(`<ComponentExample name="${item.name}"`), item.name);
-        assert.ok(page.indexOf('## Preview') < page.indexOf('## API'), item.name);
+        if (componentPageOwner(item.name)) {
+            assert.match(page, /componentPage: overview/, item.name);
+            const reference = componentReferenceLink(item.name).split('#')[0];
+            const apiPage = await readFile(path.join(root, 'docs', reference + '.md'), 'utf8');
+            assert.match(apiPage, new RegExp(`<ComponentApi name="${item.name}"`), item.name);
+        } else {
+            assert.match(page, new RegExp(`<ComponentMeta name="${item.name}"`), item.name);
+            assert.ok(page.indexOf('## Preview') < page.indexOf('## API'), item.name);
+        }
+        if (item.name === 'ContextProvider')
+            assert.match(page, /```vue[\s\S]*<ContextProvider/, item.name);
+        else assert.match(page, new RegExp(`<ComponentExample name="${item.name}"`), item.name);
         assert.doesNotMatch(page, /::: details Props/, item.name);
     }
 });
@@ -69,12 +95,12 @@ test('documentation navigation covers all public composable/support modules and 
     const groups = await json('.vitepress/theme/documentation-groups.json');
     for (const [module, title] of [
         ['composables', 'Composables'],
-        ['support', 'Support functions'],
+        ['support', 'Support'],
     ]) {
         const source = await readFile(path.join(packageSource, module, 'index.ts'), 'utf8');
         const links = groups.find((group) => group.title === title).items.map((item) => item.link);
         for (const name of exportModules(source, './'))
-            assert.ok(links.includes(`/reference/${module}/${name}`), name);
+            assert.ok(links.includes(`/docs/${module}/${name}`), name);
     }
     for (const file of await sourceFiles(path.join(packageSource, 'docs/plugins'), '.mdx'))
         assert.ok(

@@ -27,7 +27,7 @@ autoResize fits the preview and editor to the current content. minWidth and maxW
 
 ## Dependencies
 
-- **UI:** [ButtonAction](/components/button-action), [ButtonShadow](/components/button-shadow), [Tooltip](/components/api/tooltip), [TooltipContent](/components/api/tooltip-content), [TooltipProvider](/components/api/tooltip-provider), [TooltipTrigger](/components/api/tooltip-trigger)
+- **UI:** [ButtonAction](/components/button-action), [ButtonShadow](/components/button-shadow), [Tooltip](/components/tooltip), [TooltipContent](/components/tooltip/reference#tooltip-content), [TooltipProvider](/components/tooltip/reference#tooltip-provider), [TooltipTrigger](/components/tooltip/reference#tooltip-trigger)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 - **Primitive:** [Reka UI Editable](https://reka-ui.com/docs/components/editable)
 

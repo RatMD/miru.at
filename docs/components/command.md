@@ -23,7 +23,7 @@ Use [CommandDialog](/components/command/reference#command-dialog) for a palette,
 
 ## Dependencies
 
-- **UI:** [Badge](/components/badge), [FilterBar](/components/api/filter-bar), [ScrollArea](/components/api/scroll-area)
+- **UI:** [Badge](/components/badge), [FilterBar](/components/filter-bar), [ScrollArea](/components/scroll-area)
 - **Packages:** [@tabler/icons-vue](https://www.npmjs.com/package/@tabler/icons-vue), [clsx](https://www.npmjs.com/package/clsx), [reka-ui](https://www.npmjs.com/package/reka-ui), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 - **Primitive:** [Reka UI Listbox](https://reka-ui.com/docs/components/listbox)
 

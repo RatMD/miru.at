@@ -194,7 +194,12 @@
                         id="main-content"
                         class="doc-content"
                         :class="{ 'component-reference': frontmatter.component }">
-                        <template v-if="page.isNotFound">
+                        <ComponentPageRedirect
+                            v-if="documentationRedirect"
+                            :key="route.path"
+                            :to="documentationRedirect.to"
+                            :part="documentationRedirect.part" />
+                        <template v-else-if="page.isNotFound">
                             <div class="eyebrow">404 / A small detour</div>
                             <h1>This page wandered off.</h1>
                             <p>Let’s get you back to building something good.</p>
@@ -205,10 +210,6 @@
                                 v-if="frontmatter.componentPage"
                                 :name="frontmatter.component"
                                 :active="frontmatter.componentPage" />
-                            <ComponentPageRedirect
-                                v-if="frontmatter.redirectTo"
-                                :to="frontmatter.redirectTo"
-                                :part="frontmatter.redirectPart" />
                             <div v-if="frontmatter.banner" class="doc-banner">
                                 <div>
                                     <span class="eyebrow">THE miru. WAY</span>
@@ -227,7 +228,7 @@
                                     <i></i>
                                 </div>
                             </div>
-                            <Content v-if="!frontmatter.redirectTo" class="prose" />
+                            <Content class="prose" />
                         </template>
                     </main>
                     <aside v-if="headings.length" class="page-outline" aria-label="On this page">
@@ -379,6 +380,7 @@ import SiteTooltip from './components/SiteTooltip.vue';
 import SiteUi from './components/SiteUi.vue';
 import Themes from './components/Themes.vue';
 import { documentationNavigation, componentNavigation } from './navigation';
+import { legacyDocumentationRedirect } from './legacy-routes';
 const Sidebar = defineClientComponent(() => import('./components/Sidebar.vue'));
 const ColorCustomizer = defineClientComponent(() => import('./components/ColorCustomizer.vue'));
 const AppearanceButton = defineClientComponent(() => import('./components/AppearanceButton.vue'));
@@ -386,6 +388,14 @@ const Playground = defineClientComponent(() => import('./playground/Playground.v
 const PreviewRuntime = defineClientComponent(() => import('./playground/PreviewRuntime.vue'));
 const { frontmatter, page } = useData();
 const route = useRoute();
+const documentationRedirect = computed(() =>
+    frontmatter.value.redirectTo
+        ? {
+              to: frontmatter.value.redirectTo as string,
+              part: frontmatter.value.redirectPart as string | undefined,
+          }
+        : legacyDocumentationRedirect(route.path),
+);
 const currentYear = new Date().getFullYear();
 const pawCursorEnabled = ref(false);
 const pawPrints = ref<{ id: number; x: number; y: number }[]>([]);

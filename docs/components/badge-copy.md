@@ -26,7 +26,7 @@ Supply an icon component through `icon`, or replace it with the `icon` slot. `ic
 
 ## Dependencies
 
-- **UI:** [Badge](/components/badge), [Copy](/components/api/copy)
+- **UI:** [Badge](/components/badge), [Copy](/components/copy)
 - **Packages:** [clsx](https://www.npmjs.com/package/clsx), [tailwind-merge](https://www.npmjs.com/package/tailwind-merge), [vue](https://www.npmjs.com/package/vue)
 
 See the [reference](/components/badge-copy/reference) for the complete component contract.

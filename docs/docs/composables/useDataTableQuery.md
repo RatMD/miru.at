@@ -23,4 +23,4 @@ function search(term: string) {
 
 Replace the handler with your loader and update the list prop with its result. Without a handler, the composable uses the application’s navigation adapter: ordinary browser visits by default, or Inertia when its adapter is installed. Methods: `visitPage`, `visitPerPage`, `visitFilters`, `toggleSort`. `querySerializer` supports custom query formats. Backend normalisation and query conventions come from the application’s `dataTable` adapter or an explicit `dataFormat`.
 
-[DataTable guide](/reference/data-table-guide).
+[DataTable guide](/docs/data-table/introduction).

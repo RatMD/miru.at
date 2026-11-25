@@ -93,6 +93,19 @@ For a local validation preview, call `await form.validate('submit')`; this sends
 
 ## Reusable validation rules
 
-You can use ordinary Zod schemas, including asynchronous refinements and transformations. Miru’s `useValidation()` also provides localised factories for email addresses, GTINs, IBANs and card numbers, plus application-registered factories. See [Validation factories](/reference/validation) for their registration and typing.
+You can use ordinary Zod schemas, including asynchronous refinements and transformations. Miru’s `useValidation()` also provides localised factories for email addresses, GTINs, IBANs and card numbers, plus application-registered factories. See [Validation factories](/docs/forms/validation) for their registration and typing.
 
 Next: [Form generator](/docs/forms/generator) or [Submission adapters](/docs/forms/adapters).
+
+
+## Field contract for v0.1.0
+
+Text controls retain `''` for an empty editable string. Nullable selections and date values use `null` where declared by their model types; multi-value controls use an empty array. `undefined` generally means that a prop or default was not supplied. Model types remain authoritative: normalize empty values in your Zod schema or request transform when the backend needs a different representation.
+
+For composed input controls, `class` targets the editable field or trigger. `wrapperClass` targets its layout container. Existing explicit `inputClass` props remain available. Collection layouts such as CheckboxGroup apply `class` to their generated fields and `wrapperClass` to the group; custom slots own their own field styling. Low-level primitives style the element they render.
+
+Use `name` for native submission and GET query serialization, and `required` for browser validation. Date/time controls mirror serialized values into native controls; a timeframe submits `name[start]` and `name[end]`. Phone input submits its complete international value. An unchecked checkbox is omitted by native forms; selected CheckboxGroup options submit repeated names. Native forms always serialize strings/files, regardless of the Vue model type.
+
+`readonly` keeps the value in submission and prevents user edits. `disabled` prevents interaction and removes native controls from submission. Readonly is therefore useful for values that must remain visible and submitted. Selection widgets retain their focusable trigger while blocking changes; native file inputs block the picker and drop interaction because browsers have no native readonly file-input mode. Use server validation for every submitted value. Toggles and other presentation-only controls do not automatically become named form fields.
+
+Standard field sizes are `sm`, `default` and `lg`, including InputDateTime. Additional sizes on specialized components are documented by their own API.

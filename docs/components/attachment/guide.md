@@ -76,4 +76,4 @@ UploadZone owns file validation and temporary preview URLs. Its `attachments` sl
 
 Use the `actions` slot for preview, download or retry actions and `media` to replace the preview. Removing or reordering a card does not cancel a request, delete a server file or save the new order automatically.
 
-Reference: [Attachment](/components/attachment), [AttachmentList](/components/attachment-list) and [UploadZone](/components/api/upload-zone).
+Reference: [Attachment](/components/attachment), [AttachmentList](/components/attachment-list) and [UploadZone](/components/upload-zone).
