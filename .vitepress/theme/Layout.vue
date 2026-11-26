@@ -546,7 +546,7 @@ const section = computed(() =>
     route.path.startsWith('/layouts') ||
     route.path.startsWith('/reference/components')
         ? 'Components'
-        : route.path.startsWith('/playground') || route.path.startsWith('/examples')
+        : route.path.startsWith('/playground')
           ? 'Playground'
           : route.path.startsWith('/themes')
             ? 'Themes'

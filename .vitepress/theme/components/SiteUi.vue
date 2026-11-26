@@ -4,17 +4,15 @@
 
 <script lang="ts">
 import type * as MiruLibrary from '@rat.md/miru';
-</script>
-
-<script lang="ts" setup>
 import type { Component } from 'vue';
 import { computed, onMounted, shallowRef, useAttrs, markRaw } from 'vue';
 
-// Shared only after client mount. New instances can use loaded components on
-// their very first render instead of flashing a fallback during another import.
+// Share the import, but never let cache timing change the initial hydration tree.
 let loadedLibrary: typeof MiruLibrary | undefined;
 let libraryRequest: Promise<typeof MiruLibrary> | undefined;
+</script>
 
+<script lang="ts" setup>
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<{ name: string; fallback?: string }>(), {
     fallback: 'div',
@@ -34,7 +32,8 @@ function resolveNative(): Component | undefined {
 }
 
 const native = shallowRef<Component>();
-native.value = resolveNative();
+// Deferred page content may hydrate after header controls have warmed the cache.
+// Keep its first client render identical to SSR; upgrade only after this instance mounts.
 
 /**
  * Filter attributes for the resolved native fallback element.

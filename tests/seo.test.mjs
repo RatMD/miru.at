@@ -18,12 +18,11 @@ test('canonical URLs and sitemap paths use the same clean URL rules', () => {
         ['', '/'],
         ['components/index.md', '/components/'],
         ['docs/guide/installation.html', '/docs/guide/installation'],
-        ['playgrounds.md', '/playground'],
-        ['examples.md', '/playground'],
+        ['playground.md', '/playground'],
     ]) {
         assert.equal(canonicalPath(file), expected);
     }
-    for (const file of ['404.html', '/playground/preview', 'playgrounds.md', 'examples.md']) {
+    for (const file of ['404.html', '/playground/preview']) {
         assert.equal(isIndexable(file), false);
     }
     assert.equal(isIndexable('playground.md'), true);
@@ -59,9 +58,9 @@ test('page metadata follows the current route, title template and indexability',
     const themes = pageSeoHead({ ...page, relativePath: 'themes.md', title: 'Themes' }, site);
     assert.equal(get(themes, 'canonical').href, 'https://miru.at/themes');
     assert.equal(get(themes, 'twitter:title').content, 'Themes · @rat.md/miru');
-    const alias = pageSeoHead({ ...page, relativePath: 'examples.md' }, site);
-    assert.equal(get(alias, 'canonical').href, 'https://miru.at/playground');
-    assert.equal(get(alias, 'robots').content, 'noindex, follow');
+    const playground = pageSeoHead({ ...page, relativePath: 'playground.md' }, site);
+    assert.equal(get(playground, 'canonical').href, 'https://miru.at/playground');
+    assert.equal(get(playground, 'robots').content, 'index, follow, max-image-preview:large');
     const missing = pageSeoHead({ ...page, relativePath: '404.md' }, site);
     assert.equal(missing.length, 1);
     assert.equal(get(missing, 'robots').content, 'noindex, follow');

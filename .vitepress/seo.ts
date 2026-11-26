@@ -24,9 +24,7 @@ export function pagePath(file: string): string {
  * @returns
  */
 export function canonicalPath(file: string): string {
-    const path = pagePath(file);
-
-    return ['/playgrounds', '/examples'].includes(path) ? '/playground' : path;
+    return pagePath(file);
 }
 
 /**
@@ -35,7 +33,7 @@ export function canonicalPath(file: string): string {
  * @returns
  */
 export function isIndexable(file: string): boolean {
-    return !['/404', '/playground/preview', '/playgrounds', '/examples'].includes(pagePath(file));
+    return !['/404', '/playground/preview'].includes(pagePath(file));
 }
 
 type SeoPage = {

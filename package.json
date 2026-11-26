@@ -1,6 +1,17 @@
 {
     "name": "@rat.md/miru.at",
+    "description": "The VitePress documentation, component showcase and playground for miru.",
     "private": true,
+    "license": "MIT",
+    "author": "rat.md",
+    "homepage": "https://miru.at",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RatMD/miru.at.git"
+    },
+    "bugs": {
+        "url": "https://github.com/RatMD/miru.at/issues"
+    },
     "type": "module",
     "scripts": {
         "build": "npm run docs:sync && vitepress build",
