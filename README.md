@@ -33,5 +33,5 @@ document root to `.vitepress/dist`.
 
 ## Copyright & License
 
-[MIT License](https://github.com/RatMD/miru/blob/master/LICENSE.md).  
-Copyright © 2025 - 2026 rat.md
+Published under the [MIT License](./LICENSE.md).  
+Copyright © 2025 - 2026 rat.md by Sam <sam@rat.md> (An OpenSource initiative by pytesNET).
