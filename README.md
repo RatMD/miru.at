@@ -1,3 +1,5 @@
+[<img src=".github/miru-mark.svg" alt="miru." width="80" height="80">](https://miru.at)
+
 miru.at - Documentation Website
 ===============================
 
