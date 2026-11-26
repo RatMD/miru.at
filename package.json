@@ -5,7 +5,8 @@
     "scripts": {
         "build": "npm run docs:sync && vitepress build",
         "dev": "npm run docs:sync && vitepress dev",
-        "docs:sync": "node scripts/sync-storybook.mjs && node scripts/sync-brand.mjs && node scripts/generate-api.mjs && node scripts/sync-docs.mjs",
+        "docs:sync": "node scripts/prepare-package.mjs && node scripts/sync-brand.mjs && node scripts/generate-api.mjs && node scripts/sync-docs.mjs",
+        "docs:storybook": "node scripts/prepare-package.mjs && node scripts/sync-storybook.mjs",
         "format": "prettier --check .vitepress/config.mts .vitepress/seo.ts .vitepress/theme scripts tests",
         "format:fix": "prettier --write .vitepress/config.mts .vitepress/seo.ts .vitepress/theme scripts tests",
         "lint": "eslint .vitepress scripts tests --max-warnings 0",

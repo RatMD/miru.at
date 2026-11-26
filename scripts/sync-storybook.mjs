@@ -3,7 +3,7 @@
  *
  * Copies canonical installation content into the package and generates brief composable, plugin and support entries with full documentation links.
  *
- * Run through npm run docs:sync. The snapshots let the package build Storybook independently.
+ * Run through npm run docs:storybook. The snapshots let the package build Storybook independently.
  */
 
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
