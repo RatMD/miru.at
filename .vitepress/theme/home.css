@@ -509,7 +509,7 @@
     }
     .home-main .palette-hint {
         top: 18px;
-        right: calc(var(--home-inset) + 43px);
+        right: 2px;
     }
     .hero-composition {
         grid-template-columns: 1fr;

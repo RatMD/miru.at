@@ -5,10 +5,12 @@
         class="site-shell"
         :class="{
             'is-playground': frontmatter.layout === 'playground',
+            'has-compact-header': compactHeader,
         }"
         @keydown.esc="menuOpen = false">
         <a class="skip-link" href="#main-content">Skip to content</a>
         <header class="site-header">
+            <span class="mobile-header-control mobile-header-appearance"><AppearanceButton /></span>
             <a href="/" class="brand" aria-label="Miru home">
                 <span class="brand-mark"><MiruMark /></span>
                 <span>
@@ -16,6 +18,16 @@
                     <span class="brand-period">.</span>
                 </span>
             </a>
+            <SiteUi
+                name="ButtonAction"
+                fallback="button"
+                variant="default"
+                borderless="yes"
+                class="mobile-header-control mobile-header-palette"
+                aria-label="Customize colors"
+                @click="colorPanelOpen = true">
+                <Icon name="adjust" :size="22" />
+            </SiteUi>
             <div class="header-center">
                 <nav class="primary-nav" aria-label="Main navigation">
                     <SiteUi
@@ -106,6 +118,13 @@
             </div>
             <span class="version">v0.1.0</span>
         </header>
+        <MobileAppBar
+            :menu-open="menuOpen"
+            @toggle-menu="menuOpen = !menuOpen"
+            @search="
+                menuOpen = false;
+                search?.open();
+            " />
         <template
             v-if="
                 (isNotFound ||
@@ -379,6 +398,7 @@ import { IconBrandGithub, IconBrandStorybook, IconPawFilled } from '@tabler/icon
 import { useData, useRoute, defineClientComponent } from 'vitepress';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { isIndexable } from '../seo';
+import { colorPanelOpen } from './colors/store';
 import ComponentPageHeader from './components/ComponentPageHeader.vue';
 import ComponentPageRedirect from './components/ComponentPageRedirect.vue';
 import Home from './components/Home.vue';
@@ -396,10 +416,23 @@ import { documentationNavigation, componentNavigation } from './navigation';
 const Sidebar = defineClientComponent(() => import('./components/Sidebar.vue'));
 const ColorCustomizer = defineClientComponent(() => import('./components/ColorCustomizer.vue'));
 const AppearanceButton = defineClientComponent(() => import('./components/AppearanceButton.vue'));
+const MobileAppBar = defineClientComponent(() => import('./components/MobileAppBar.vue'));
 const Playground = defineClientComponent(() => import('./playground/Playground.vue'));
 const PreviewRuntime = defineClientComponent(() => import('./playground/PreviewRuntime.vue'));
 const { frontmatter, page } = useData();
 const route = useRoute();
+const compactHeader = ref(false);
+
+/** Keep a little hysteresis so the shrinking header does not flicker near its threshold. */
+function updateCompactHeader() {
+    compactHeader.value = window.scrollY > (compactHeader.value ? 40 : 100);
+}
+
+onMounted(() => {
+    updateCompactHeader();
+    window.addEventListener('scroll', updateCompactHeader, { passive: true });
+});
+onUnmounted(() => window.removeEventListener('scroll', updateCompactHeader));
 const documentationRedirect = computed(() =>
     frontmatter.value.redirectTo
         ? {

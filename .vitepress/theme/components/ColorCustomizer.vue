@@ -1,6 +1,11 @@
 <template>
-    <Popover v-model:open="colorPanelOpen">
-        <PopoverTrigger
+    <component
+        v-if="mobile === !!mobileOnly"
+        :is="mobile ? Drawer : Popover"
+        v-model:open="colorPanelOpen"
+        v-bind="mobile ? { snapPoints: [0.9] } : {}">
+        <component
+            :is="mobile ? DrawerTrigger : PopoverTrigger"
             as-child
             tooltip="Change your colours"
             tooltip-side="bottom"
@@ -13,18 +18,23 @@
                 class="color-adapt-trigger">
                 <Icon name="adjust" />
             </ButtonAction>
-        </PopoverTrigger>
-        <PopoverContent
-            align="end"
-            :align-offset="-16"
-            :collision-padding="12"
-            :side-offset="12"
+        </component>
+        <component
+            :is="mobile ? DrawerContent : PopoverContent"
+            v-bind="
+                mobile
+                    ? { showClose: false, scrollable: false, maxHeight: '90dvh' }
+                    : { align: 'end', alignOffset: -16, collisionPadding: 12, sideOffset: 12 }
+            "
             class="color-customizer"
             aria-label="Customize colors">
+            <DrawerDescription v-if="mobile" class="sr-only">
+                Choose a palette or customise your interface colours.
+            </DrawerDescription>
             <div class="color-panel-heading">
                 <div>
                     <span class="eyebrow">THE miru. PALETTE</span>
-                    <h2>Make it your own.</h2>
+                    <component :is="mobile ? DrawerTitle : 'h2'">Make it your own.</component>
                 </div>
                 <ButtonAction
                     variant="default"
@@ -121,9 +131,9 @@
                 </span>
                 <Button variant="outline" size="sm" @click="selectPreset('miru')">Reset</Button>
             </div>
-            <PopoverArrow :width="20" :height="10" />
-        </PopoverContent>
-    </Popover>
+            <PopoverArrow v-if="!mobile" :width="20" :height="10" />
+        </component>
+    </component>
 </template>
 
 <script lang="ts" setup>
@@ -132,6 +142,11 @@ import {
     Button,
     ButtonAction,
     ColorPicker,
+    Drawer,
+    DrawerContent,
+    DrawerDescription,
+    DrawerTitle,
+    DrawerTrigger,
     Label,
     Popover,
     PopoverTrigger,
@@ -139,7 +154,7 @@ import {
     PopoverArrow,
     ScrollArea,
 } from '@rat.md/miru';
-import { ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { roles, presets, surfaceBase, normalizeHex } from '../colors/engine';
 import {
     profile,
@@ -150,6 +165,23 @@ import {
     setSurface,
 } from '../colors/store';
 import Icon from './Icon.vue';
+
+defineProps<{ mobileOnly?: boolean }>();
+const mobile = ref(false);
+let mobileQuery: MediaQueryList | undefined;
+
+/** Synchronise the overlay with the mobile navigation breakpoint. */
+function updateMobile() {
+    colorPanelOpen.value = false;
+    mobile.value = mobileQuery?.matches ?? false;
+}
+
+onMounted(() => {
+    mobileQuery = window.matchMedia('(max-width: 760px)');
+    mobile.value = mobileQuery.matches;
+    mobileQuery.addEventListener('change', updateMobile);
+});
+onUnmounted(() => mobileQuery?.removeEventListener('change', updateMobile));
 
 const drafts = ref({ ...profile.value.colors });
 const surfaceDraft = ref(surfaceBase(profile.value));
