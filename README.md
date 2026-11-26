@@ -38,4 +38,4 @@ document root to `.vitepress/dist`.
 Published under the [MIT License](./LICENSE.md).  
 Copyright © 2025 - 2026 rat.md (Sam \<sam@rat.md\>).
 
-*rat.md is n OpenSource initiative by pytesNET.*
+*rat.md is an OpenSource initiative by pytesNET.*
