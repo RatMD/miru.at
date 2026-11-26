@@ -40,7 +40,7 @@
                         href="/docs/welcome"
                         class="topnav-link"
                         :class="{
-                            active: section === 'Documentation' && !frontmatter.home,
+                            active: section === 'Documentation' && !frontmatter.home && !isNotFound,
                         }">
                         Documentation
                     </SiteUi>
@@ -108,8 +108,10 @@
         </header>
         <template
             v-if="
-                (frontmatter.home ||
+                (isNotFound ||
+                    frontmatter.home ||
                     frontmatter.catalogue ||
+                    frontmatter.layout === 'gallery' ||
                     frontmatter.layout === 'themes' ||
                     frontmatter.layout === 'playground') &&
                 menuOpen
@@ -136,7 +138,10 @@
                 </section>
             </aside>
         </template>
-        <template v-if="frontmatter.home">
+        <main v-if="isNotFound" id="main-content" class="not-found-main">
+            <NotFound @search="search?.open()" />
+        </main>
+        <template v-else-if="frontmatter.home">
             <main id="main-content" class="home-main">
                 <Home />
                 <noscript>
@@ -146,6 +151,9 @@
                 </noscript>
             </main>
         </template>
+        <main v-else-if="frontmatter.layout === 'gallery'" id="main-content" class="gallery-main">
+            <ComponentGallery />
+        </main>
         <main v-else-if="frontmatter.layout === 'themes'" id="main-content" class="themes-main">
             <Themes />
         </main>
@@ -153,6 +161,11 @@
             v-else-if="frontmatter.layout === 'playground'"
             id="main-content"
             class="playground-main">
+            <h1 class="sr-only">Vue component playground</h1>
+            <p class="sr-only">
+                Try miru’s Vue components, edit Vue, TypeScript and CSS, adjust themes and preview
+                your interface at mobile, tablet and desktop sizes.
+            </p>
             <Playground />
             <noscript>
                 The interactive playground requires JavaScript. Browse
@@ -199,12 +212,6 @@
                             :key="route.path"
                             :to="documentationRedirect.to"
                             :part="documentationRedirect.part" />
-                        <template v-else-if="page.isNotFound">
-                            <div class="eyebrow">404 / A small detour</div>
-                            <h1>This page wandered off.</h1>
-                            <p>Let’s get you back to building something good.</p>
-                            <a class="cta primary" href="/docs/welcome">Back to the docs</a>
-                        </template>
                         <template v-else>
                             <ComponentPageHeader
                                 v-if="frontmatter.componentPage"
@@ -366,21 +373,26 @@
         </Teleport>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { IconBrandGithub, IconBrandStorybook, IconPawFilled } from '@tabler/icons-vue';
 import { useData, useRoute, defineClientComponent } from 'vitepress';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { isIndexable } from '../seo';
 import ComponentPageHeader from './components/ComponentPageHeader.vue';
 import ComponentPageRedirect from './components/ComponentPageRedirect.vue';
 import Home from './components/Home.vue';
 import Icon from './components/Icon.vue';
 import MiruMark from './components/MiruMark.vue';
+import NotFound from './components/NotFound.vue';
 import Search from './components/Search.vue';
 import SiteTooltip from './components/SiteTooltip.vue';
 import SiteUi from './components/SiteUi.vue';
 import Themes from './components/Themes.vue';
-import { documentationNavigation, componentNavigation } from './navigation';
+import ComponentGallery from './gallery/ComponentGallery.vue';
 import { legacyDocumentationRedirect } from './legacy-routes';
+import { documentationNavigation, componentNavigation } from './navigation';
+
 const Sidebar = defineClientComponent(() => import('./components/Sidebar.vue'));
 const ColorCustomizer = defineClientComponent(() => import('./components/ColorCustomizer.vue'));
 const AppearanceButton = defineClientComponent(() => import('./components/AppearanceButton.vue'));
@@ -396,25 +408,79 @@ const documentationRedirect = computed(() =>
           }
         : legacyDocumentationRedirect(route.path),
 );
+const isNotFound = computed(
+    () =>
+        (page.value.isNotFound || frontmatter.value.layout === 'not-found') &&
+        !documentationRedirect.value,
+);
+
+/**
+ * Synchronize robots metadata with the current route.
+ */
+function syncRobots() {
+    if (typeof document === 'undefined') {
+        return;
+    }
+    // Unknown URLs use VitePress's fallback data rather than generated frontmatter.
+    // Reconcile its robots tag as well, including navigation away from a 404.
+    const candidates = [...document.head.querySelectorAll<HTMLMetaElement>('meta[name="robots"]')];
+    const meta = candidates.at(-1) || document.createElement('meta');
+    meta.name = 'robots';
+    meta.content =
+        page.value.isNotFound || !isIndexable(page.value.relativePath)
+            ? 'noindex, follow'
+            : 'index, follow, max-image-preview:large';
+    for (const candidate of candidates) {
+        if (candidate !== meta) {
+            candidate.remove();
+        }
+    }
+    if (!meta.isConnected) {
+        document.head.appendChild(meta);
+    }
+}
+
+onMounted(syncRobots);
+watch(() => page.value, syncRobots, { flush: 'post' });
 const currentYear = new Date().getFullYear();
 const pawCursorEnabled = ref(false);
 const pawPrints = ref<{ id: number; x: number; y: number }[]>([]);
 const pawPrintTimers = new Map<number, ReturnType<typeof setTimeout>>();
 let nextPawPrintId = 0;
+
+/**
+ * Remove an expired decorative paw print.
+ * @param id
+ */
 function removePawPrint(id: number) {
     clearTimeout(pawPrintTimers.get(id));
     pawPrintTimers.delete(id);
     pawPrints.value = pawPrints.value.filter((print) => print.id !== id);
 }
+
+/**
+ * Clear decorative paw prints and their pending timers.
+ */
 function clearPawPrints() {
     pawPrintTimers.forEach((timer) => clearTimeout(timer));
     pawPrintTimers.clear();
     pawPrints.value = [];
 }
+
+/**
+ * Place a decorative paw print at the current pointer position.
+ * @param event
+ */
 function leavePawPrint(event: MouseEvent) {
-    if (!pawCursorEnabled.value || event.button !== 0 || event.detail === 0) return;
-    if (event.target instanceof Element && event.target.closest('.footer-paw-button')) return;
-    if (pawPrints.value.length >= 24) removePawPrint(pawPrints.value[0]!.id);
+    if (!pawCursorEnabled.value || event.button !== 0 || event.detail === 0) {
+        return;
+    }
+    if (event.target instanceof Element && event.target.closest('.footer-paw-button')) {
+        return;
+    }
+    if (pawPrints.value.length >= 24) {
+        removePawPrint(pawPrints.value[0]!.id);
+    }
     const id = nextPawPrintId++;
     pawPrints.value.push({ id, x: event.clientX, y: event.clientY });
     pawPrintTimers.set(
@@ -422,20 +488,33 @@ function leavePawPrint(event: MouseEvent) {
         setTimeout(() => removePawPrint(id), 1100),
     );
 }
+
+/**
+ * Toggle the decorative paw cursor.
+ */
 function togglePawCursor() {
     pawCursorEnabled.value = !pawCursorEnabled.value;
     document.documentElement.classList.toggle('has-paw-cursor', pawCursorEnabled.value);
-    if (!pawCursorEnabled.value) clearPawPrints();
+    if (!pawCursorEnabled.value) {
+        clearPawPrints();
+    }
 }
+
 const pawAnimation = ref('');
 const pawAnimations = ['play', 'peek', 'twirl', 'stretch'];
 let previousPawAnimation = '';
 let pawTimer: ReturnType<typeof setTimeout> | undefined;
 let pawMotionPreference: MediaQueryList | undefined;
+
+/**
+ * Schedule the next decorative paw animation frame.
+ */
 function schedulePawAnimation() {
     clearTimeout(pawTimer);
     pawAnimation.value = '';
-    if (pawMotionPreference?.matches) return;
+    if (pawMotionPreference?.matches) {
+        return;
+    }
     pawTimer = setTimeout(
         () => {
             const choices = pawAnimations.filter((animation) => animation !== previousPawAnimation);
@@ -445,6 +524,7 @@ function schedulePawAnimation() {
         3000 + Math.random() * 5000,
     );
 }
+
 onMounted(() => {
     document.addEventListener('click', leavePawPrint, { capture: true, passive: true });
     pawMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -462,6 +542,7 @@ const menuOpen = ref(false);
 const search = ref<InstanceType<typeof Search>>();
 const section = computed(() =>
     route.path.startsWith('/components') ||
+    route.path.startsWith('/gotta-catch-em-all') ||
     route.path.startsWith('/layouts') ||
     route.path.startsWith('/reference/components')
         ? 'Components'
@@ -476,6 +557,12 @@ const navigation = computed(() =>
 );
 // With scripting enabled, browsers parse noscript contents as text. Render its
 // fallback as HTML so Vue does not try to hydrate a v-for fragment inside it.
+
+/**
+ * Escape text before inserting it into generated HTML.
+ * @param value
+ * @returns
+ */
 const escapeHtml = (value: string) =>
     value.replace(
         /[&<>"']/g,
@@ -491,6 +578,12 @@ const noscriptNavigation = computed(() =>
         .join(''),
 );
 const headings = computed(() => page.value.headers.flatMap((h) => [h, ...(h.children || [])]));
+
+/**
+ * Compare a navigation target with the current route.
+ * @param link
+ * @returns
+ */
 const isCurrent = (link: string) => route.path.replace(/\/$/, '') === link.replace(/\/$/, '');
 watch(
     () => route.path,

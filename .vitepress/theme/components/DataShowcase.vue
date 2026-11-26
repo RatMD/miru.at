@@ -234,7 +234,7 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import type {
     DataTableColumnDef,
     DataTableRowAction,
@@ -323,10 +323,17 @@ const state = ref<ListState>({
 });
 const filters = ref<Record<string, unknown>>({});
 const actionFeedback = ref('');
+
+/**
+ * Filter and paginate the demonstration records.
+ * @param next
+ * @param nextFilters
+ */
 function query(next: ListState, nextFilters: Record<string, unknown>) {
     state.value = next;
     filters.value = { ...nextFilters };
 }
+
 const list = computed<ListPayload<Project>>(() => {
     const current = state.value;
     const search = String(filters.value.search ?? current.search ?? '').toLowerCase();
@@ -336,19 +343,22 @@ const list = computed<ListPayload<Project>>(() => {
             `${row.name} ${row.code} ${row.owner}`.toLowerCase().includes(search) &&
             (!status || row.status === status),
     );
-    if (current.order_by)
+    if (current.order_by) {
         rows.sort((a, b) => {
             const av = a[current.order_by as keyof Project],
                 bv = b[current.order_by as keyof Project];
+
             return (
                 (typeof av === 'number' && typeof bv === 'number'
                     ? av - bv
                     : String(av).localeCompare(String(bv))) * (current.order === 'ASC' ? 1 : -1)
             );
         });
+    }
     const last = Math.max(1, Math.ceil(rows.length / current.per_page));
     const page = Math.min(Math.max(current.page, 1), last);
     const start = (page - 1) * current.per_page;
+
     return {
         results: {
             data: rows.slice(start, start + current.per_page),
@@ -434,6 +444,11 @@ const actions: DataTableRowAction<Project>[] = [
         label: 'Preview project',
         icon: IconEye,
         color: 'accent',
+
+        /**
+         * Run the selected demonstration row action.
+         * @param row
+         */
         execute: (row) => {
             actionFeedback.value = `${row.name} · ${row.owner} · ${row.tasks} tasks. A rather good start.`;
         },
@@ -443,6 +458,11 @@ const actions: DataTableRowAction<Project>[] = [
         label: 'Send for review',
         icon: IconCircleCheck,
         color: 'primary',
+
+        /**
+         * Run the selected demonstration row action.
+         * @param row
+         */
         execute: (row) => {
             projects.value = projects.value.map((project) =>
                 project.id === row.id ? { ...project, status: 'review' } : project,
@@ -506,9 +526,21 @@ const taskColumns: DataTableColumnDef<ProjectTask>[] = [
     }),
 ];
 const taskStates = ref<Record<string, ListState>>({});
+
+/**
+ * Filter the tasks associated with a project.
+ * @param projectId
+ * @param state
+ */
 function queryTasks(projectId: string, state: ListState) {
     taskStates.value = { ...taskStates.value, [projectId]: state };
 }
+
+/**
+ * Build the task list for the selected project.
+ * @param project
+ * @returns
+ */
 function taskList(project: Project): ListPayload<ProjectTask> {
     const state = taskStates.value[project.id] ?? {
         page: 1,
@@ -537,9 +569,11 @@ function taskList(project: Project): ListPayload<ProjectTask> {
                 typeof left === 'number' && typeof right === 'number'
                     ? left - right
                     : String(left).localeCompare(String(right));
+
             return comparison * (state.order === 'ASC' ? 1 : -1);
         });
     }
+
     return {
         results: {
             data,
@@ -567,9 +601,11 @@ function taskList(project: Project): ListPayload<ProjectTask> {
         },
     };
 }
+
 const chartPeriod = ref('Quarter');
 const chartSeries = computed(() => {
     const factor = chartPeriod.value === 'Year' ? 3 : 1;
+
     return [
         {
             name: 'Delivered',
@@ -654,6 +690,11 @@ const chartOptions = computed(() => ({
     },
     yaxis: {
         labels: {
+            /**
+             * Format a demonstration value for display.
+             * @param value
+             * @returns
+             */
             formatter: (value: number) => Math.round(value).toLocaleString('en-GB'),
             style: { fontSize: '10px' },
         },
@@ -665,9 +706,16 @@ const chartOptions = computed(() => ({
 }));
 
 const now = new Date();
+
+/**
+ * Create a demonstration date for the requested day.
+ * @param day
+ * @returns
+ */
 function dateAt(day: number) {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
+
 const meetingDay = Math.min(
     now.getDate() + 1,
     new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(),

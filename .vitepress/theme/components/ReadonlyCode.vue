@@ -48,7 +48,8 @@
         </p>
     </section>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import type { createReadonlyEditor } from '../code/readonly-editor';
 import {
     ButtonAction,
@@ -61,6 +62,7 @@ import {
 import { IconClipboard, IconClipboardCheck } from '@tabler/icons-vue';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { copyCode } from '../../../../package/src/components/code-panel/clipboard';
+
 const props = withDefaults(
     defineProps<{
         code: string;
@@ -88,20 +90,32 @@ const source = computed(() =>
 let editor: ReturnType<typeof createReadonlyEditor> | undefined;
 let disposed = false;
 let copiedTimer: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * Reset copy feedback after its display interval.
+ */
 function resetCopy() {
     clearTimeout(copiedTimer);
     copied.value = false;
     copyFailed.value = false;
     tooltipOpen.value = false;
 }
+
+/**
+ * Copy the displayed source to the clipboard.
+ */
 async function copy() {
-    if (copying.value) return;
+    if (copying.value) {
+        return;
+    }
     const snapshot = source.value;
     resetCopy();
     copying.value = true;
     try {
         await copyCode(snapshot);
-        if (disposed || snapshot !== source.value) return;
+        if (disposed || snapshot !== source.value) {
+            return;
+        }
         copied.value = true;
         tooltipOpen.value = true;
         copiedTimer = setTimeout(() => {
@@ -109,14 +123,19 @@ async function copy() {
             tooltipOpen.value = false;
         }, 2000);
     } catch {
-        if (!disposed) copyFailed.value = true;
+        if (!disposed) {
+            copyFailed.value = true;
+        }
     } finally {
         copying.value = false;
     }
 }
+
 onMounted(async () => {
     const { createReadonlyEditor } = await import('../code/readonly-editor');
-    if (disposed || !host.value) return;
+    if (disposed || !host.value) {
+        return;
+    }
     editor = createReadonlyEditor(
         host.value,
         source.value,
@@ -139,6 +158,7 @@ onBeforeUnmount(() => {
     editor?.destroy();
 });
 </script>
+
 <style scoped>
 .readonly-code {
     position: relative;

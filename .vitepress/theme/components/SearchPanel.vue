@@ -18,12 +18,14 @@
         </CommandDialog>
     </PageRoot>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { CommandDialog, PageRoot } from '@rat.md/miru';
 import { useRouter } from 'vitepress';
 import { computed, ref } from 'vue';
 import catalogue from '../component-catalogue.json';
 import searchIndex from '../search-index.json';
+
 const query = ref('');
 const primary = new Set(catalogue.filter((item) => item.primary).map((item) => item.link));
 const open = defineModel<boolean>('open', { default: false });
@@ -43,8 +45,15 @@ const items = computed(() =>
                   : 'Documentation',
         })),
 );
+
+/**
+ * Rank a search result against the current query.
+ * @param item
+ * @returns
+ */
 function score(item: (typeof searchIndex)[number]) {
     const term = query.value.trim().toLowerCase();
+
     return (
         (term && item.title.toLowerCase() === term ? 100 : 0) +
         (term && item.title.toLowerCase().startsWith(term) ? 30 : 0) +

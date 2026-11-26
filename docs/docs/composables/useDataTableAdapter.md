@@ -13,4 +13,4 @@ const backend = useDataTableAdapter();
 
 Without an explicit format, the composable uses `createMiru({ dataTable })` when configured, otherwise the default contract. Pass a string, ref or getter for `'default'`, `'lucid'` or `'laravel'` to choose a table-specific format. A matching application adapter is retained, including its custom query options; a different explicit format uses that format’s standard adapter.
 
-See [Adonis & Laravel](/docs/guide/backends) for application defaults and [Response adapters](/docs/data-table/adapters) for payload contracts and custom APIs.
+See [Adapters](/docs/guide/adapters) for application defaults and [Response adapters](/docs/data-table/adapters) for payload contracts and custom APIs.

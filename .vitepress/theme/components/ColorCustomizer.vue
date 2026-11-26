@@ -125,7 +125,8 @@
         </PopoverContent>
     </Popover>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import type { Role } from '../colors/engine';
 import {
     Button,
@@ -149,6 +150,7 @@ import {
     setSurface,
 } from '../colors/store';
 import Icon from './Icon.vue';
+
 const drafts = ref({ ...profile.value.colors });
 const surfaceDraft = ref(surfaceBase(profile.value));
 const invalid = ref<string | null>(null);
@@ -161,13 +163,23 @@ watch(profile, (value) => {
         }
     }
     const surface = surfaceBase(value);
-    if (normalizeHex(surfaceDraft.value) !== surface) surfaceDraft.value = surface;
+    if (normalizeHex(surfaceDraft.value) !== surface) {
+        surfaceDraft.value = surface;
+    }
     if (invalid.value) {
         const draft =
             invalid.value === 'surface' ? surfaceDraft.value : drafts.value[invalid.value as Role];
-        if (normalizeHex(draft)) invalid.value = null;
+        if (normalizeHex(draft)) {
+            invalid.value = null;
+        }
     }
 });
+
+/**
+ * Validate and apply an edited palette color.
+ * @param role
+ * @param value
+ */
 function updateColor(role: Role, value: string | null) {
     drafts.value[role] = value || '';
     if (normalizeHex(value)) {
@@ -175,6 +187,11 @@ function updateColor(role: Role, value: string | null) {
         invalid.value = null;
     }
 }
+
+/**
+ * Validate and apply an edited surface color.
+ * @param value
+ */
 function updateSurface(value: string | null) {
     surfaceDraft.value = value || '';
     if (normalizeHex(value)) {
@@ -182,6 +199,12 @@ function updateSurface(value: string | null) {
         invalid.value = null;
     }
 }
+
+/**
+ * Validate the current input before applying changes.
+ * @param name
+ * @param value
+ */
 function validate(name: string, value: string) {
     invalid.value = normalizeHex(value) ? null : name;
 }

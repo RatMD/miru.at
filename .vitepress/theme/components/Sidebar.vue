@@ -76,7 +76,8 @@
         </a>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import type { NavigationGroup } from '../navigation';
 import {
     Collapsible,
@@ -91,6 +92,7 @@ import {
 import { IconChevronDown } from '@tabler/icons-vue';
 import { useRoute, useRouter } from 'vitepress';
 import { computed, ref } from 'vue';
+
 const props = defineProps<{ groups: NavigationGroup[]; section: string }>();
 const route = useRoute();
 const router = useRouter();
@@ -99,11 +101,18 @@ const showOverview = computed(
     () => props.section === 'Components' && 'all components'.includes(query.value.toLowerCase()),
 );
 const expanded = ref(props.groups.filter((group) => !group.collapsed).map((group) => group.title));
+
+/**
+ * Update the expanded state of a sidebar section.
+ * @param title
+ * @param open
+ */
 function setExpanded(title: string, open: boolean) {
     expanded.value = open
         ? [...new Set([...expanded.value, title])]
         : expanded.value.filter((item) => item !== title);
 }
+
 const filtered = computed(() =>
     props.groups
         .map((group) => ({
@@ -114,12 +123,20 @@ const filtered = computed(() =>
         }))
         .filter((group) => group.items.length),
 );
+
+/**
+ * Compare a navigation target with the current route.
+ * @param url
+ * @returns
+ */
 const isCurrent = (url: string) => {
     const path = route.path.replace(/\/$/, '');
     const target = url.replace(/\/$/, '');
+
     return path === target || path.startsWith(target + '/');
 };
 </script>
+
 <style scoped>
 .sidebar-overview-link {
     width: 100%;

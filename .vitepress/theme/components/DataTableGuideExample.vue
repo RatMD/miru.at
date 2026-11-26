@@ -1,14 +1,17 @@
 <template>
     <ComponentExample name="DataTable" :code="source" :show-playground="false" />
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { computed } from 'vue';
 import ComponentExample from './ComponentExample.vue';
+
 const props = defineProps<{ example: 'values' | 'grouped' | 'expanded' }>();
 const source = computed(() => {
     const grouped = props.example === 'grouped';
     const expanded = props.example === 'expanded';
-    return `<script setup lang="ts">
+
+    return `<script lang="ts" setup>
 import { DataTable, DataTableMoneyCell, adaptLaravelList, createBadgeColumn, createCountColumn, createDateTimeColumn, createExpansionColumn } from '@rat.md/miru';
 import type { DataTableColumnDef } from '@rat.md/miru';
 

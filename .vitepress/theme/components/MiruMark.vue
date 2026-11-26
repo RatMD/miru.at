@@ -4,8 +4,10 @@
         <g transform="translate(7 6) scale(.9)" v-html="artwork" />
     </svg>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { markArtwork, squirclePath } from '../branding/mark';
+
 const artwork = markArtwork({
     front: 'var(--miru-mark-front)',
     side: 'var(--miru-mark-side)',
@@ -14,6 +16,7 @@ const artwork = markArtwork({
     edge: 'var(--miru-mark-edge)',
 });
 </script>
+
 <style scoped>
 .miru-mark {
     --miru-mark-front: #ffffff;

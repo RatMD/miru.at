@@ -115,7 +115,8 @@
         <SpectrumCelebration v-model="celebrate" />
     </section>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { Button, Badge, buttonColorVariants, Toast, toast } from '@rat.md/miru';
 import { ref, reactive, watch, onUnmounted, useId } from 'vue';
 import { useAppearance } from '../colors/appearance';
@@ -124,6 +125,7 @@ import { profile, schemeName, colorPanelOpen, selectPreset } from '../colors/sto
 import Icon from './Icon.vue';
 import SpectrumButtonDemo from './SpectrumButtonDemo.vue';
 import SpectrumCelebration from './SpectrumCelebration.vue';
+
 const { isDark, toggleAppearance } = useAppearance();
 const variants = buttonColorVariants;
 const loading = reactive<Record<string, boolean>>({});
@@ -134,18 +136,34 @@ const busyDemos = reactive(new Set<string>());
 const celebrate = ref(false);
 let celebrated = false;
 let celebrationTimer: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * Update the loading state of a color demonstration.
+ * @param variant
+ * @param busy
+ */
 function setDemoBusy(variant: string, busy: boolean) {
-    if (busy) busyDemos.add(variant);
-    else busyDemos.delete(variant);
+    if (busy) {
+        busyDemos.add(variant);
+    } else {
+        busyDemos.delete(variant);
+    }
 }
+
+/**
+ * Show feedback for an interactive color demonstration.
+ * @param title
+ * @param description
+ */
 function demoFeedback(title: string, description: string) {
     toast.info(title, { toasterId, description });
 }
+
 watch(
     () => variants.every((variant) => visited.has(variant)) && busyDemos.size === 0,
     (ready) => {
         clearTimeout(celebrationTimer);
-        if (ready && !celebrated)
+        if (ready && !celebrated) {
             celebrationTimer = setTimeout(() => {
                 celebrated = true;
                 Object.keys(messages).forEach((variant) =>
@@ -153,6 +171,7 @@ watch(
                 );
                 celebrate.value = true;
             }, 850);
+        }
     },
 );
 watch(celebrate, (open, wasOpen) => {
@@ -183,10 +202,17 @@ const messages = {
         description: 'Nothing exploded. Just a little drama for your interface.',
     },
 } as const;
+
+/**
+ * Run the selected color variant demonstration.
+ * @param variant
+ */
 function clickVariant(variant: (typeof buttonColorVariants)[number]) {
     run(`variant:${variant}`, () => {
         visited.add(variant);
-        if (!(variant in messages)) return;
+        if (!(variant in messages)) {
+            return;
+        }
         const message = messages[variant as keyof typeof messages];
         toast[message.type](message.title, {
             id: `${toasterId}-${variant}`,
@@ -196,8 +222,16 @@ function clickVariant(variant: (typeof buttonColorVariants)[number]) {
         });
     });
 }
+
+/**
+ * Run the requested preview action.
+ * @param key
+ * @param action
+ */
 function run(key: string, action: () => void) {
-    if (loading[key]) return;
+    if (loading[key]) {
+        return;
+    }
     loading[key] = true;
     const timer = setTimeout(() => {
         delete loading[key];
@@ -206,6 +240,7 @@ function run(key: string, action: () => void) {
     loadingTimers.add(timer);
     action();
 }
+
 onUnmounted(() => {
     clearTimeout(celebrationTimer);
     loadingTimers.forEach(clearTimeout);

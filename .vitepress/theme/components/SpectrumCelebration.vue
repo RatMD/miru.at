@@ -40,9 +40,11 @@
         </DialogContent>
     </Dialog>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { Button, Badge, Dialog, DialogContent, DialogTitle, DialogDescription } from '@rat.md/miru';
 import { IconPawFilled, IconStarFilled, IconSparkles } from '@tabler/icons-vue';
+
 const open = defineModel<boolean>({ default: false });
 // Fixed, repeatable positions avoid layout shifts and make the trail feel intentional.
 const stars = Array.from({ length: 32 }, (_, id) => ({
@@ -65,6 +67,7 @@ const paws = Array.from({ length: 12 }, (_, id) => ({
     },
 }));
 </script>
+
 <style>
 .spectrum-celebration {
     position: fixed;

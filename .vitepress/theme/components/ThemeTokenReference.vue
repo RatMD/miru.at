@@ -60,7 +60,8 @@
         <p v-else role="status">Loading theme tokens…</p>
     </section>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import type { DataTableColumnDef, ListPayload, ListState } from '@rat.md/miru';
 import {
     adaptLaravelList,
@@ -75,12 +76,12 @@ import {
 } from '@rat.md/miru';
 import { useData } from 'vitepress';
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
-import tokenCss from '../../../../package/src/styles/tokens.css?raw';
-import foregroundCss from '../../../../package/src/styles/palette-foregrounds.css?raw';
 import breakpointCss from '../../../../package/src/styles/breakpoints.css?raw';
+import foregroundCss from '../../../../package/src/styles/palette-foregrounds.css?raw';
+import tokenCss from '../../../../package/src/styles/tokens.css?raw';
 import { presets } from '../colors/engine';
-import { selectedThemeCss } from '../colors/styles';
 import { profile, schemeName, selectPreset } from '../colors/store';
+import { selectedThemeCss } from '../colors/styles';
 
 type Token = { name: string; group: string; value: string; resolved: string; colour: boolean };
 const { isDark } = useData();
@@ -100,16 +101,34 @@ const columns: DataTableColumnDef<Token>[] = [
     { accessorKey: 'resolved', header: 'Resolved value', size: 0 },
 ];
 
+/**
+ * Resolve the category of a CSS token.
+ * @param name
+ * @returns
+ */
 function groupFor(name: string): string {
-    if (/^--ui-(?:primary|secondary|accent|info|success|warning|danger|neutral)-\d+/.test(name))
+    if (/^--ui-(?:primary|secondary|accent|info|success|warning|danger|neutral)-\d+/.test(name)) {
         return 'Palettes';
-    if (name.startsWith('--ui-font-')) return 'Typography';
-    if (name.startsWith('--ui-breakpoint-')) return 'Responsive';
-    if (name.includes('radius')) return 'Shape';
-    if (name.includes('shadow')) return 'Effects';
-    if (/^--ui-(?:code|editor)-/.test(name)) return 'Code';
-    if (/^--ui-(?:primary|secondary|accent|info|success|warning|danger|default|ghost)/.test(name))
+    }
+    if (name.startsWith('--ui-font-')) {
+        return 'Typography';
+    }
+    if (name.startsWith('--ui-breakpoint-')) {
+        return 'Responsive';
+    }
+    if (name.includes('radius')) {
+        return 'Shape';
+    }
+    if (name.includes('shadow')) {
+        return 'Effects';
+    }
+    if (/^--ui-(?:code|editor)-/.test(name)) {
+        return 'Code';
+    }
+    if (/^--ui-(?:primary|secondary|accent|info|success|warning|danger|default|ghost)/.test(name)) {
         return 'Semantic';
+    }
+
     return 'Surfaces';
 }
 
@@ -133,7 +152,19 @@ const semanticOrder = [
     'border',
     'text',
 ];
+
+/**
+ * Sort tokens by their family and numeric shade.
+ * @param a
+ * @param b
+ * @returns
+ */
 function compareTokens(a: Token, b: Token): number {
+    /**
+     * Resolve the semantic family of a token.
+     * @param name
+     * @returns
+     */
     const family = (name: string) =>
         colourFamilies.findIndex(
             (role) => name === `--ui-${role}` || name.startsWith(`--ui-${role}-`),
@@ -143,22 +174,41 @@ function compareTokens(a: Token, b: Token): number {
     const familyOrder =
         (aFamily < 0 ? colourFamilies.length : aFamily) -
         (bFamily < 0 ? colourFamilies.length : bFamily);
-    if (familyOrder) return familyOrder;
+    if (familyOrder) {
+        return familyOrder;
+    }
     if (aFamily >= 0) {
         // Keep the semantic recipe together, followed by that colour's numbered shades and ink.
         const paletteOrder = Number(a.group === 'Palettes') - Number(b.group === 'Palettes');
-        if (paletteOrder) return paletteOrder;
+        if (paletteOrder) {
+            return paletteOrder;
+        }
         if (a.group !== 'Palettes' && b.group !== 'Palettes') {
+            /**
+             * Read the final segment of a token name.
+             * @param name
+             * @returns
+             */
             const suffix = (name: string) =>
                 name.slice(`--ui-${colourFamilies[aFamily]}`.length).replace(/^-/, '');
+
+            /**
+             * Resolve the ordering weight of a token.
+             * @param name
+             * @returns
+             */
             const rank = (name: string) => {
                 const index = semanticOrder.indexOf(suffix(name));
+
                 return index < 0 ? semanticOrder.length : index;
             };
             const recipeOrder = rank(a.name) - rank(b.name);
-            if (recipeOrder) return recipeOrder;
+            if (recipeOrder) {
+                return recipeOrder;
+            }
         }
     }
+
     return a.name.localeCompare(b.name, 'en', { numeric: true });
 }
 
@@ -182,6 +232,7 @@ const list = computed(() => {
     );
     const lastPage = Math.max(1, Math.ceil(found.length / state.value.per_page));
     const page = Math.min(Math.max(1, state.value.page), lastPage);
+
     return adaptLaravelList<Token>({
         results: {
             data: found.slice((page - 1) * state.value.per_page, page * state.value.per_page),
@@ -208,17 +259,30 @@ const list = computed(() => {
         filters: filters.value,
     });
 });
+
+/**
+ * Filter and paginate the demonstration records.
+ * @param next
+ * @param nextFilters
+ */
 function query(next: ListState, nextFilters: Record<string, unknown>) {
     state.value = { ...next };
     filters.value = { ...nextFilters };
 }
 
 let frame: HTMLIFrameElement | undefined;
+
 // Resolve in a clean document so documentation-specific overrides cannot leak into scheme defaults.
+
+/**
+ * Refresh the displayed data from its current source.
+ */
 function refresh() {
     const doc = frame?.contentDocument;
     const view = frame?.contentWindow;
-    if (!doc || !view) return;
+    if (!doc || !view) {
+        return;
+    }
     doc.documentElement.className = isDark.value ? 'dark' : '';
     const style = doc.createElement('style');
     style.textContent = `${tokenCss}\n${foregroundCss}\n${breakpointCss}\n${selectedThemeCss(profile.value)}`;
@@ -227,18 +291,24 @@ function refresh() {
     for (const sheet of Array.from(doc.styleSheets)) {
         for (const rule of Array.from(sheet.cssRules)) {
             // These source files declare global tokens in plain, ordered style rules.
-            if (!('selectorText' in rule) || !('style' in rule)) continue;
+            if (!('selectorText' in rule) || !('style' in rule)) {
+                continue;
+            }
             const declaration = rule as CSSStyleRule;
-            if (!doc.documentElement.matches(declaration.selectorText)) continue;
+            if (!doc.documentElement.matches(declaration.selectorText)) {
+                continue;
+            }
             for (const name of Array.from(declaration.style)) {
-                if (name.startsWith('--ui-'))
+                if (name.startsWith('--ui-')) {
                     declarations.set(name, declaration.style.getPropertyValue(name).trim());
+                }
             }
         }
     }
     const computedStyle = view.getComputedStyle(doc.documentElement);
     rows.value = [...declarations].map(([name, value]) => {
         const resolved = computedStyle.getPropertyValue(name).trim();
+
         return {
             name,
             group: groupFor(name),
@@ -248,6 +318,7 @@ function refresh() {
         };
     });
 }
+
 onMounted(() => {
     frame = document.createElement('iframe');
     frame.title = 'Theme token value resolver';
@@ -261,6 +332,7 @@ onMounted(() => {
 watch([profile, isDark], refresh, { deep: true, flush: 'post' });
 onBeforeUnmount(() => frame?.remove());
 </script>
+
 <style scoped>
 .theme-token-reference {
     min-width: 0;

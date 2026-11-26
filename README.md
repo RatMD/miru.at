@@ -29,9 +29,51 @@ npm run format
 npm run format:fix
 ```
 
-`lint` and `format` check files; the `:fix` commands apply changes. They target only `.vitepress/theme`, `scripts` and `tests`. Generated catalogues, API data, palette defaults and formatted examples are excluded. Markdown documentation and build output are outside this scope.
+`lint` and `format` check files; the `:fix` commands apply changes. They target `.vitepress` source files, `scripts` and `tests`. Generated catalogues, API data, palette defaults and formatted examples are excluded. Markdown documentation and build output are outside this scope.
 
-`eslint.config.ts` uses the package's Vue/TypeScript conventions, including sorted imports and the block order `template`, `script`, `script setup`, `style`. `.prettierrc.json` matches the package's formatting rules; `.prettierignore` lists generated files that must remain untouched.
+`eslint.config.ts` uses the package's Vue/TypeScript conventions, including sorted imports and the block order `template`, `script`, `script setup`, `style`. `.prettierrc.json` matches the package's formatting rules; `.prettierignore` lists generated files that must remain untouched. All `if` branches require braces. Vue files separate template, script and style blocks with a blank line; script setup uses `<script lang="ts" setup>`. Named functions and handlers use an English docblock with a brief purpose, parameter names and `@returns` when returning a value.
+
+## Scripts
+
+The four synchronization steps run in this order through `npm run docs:sync` before `dev` and `build`: Storybook summaries, brand assets, component API extraction and documentation synchronization. Helper modules are imported by those steps and do not run independently on the deployed site.
+
+| File                         | Purpose and inputs                                                                  | Output or invocation                                                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `sync-storybook.mjs`         | Reads the authored VitePress installation page and the full reference sources.      | Writes the package's Getting Started snapshot and brief composable, plugin and support entries.                        |
+| `sync-brand.mjs`             | Reads the shared vector mark and default brand colors.                              | Writes the public SVG variants and calls the favicon generator.                                                        |
+| `favicon-assets.mjs`         | Rasterizes the supplied SVG with Resvg and adds icon-safe padding.                  | Writes ICO/PNG icons, Apple/Android assets and the web manifest. Called by `sync-brand.mjs`.                           |
+| `generate-api.mjs`           | Reads public Vue exports, component metadata and shared API copy from `../package`. | Writes `.vitepress/theme/component-api.json`.                                                                          |
+| `package-inventory.mjs`      | Inspects public exports and Storybook metadata.                                     | Returns component ownership, categories and Storybook preview URLs to the generators.                                  |
+| `component-copy.mjs`         | Re-exports the library-owned descriptions.                                          | Keeps the website generators on the same component copy as the package.                                                |
+| `format-examples.mjs`        | Loads the library ESLint and Prettier configuration.                                | Returns the formatter used for copyable Vue examples.                                                                  |
+| `sync-docs.mjs`              | Combines reference sources, authored component pages, API data and examples.        | Refreshes generated reference pages, catalogue/navigation metadata and the search index.                               |
+| `check-examples.mjs`         | Builds isolated Vue fixtures from documentation and playground snippets.            | Runs `vue-tsc` through `npm run test:docs`. Its legacy guide paths still need migration to the current authored pages. |
+| `check-seo.mjs`              | Inspects the rendered HTML, sitemap, icons and social metadata.                     | Run `npm run seo:check` after a production build.                                                                      |
+| `generate-social-images.ps1` | Reads `docs/public/miru-thumbnail.png` on Windows.                                  | Manually creates four centered JPEG crops after artwork changes; excluded from normal builds.                          |
+| `install-hooks.mjs`          | Checks for a local development checkout with Husky enabled.                         | Installs the repository hook during `npm prepare`; skips CI and production installs.                                   |
+
+## Tests and pre-commit checks
+
+`npm test` runs the Node test files in `tests/`. They cover documentation and catalogue consistency, Storybook synchronization, color profiles and contrast, generated icons and favicon updates, playground compilation and editing, gallery variants, preview connection retries and SEO URL rules. Test file headers briefly state their individual scope.
+
+`npm run check` runs lint, Vue/TypeScript checking and these tests. Husky runs the same command before a commit in this website repository. `npm install` and `npm ci` install the hook through `prepare`; run `node scripts/install-hooks.mjs` to reinstall it in an existing checkout. The adjacent library retains its own independent hook.
+
+Production builds, the SEO output check and the separate snippet type-checker are explicit additional checks. The commit hook does not regenerate documentation or build deployment assets.
+
+```js
+/**
+ * Resolve the canonical destination of a documentation path.
+ * @param path
+ * @returns
+ */
+function destination(path) {
+    if (!path) {
+        return '/';
+    }
+
+    return path;
+}
+```
 
 ## Content and architecture
 
@@ -66,6 +108,85 @@ The preview compiles user-authored Vue SFCs in a same-origin iframe with its own
 - Run `npm test` for compiler, insertion and catalogue tests, and `npm run typecheck` for the website’s Vue/TypeScript sources. The typecheck and API extractor use the existing tooling in `../package`.
 
 ## Production
+
+### Search indexing and metadata
+
+Every production build generates `/sitemap.xml` via VitePress. `/robots.txt`
+allows crawling and advertises `https://miru.at/sitemap.xml`; the head also links it.
+Canonical URLs, Open Graph URLs and sitemap entries use the same HTTPS domain and
+clean URL rules. The internal `/playground/preview`, duplicates `/playgrounds`
+and `/examples`, and 404 are `noindex` and excluded from the sitemap. Both aliases point their
+canonical to `/playground`; crawlers remain allowed so they can read these tags.
+
+Build-time HTML titles match Open Graph and Twitter titles. The homepage retains
+its existing rotating browser-tab title after hydration; its share title stays stable.
+Page metadata is stored in generated frontmatter so VitePress also updates canonical,
+social and robots tags on client-side navigation. Unknown URLs get `noindex` without
+leaving that directive behind when returning to a normal page. Descriptions use authored
+frontmatter when available, then the first prose paragraph, with a page-specific
+fallback for pages without prose. Run `npm run seo:check` after `npm run build`
+to check all generated pages, sitemap/canonical agreement, unique titles, matching
+descriptions, social images, icon files and robots.txt. Deploy the entire
+`.vitepress/dist` directory, including the XML, text and manifest files.
+
+The SEO check also requires one static main heading and meaningful main content on
+every indexable page, plus matching SSR/CSS scope IDs for shared visual components.
+The live collection renders its heading, descriptions and card links on the server;
+only the interactive previews wait until their cards approach the viewport.
+
+### Responsive verification
+
+The November 2026 audit sampled the homepage, component catalogue, live collection,
+themes, installation guide, DataTable overview/reference, Form, Schedule, playground
+and 404. Chromium viewport checks covered 360, 768, 1024 and 1440 px, with additional
+320 px checks on the catalogue, collection and 404. Navigation, API tables, source
+views and embedded previews were checked separately from document-level overflow.
+Wide calendar content scrolls within its own preview rather than widening the page.
+
+Corrections include clipped decorative catalogue orbits, a compact tablet header,
+full-width form previews and stable scoped CSS IDs across client/SSR builds. These
+are browser viewport tests, not physical-device Safari/Firefox certification.
+
+The catalogue still emits a generic Vue hydration-mismatch console message on a
+direct production load. Search/filtering and card links worked in the sampled
+viewports, with no visible missing content; the warning remains an open finding.
+An isolated build can be checked with `node scripts/check-seo.mjs <output-directory>`.
+
+### Favicons and home screen icons
+
+`miru-mark-squircle.svg` is the default SVG favicon. `scripts/sync-brand.mjs`
+generates the same mark as `favicon.svg`, a 32×32 `favicon.ico` and `favicon.png`,
+180×180 `apple-touch-icon.png`, 192×192 `icon-192.png`, 512×512 `icon-512.png`,
+and a padded, opaque 512×512 `icon-mask.png` for Android launcher masks.
+The Apple icon also has an opaque background and extra padding.
+
+The global head links the icons and `manifest.webmanifest`, including application
+names and theme color. Existing live favicon palette changes remain available;
+installed/home screen icons use the static brand colors. Assets are regenerated
+by `npm run docs:sync` before development and production builds, or directly with
+`node scripts/sync-brand.mjs`. SVG rasterization uses `@resvg/resvg-js` on Node.
+
+### Social sharing
+
+The VitePress config emits Open Graph and Twitter large-image cards into every built
+page (except the 404), with page-specific titles, descriptions and canonical URLs
+under `https://miru.at`. The shared images are served from `docs/public/social`:
+
+| File                         | Size       | Use                                          |
+| ---------------------------- | ---------- | -------------------------------------------- |
+| `miru-og-1200x630.jpg`       | 1200 × 630 | Facebook, Open Graph and other link previews |
+| `miru-twitter-1200x600.jpg`  | 1200 × 600 | Twitter/X large-image card                   |
+| `miru-reka-1600x900.jpg`     | 1600 × 900 | Reka UI showcase (16:9)                      |
+| `miru-thumbnail-800x450.jpg` | 800 × 450  | Compact 16:9 thumbnail                       |
+
+Reka's showcase uses its own image entry rather than a site meta tag. Use
+`https://miru.at/social/miru-reka-1600x900.jpg` as the source when preparing a
+showcase submission; the repository may require copying it into its showcase assets.
+
+Regenerate all four JPEGs from the original `docs/public/miru-thumbnail.png`
+on Windows with `powershell -File scripts/generate-social-images.ps1`. This only
+resizes and center-crops; it does not regenerate the artwork. Deploy the site before
+testing public previews. Platforms may cache previews of links already shared.
 
 ```sh
 npm run build

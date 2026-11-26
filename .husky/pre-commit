@@ -1,0 +1,2 @@
+printf '\nMIRU website: checking lint, types and tests...\n'
+npm run check || exit 1

@@ -201,10 +201,7 @@
                                 Keyboard navigation, considered spacing and the freedom to compose.
                                 Start with the pieces, then make them unmistakably yours.
                             </p>
-                            <Anchor
-                                href="/components/accordion"
-                                variant="accent"
-                                animation="slide">
+                            <Anchor href="/components/accordion" variant="accent" animation="slide">
                                 Take a closer look ↗
                             </Anchor>
                         </AccordionContent>
@@ -346,7 +343,8 @@
         </div>
     </PageRoot>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import type {
     AttachmentItem,
     CalendarValue,
@@ -401,6 +399,7 @@ import {
     IconHeartFilled,
 } from '@tabler/icons-vue';
 import { computed, ref, shallowRef, onUnmounted } from 'vue';
+
 const email = ref('');
 const password = ref('');
 const otp = ref('');
@@ -415,12 +414,20 @@ const selectedRange = shallowRef<CalendarValue<true>>({
 const calendarHolidays: Record<string, string> = {};
 const calendarAvailability: Record<string, CalendarDayAvailability> = {};
 const calendarToday = new Date();
+
+/**
+ * Check whether a demonstration calendar day is unavailable.
+ * @param date
+ * @returns
+ */
 const isCalendarDayUnavailable: NonNullable<CalendarRulesProps['isDateUnavailable']> = (date) =>
     new Date(`${date.toString()}T12:00:00`).getDay() === 0;
 for (let month = 0; month < 2; month++) {
     for (const [day, label] of [[10, 'A little team day off']] as const) {
         const date = new Date(calendarToday.getFullYear(), calendarToday.getMonth() + month, day);
-        while (date.getDay() === 0 || date.getDay() === 6) date.setDate(date.getDate() + 1);
+        while (date.getDay() === 0 || date.getDay() === 6) {
+            date.setDate(date.getDate() + 1);
+        }
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         calendarHolidays[key] = label;
     }
@@ -432,23 +439,41 @@ for (let month = 0; month < 2; month++) {
 }
 const rangeLabel = computed(() => {
     const { start, end } = selectedRange.value;
+
+    /**
+     * Format a demonstration date for display.
+     * @param date
+     * @returns
+     */
     const format = (date: NonNullable<typeof start>) =>
         new Date(`${date.toString()}T12:00:00`).toLocaleDateString('en-GB', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
         });
-    if (start && end) return `${format(start)} – ${format(end)}. A little room for good things.`;
-    if (start) return `${format(start)}. Now pick an end date.`;
+    if (start && end) {
+        return `${format(start)} – ${format(end)}. A little room for good things.`;
+    }
+    if (start) {
+        return `${format(start)}. Now pick an end date.`;
+    }
+
     return 'Pick a start and an end date. Make a little room for good things.';
 });
 const reviewed = ref(false);
 const showSkeleton = ref(true);
 let signInTimer: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * Show local sign-in feedback without sending a request.
+ */
 function signIn() {
-    if (signingIn.value) return;
+    if (signingIn.value) {
+        return;
+    }
     if (!/^\d{6}$/.test(otp.value)) {
         loginFeedback.value = 'Add all six digits of your one-time code first.';
+
         return;
     }
     signingIn.value = true;
@@ -458,6 +483,7 @@ function signIn() {
         loginFeedback.value = 'A lovely entrance. This demo keeps you right here.';
     }, 750);
 }
+
 onUnmounted(() => clearTimeout(signInTimer));
 const slides = [
     {
@@ -540,6 +566,7 @@ const attachment: AttachmentItem = {
     status: 'success',
 };
 </script>
+
 <style scoped>
 .gallery-footer {
     display: flex;

@@ -1,3 +1,11 @@
+/**
+ * Extract public component contracts for the VitePress reference pages.
+ *
+ * Reads library exports and Vue metadata, combines declared props, events and slots with shared API copy, and writes component-api.json.
+ *
+ * Run through npm run docs:sync before development or production builds.
+ */
+
 import { readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -43,22 +51,37 @@ import {
     utilityApiCopy,
     utilityClassComponents,
 } from '../../package/src/stories/utilities-documentation.ts';
+
 const root = fileURLToPath(new URL('..', import.meta.url));
 const packageRoot = path.resolve(root, '../package');
 const require = createRequire(path.join(packageRoot, 'package.json'));
 const ts = require('typescript');
 const { createChecker } = require('vue-component-meta');
+
+/**
+ * Extract finite string choices from a component property type.
+ * @param prop
+ * @returns
+ */
 function stringOptions(prop) {
     const type = prop.getTypeObject();
     const members = (type.isUnion() ? type.types : [type]).filter(
         (type) => !(type.flags & (ts.TypeFlags.Undefined | ts.TypeFlags.Null)),
     );
+
     return members.length && members.every((type) => type.isStringLiteral())
         ? members.map((type) => type.value)
         : [];
 }
+
+/**
+ * Read exported Vue component names from a module.
+ * @param source
+ * @returns
+ */
 function vueExports(source) {
     const file = ts.createSourceFile('index.ts', source, ts.ScriptTarget.Latest, true);
+
     return file.statements
         .filter(
             (statement) =>
@@ -75,6 +98,7 @@ function vueExports(source) {
                 .map((element) => [element.name.text, statement.moduleSpecifier.text]),
         );
 }
+
 const checker = createChecker(path.join(packageRoot, 'tsconfig.build.json'), {
     schema: false,
 });
@@ -212,19 +236,24 @@ const documentationCopy = {
 for (const components of Object.values(api)) {
     for (const component of components) {
         const copy = documentationCopy[component.name];
-        if (!copy) continue;
+        if (!copy) {
+            continue;
+        }
         if (
             component.name === 'DataTable' &&
             !component.slots.some((slot) => slot.name === 'cell-[columnId]')
-        )
+        ) {
             component.slots.push({
                 name: 'cell-[columnId]',
                 type: '{ item: TData; cell: DataTableCell<TData>; disabled: boolean; loading: boolean; }',
                 description: extensionApiCopy.DataTable.slots['cell-[columnId]'],
             });
+        }
         if (component.name === 'ApexChart') {
             const series = component.props.find((prop) => prop.name === 'series');
-            if (series) series.type = 'ApexAxisChartSeries | ApexNonAxisChartSeries';
+            if (series) {
+                series.type = 'ApexAxisChartSeries | ApexNonAxisChartSeries';
+            }
         }
         if (component.name === 'Form') {
             for (const slot of [
@@ -233,21 +262,23 @@ for (const components of Object.values(api)) {
                 'section-[id]-actions',
                 'section-[id]-after',
             ]) {
-                if (!component.slots.some((member) => member.name === slot))
+                if (!component.slots.some((member) => member.name === slot)) {
                     component.slots.push({
                         name: slot,
                         type: '{ [key: string]: unknown }',
                         description: copy.slots[slot],
                     });
+                }
             }
         }
         // Dynamic Vue slot names are not included in the extracted Tabs metadata.
-        if (component.name === 'Tabs' && !component.slots.length)
+        if (component.name === 'Tabs' && !component.slots.length) {
             component.slots.push({
                 name: '[tab.value]',
                 type: '{}',
                 description: tabsApiCopy.Tabs.slots['[tab.value]'],
             });
+        }
         for (const kind of ['props', 'events', 'slots', 'exposed']) {
             component[kind].sort((a, b) => a.name.localeCompare(b.name));
             for (const member of component[kind]) {
@@ -257,7 +288,9 @@ for (const components of Object.values(api)) {
                         ? accordionCommonProps[member.name]
                         : undefined) ??
                     member.description;
-                if (kind === 'props') member.default ??= copy.defaults?.[member.name];
+                if (kind === 'props') {
+                    member.default ??= copy.defaults?.[member.name];
+                }
             }
         }
     }
@@ -301,11 +334,14 @@ for (const [name, relative] of vueExports(layoutBarrel)) {
 }
 for (const component of api.layouts) {
     const copy = layoutApiCopy[component.name];
-    if (!copy) continue;
+    if (!copy) {
+        continue;
+    }
     for (const kind of ['props', 'events', 'slots', 'exposed']) {
         component[kind].sort((a, b) => a.name.localeCompare(b.name));
-        for (const member of component[kind])
+        for (const member of component[kind]) {
             member.description = copy[kind]?.[member.name] ?? member.description;
+        }
     }
 }
 await writeFile(

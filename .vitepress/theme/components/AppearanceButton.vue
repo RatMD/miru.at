@@ -17,7 +17,8 @@
         </Tooltip>
     </TooltipProvider>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import {
     ButtonAction,
     Tooltip,
@@ -27,5 +28,6 @@ import {
 } from '@rat.md/miru';
 import { useAppearance } from '../colors/appearance';
 import Icon from './Icon.vue';
+
 const { isDark, toggleAppearance } = useAppearance();
 </script>

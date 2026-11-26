@@ -1,8 +1,17 @@
 import { useData } from 'vitepress';
+
 let transitionTimer: ReturnType<typeof setTimeout> | undefined;
 
+/**
+ * Expose the current appearance and its theme toggle.
+ * @returns
+ */
 export function useAppearance() {
     const { isDark } = useData();
+
+    /**
+     * Switch appearance while respecting reduced-motion preferences.
+     */
     function toggleAppearance() {
         if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             document.documentElement.classList.add('miru-appearance-transition');
@@ -14,5 +23,6 @@ export function useAppearance() {
         }
         isDark.value = !isDark.value;
     }
+
     return { isDark, toggleAppearance };
 }

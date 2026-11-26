@@ -1,3 +1,7 @@
+/**
+ * Check safe example edits and supported playground controls.
+ */
+
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { parse } from '@vue/compiler-sfc';

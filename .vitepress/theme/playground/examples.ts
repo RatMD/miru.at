@@ -1,10 +1,19 @@
 import { palette, ink } from '../colors/engine.ts';
+
 export interface Example {
     template: string;
     setup?: string;
     imports?: string[];
     note?: string;
 }
+
+/**
+ * Create a component example definition.
+ * @param template
+ * @param setup
+ * @param imports
+ * @returns
+ */
 const ex = (template: string, setup = '', imports: string[] = []): Example => ({
     template,
     setup,
@@ -21,8 +30,13 @@ async function validateForm() {
 const formImports = ['defineFormSections', 'literal'];
 const formTemplate = `<Form title="Your studio" :form="formController.form" :sections="formSections" cancel-href="#" :actions-label="literal('Actions')" :section-selector-label="literal('Sections')" @submit="validateForm"><template #secondary-action><Button type="button" variant="outline" @click="formController.form.reset()">Reset</Button></template></Form><p role="status">{{ formFeedback }}</p>`;
 export const examples: Record<string, Example> = {
-    Stepper: ex(`<Stepper v-model="step" variant="bordered" mobile-layout="vertical"><StepperList><StepperItem :step="1"><StepperTrigger><StepperIndicator /><StepperLabel><StepperTitle>Details</StepperTitle><StepperDescription>Enter recipient details</StepperDescription></StepperLabel></StepperTrigger><StepperSeparator /></StepperItem><StepperItem :step="2"><StepperTrigger><StepperIndicator /><StepperLabel><StepperTitle>Delivery</StepperTitle><StepperDescription>Choose delivery method</StepperDescription></StepperLabel></StepperTrigger></StepperItem></StepperList><StepperContent :step="1" force-mount><Field><Label for="recipient">Recipient</Label><Input id="recipient" placeholder="Recipient name" /></Field></StepperContent><StepperContent :step="2">Choose your preferred delivery method.</StepperContent><StepperActions /></Stepper>`, `const step = ref(1);`),
-    Resizable: ex(`<div style="height: 280px"><Resizable direction="horizontal"><ResizablePanel :default-size="35" :min-size="20" collapsible :collapsed-size="0"><div style="padding: 24px">Navigation</div></ResizablePanel><ResizableHandle show-grip show-toggle /><ResizablePanel :min-size="20"><div style="padding: 24px">Content</div></ResizablePanel></Resizable></div>`),
+    Stepper: ex(
+        `<Stepper v-model="step" variant="bordered" mobile-layout="vertical"><StepperList><StepperItem :step="1"><StepperTrigger><StepperIndicator /><StepperLabel><StepperTitle>Details</StepperTitle><StepperDescription>Enter recipient details</StepperDescription></StepperLabel></StepperTrigger><StepperSeparator /></StepperItem><StepperItem :step="2"><StepperTrigger><StepperIndicator /><StepperLabel><StepperTitle>Delivery</StepperTitle><StepperDescription>Choose delivery method</StepperDescription></StepperLabel></StepperTrigger></StepperItem></StepperList><StepperContent :step="1" force-mount><Field><Label for="recipient">Recipient</Label><Input id="recipient" placeholder="Recipient name" /></Field></StepperContent><StepperContent :step="2">Choose your preferred delivery method.</StepperContent><StepperActions /></Stepper>`,
+        `const step = ref(1);`,
+    ),
+    Resizable: ex(
+        `<div style="height: 280px"><Resizable direction="horizontal"><ResizablePanel :default-size="35" :min-size="20" collapsible :collapsed-size="0"><div style="padding: 24px">Navigation</div></ResizablePanel><ResizableHandle show-grip show-toggle /><ResizablePanel :min-size="20"><div style="padding: 24px">Content</div></ResizablePanel></Resizable></div>`,
+    ),
 
     AutoComplete: ex(
         `<AutoComplete v-model="jobTitle" :options="['Frontend Developer', 'Backend Developer', 'Product Designer']" placeholder="Type any job title…" clearable aria-label="Job title" /><p>{{ jobTitle }}</p>`,
@@ -390,6 +404,11 @@ export const exampleStyles = `.stack { display: flex; flex-direction: column; ga
 .demo-bars i { flex: 1; background: var(--ui-primary); border-radius: 6px 6px 0 0; }
 h2, h3 { margin: 0; }`;
 
+/**
+ * Collect the public component imports used by an example.
+ * @param example
+ * @returns
+ */
 export function importsFor(example: Example) {
     return [
         ...new Set([
@@ -398,10 +417,18 @@ export function importsFor(example: Example) {
         ]),
     ];
 }
+
+/**
+ * Resolve a complete Vue source example for a component.
+ * @param name
+ * @param fallbackName
+ * @returns
+ */
 export function exampleSource(name: string, fallbackName?: string) {
     const example = examples[name] || (fallbackName ? examples[fallbackName] : undefined);
-    if (!example)
+    if (!example) {
         return `<template>\n  <p>This primitive is designed to be composed with its parent. Choose a related component to start a complete example.</p>\n</template>`;
+    }
     const helpers = ['ref', 'computed', 'h', 'defineComponent'].filter((name) =>
         new RegExp(`\\b${name}\\(`).test(example.setup || ''),
     );
@@ -413,11 +440,13 @@ export function exampleSource(name: string, fallbackName?: string) {
         .split(/(?<=\})\s*/)
         .filter((rule) => {
             const className = rule.match(/^\.(\w[\w-]*)/)?.[1];
+
             return className
                 ? new RegExp(`class=["'][^"']*\\b${className}\\b`).test(example.template)
                 : /<h[23]\b/.test(example.template);
         })
         .join('\n');
+
     return `<template>\n${example.template}\n</template>\n\n<script setup lang="ts">\n${vueImports}import { ${importsFor(example).join(', ')} } from '@rat.md/miru'\n${formImport}${example.setup ? '\n' + example.setup + '\n' : ''}</script>\n${styles ? `\n<style scoped>\n${styles}\n</style>\n` : ''}`;
 }
 
@@ -460,6 +489,12 @@ const created = ref(false)
 ${exampleStyles}
 </style>`;
 
+/**
+ * Build optional palette and radius overrides for the playground.
+ * @param accent
+ * @param radius
+ * @returns
+ */
 export function tokenStyles(accent?: string, radius = 10) {
     const colors = accent
         ? Object.entries(palette(accent))
@@ -469,7 +504,6 @@ export function tokenStyles(accent?: string, radius = 10) {
               )
               .join('\n')
         : '';
+
     return `/* Inherits the website palette. Override Miru tokens here to experiment. */\n:root, :root.dark {\n${colors}\n  --ui-radius: ${radius}px;\n}`;
 }
-
-

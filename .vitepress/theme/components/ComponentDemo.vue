@@ -2,10 +2,12 @@
     <div v-if="kind === 'showcase'" class="embedded-showcase"><Showcase /></div>
     <ComponentExample v-else :name="name" />
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { computed } from 'vue';
 import ComponentExample from './ComponentExample.vue';
 import Showcase from './Showcase.vue';
+
 const props = withDefaults(defineProps<{ kind?: string }>(), {
     kind: 'button',
 });

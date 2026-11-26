@@ -291,7 +291,8 @@
         </SiteUi>
     </SiteUi>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { IconBrandGithub, IconBrandStorybook } from '@tabler/icons-vue';
 import { defineClientComponent } from 'vitepress';
 import { onMounted, onBeforeUnmount } from 'vue';
@@ -300,6 +301,7 @@ import HeroScene from './HeroScene.vue';
 import Icon from './Icon.vue';
 import SiteTooltip from './SiteTooltip.vue';
 import SiteUi from './SiteUi.vue';
+
 const homeTitles = [
     'The simple way to design in Vue.',
     "Components you'll love to use.",
@@ -315,7 +317,9 @@ onMounted(() => {
     let index = 0;
     document.title = `${homeTitles[index]} · @rat.md/miru`;
     titleTimer = setInterval(() => {
-        if (document.hidden) return;
+        if (document.hidden) {
+            return;
+        }
         index = (index + 1) % homeTitles.length;
         document.title = `${homeTitles[index]} · @rat.md/miru`;
     }, 8000);

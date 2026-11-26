@@ -1,5 +1,6 @@
 import catalogue from './component-catalogue.json';
 import documentationGroups from './documentation-groups.json';
+
 export interface NavigationGroup {
     title: string;
     collapsed?: boolean;
@@ -17,8 +18,7 @@ export const documentationNavigation: NavigationGroup[] = [
         items: [
             { text: 'Installation', link: '/docs/guide/installation' },
             { text: 'Theming', link: '/docs/guide/theming' },
-            { text: 'Adonis & Laravel', link: '/docs/guide/backends' },
-            { text: 'AJAX & Inertia', link: '/docs/guide/adapters' },
+            { text: 'Adapters', link: '/docs/guide/adapters' },
         ],
     },
     {

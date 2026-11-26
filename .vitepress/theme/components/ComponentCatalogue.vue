@@ -1,104 +1,22 @@
 <template>
     <div class="component-catalogue" :class="{ 'catalogue-overview': overview }">
-        <div :class="{ 'catalogue-header-region': overview }">
-            <header v-if="overview" class="catalogue-intro">
-                <div class="catalogue-intro-copy">
-                    <span class="catalogue-eyebrow">
-                        <Icon name="grid" :size="14" />
-                        THE miru. COLLECTION
-                    </span>
-                    <h1>
-                        Small pieces.
-                        <br />
-                        <em>Big possibilities.</em>
-                    </h1>
-                    <p>
-                        Components, expressive forms and layouts that fit. Find your next piece, try
-                        it live and make something yours.
-                    </p>
-                    <div class="catalogue-intro-tags">
-                        <span>
-                            <i />
-                            Vue 3 &amp; TypeScript
-                        </span>
-                        <span>Made for every screen</span>
-                    </div>
-                </div>
-                <div class="catalogue-intro-art" aria-hidden="true">
-                    <div class="catalogue-art-orbit"></div>
-                    <span class="catalogue-art-note">
-                        A little piece.
-                        <br />
-                        <em>A world of possibility.</em>
-                    </span>
-                    <div class="catalogue-art-board">
-                        <div class="catalogue-art-topline">
-                            <strong>miru.</strong>
-                            <span>SMALL DETAILS / BIG IDEAS</span>
-                        </div>
-                        <div class="catalogue-art-pieces">
-                            <div class="catalogue-art-symbol">
-                                <Icon name="grid" :size="36" />
-                                <strong>Made to fit.</strong>
-                                <span>Every little detail.</span>
-                            </div>
-                            <div class="catalogue-art-form">
-                                <div class="catalogue-art-field-label">
-                                    <span>Your next idea</span>
-                                    <small>Ready</small>
-                                </div>
-                                <div class="catalogue-art-input">
-                                    <Icon name="spark" :size="12" />
-                                    <span>Something wonderful</span>
-                                </div>
-                                <div class="catalogue-art-preference">
-                                    <b></b>
-                                    <span>A little inspiration</span>
-                                    <Icon name="check" :size="12" />
-                                </div>
-                                <div class="catalogue-art-mini-slider"><i></i></div>
-                            </div>
-                            <div class="catalogue-art-footer">
-                                <div class="catalogue-art-colours">
-                                    <i></i>
-                                    <i></i>
-                                    <i></i>
-                                    <i></i>
-                                    <span>Your signature.</span>
-                                </div>
-                                <div class="catalogue-art-action">
-                                    Make it yours
-                                    <Icon name="arrow-right" :size="13" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <span class="catalogue-art-caption">
-                        GOOD ON THEIR OWN.
-                        <br />
-                        <strong>BETTER TOGETHER.</strong>
-                    </span>
-                </div>
-            </header>
+        <component :is="overview ? CollectionHeader : 'div'">
             <div :class="{ 'catalogue-discovery': overview }">
                 <div class="catalogue-controls">
-                    <SiteUi
-                        name="InputSearch"
-                        fallback="input"
+                    <InputSearch
+                        data-miru-component="InputSearch"
                         :model-value="query"
                         @update:model-value="query = String($event)"
                         @input="query = ($event.target as HTMLInputElement).value"
                         placeholder="Find a component…"
                         aria-label="Find a component" />
-                    <SiteUi
-                        name="Button"
-                        fallback="button"
+                    <Button
                         variant="outline"
                         size="sm"
                         :aria-pressed="primitives"
                         @click="primitives = !primitives">
                         {{ primitives ? 'Hide primitives' : 'Include primitives' }}
-                    </SiteUi>
+                    </Button>
                     <span class="catalogue-result-count">
                         {{ count }} {{ count === 1 ? 'component' : 'components' }}
                     </span>
@@ -114,20 +32,18 @@
                         @select="selectedCategory = $event" />
                 </nav>
             </div>
-            <div v-if="overview" class="catalogue-divider" aria-hidden="true" />
-        </div>
+        </component>
         <section v-for="group in visibleGroups" :key="group.title" class="catalogue-group">
             <h2 :id="categoryId(group.title)">
                 {{ group.title }}
-                <SiteUi name="Badge" fallback="span" variant="outline">
+                <Badge variant="outline">
                     {{ group.items.length }}
-                </SiteUi>
+                </Badge>
             </h2>
             <div class="catalogue-cards">
-                <SiteUi
+                <Card
                     v-for="item in group.items"
                     :key="item.name"
-                    name="Card"
                     class="component-card"
                     :data-kind="
                         item.layout ? 'layout' : item.primary ? 'component' : 'building-block'
@@ -146,19 +62,37 @@
                         </div>
                         <span v-if="item.layout" class="component-kind">Layout</span>
                     </a>
-                </SiteUi>
+                </Card>
             </div>
         </section>
         <p v-if="!count">No matches. Try a different component name.</p>
+        <a
+            v-if="overview"
+            class="catalogue-gallery-link"
+            data-slot="collection-link"
+            href="/gotta-catch-em-all">
+            <span class="catalogue-gallery-symbol"><Icon name="spark" :size="24" /></span>
+            <span class="catalogue-gallery-copy">
+                <span class="catalogue-gallery-eyebrow">THE LIVE COLLECTION</span>
+                <strong>Gotta catch ’em all.</strong>
+                <small>The whole collection. Live, colourful, and ready to play.</small>
+            </span>
+            <span class="catalogue-gallery-action">
+                Explore the collection
+                <Icon name="arrow-right" :size="17" />
+            </span>
+        </a>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import type { FilterBarItem } from '@rat.md/miru';
-import { Avatar, AvatarFallback, FilterBar } from '@rat.md/miru';
+import { Avatar, AvatarFallback, Badge, Button, Card, FilterBar, InputSearch } from '@rat.md/miru';
 import { computed, ref } from 'vue';
 import catalogue from '../component-catalogue.json';
+import CollectionHeader from './CollectionHeader.vue';
 import Icon from './Icon.vue';
-import SiteUi from './SiteUi.vue';
+
 const props = withDefaults(defineProps<{ scope?: 'all' | 'layouts'; overview?: boolean }>(), {
     scope: 'all',
     overview: false,
@@ -166,6 +100,12 @@ const props = withDefaults(defineProps<{ scope?: 'all' | 'layouts'; overview?: b
 const query = ref('');
 const primitives = ref(false);
 const selectedCategory = ref('all');
+
+/**
+ * Convert a category title into a stable section identifier.
+ * @param title
+ * @returns
+ */
 const categoryId = (title: string) => title.toLowerCase().replace(/\W+/g, '-');
 const groups = computed(() =>
     [...new Set(catalogue.map((item) => item.category))]

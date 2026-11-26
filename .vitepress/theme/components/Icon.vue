@@ -12,7 +12,8 @@
         <path :d="paths[name] || paths.grid" />
     </svg>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 defineProps<{ name: string; size?: number }>();
 const paths: Record<string, string> = {
     expand: 'M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5',

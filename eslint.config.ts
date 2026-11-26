@@ -20,15 +20,26 @@ export default defineConfigWithVueTs(
     },
     vue.configs['flat/essential'],
     vueTsConfigs.recommended,
+    prettier,
     {
         name: 'miru-website/conventions',
-        files: ['.vitepress/theme/**/*.{js,mjs,ts,mts,vue}', 'scripts/**/*.mjs', 'tests/**/*.mjs'],
+        files: ['.vitepress/**/*.{js,mjs,ts,mts,vue}', 'scripts/**/*.mjs', 'tests/**/*.mjs'],
         plugins: { import: importPlugin },
         languageOptions: {
             parserOptions: { vueFeatures: { filter: false } },
         },
         rules: {
+            curly: ['error', 'all'],
+            'padding-line-between-statements': [
+                'error',
+                { blankLine: 'always', prev: 'import', next: '*' },
+                { blankLine: 'any', prev: 'import', next: 'import' },
+                { blankLine: 'always', prev: '*', next: ['function', 'class'] },
+                { blankLine: 'always', prev: ['function', 'class'], next: '*' },
+                { blankLine: 'always', prev: '*', next: 'return' },
+            ],
             'vue/multi-word-component-names': 'off',
+            'vue/padding-line-between-blocks': ['error', 'always'],
             'vue/block-order': [
                 'error',
                 { order: ['template', 'script:not([setup])', 'script[setup]', 'style'] },
@@ -55,7 +66,7 @@ export default defineConfigWithVueTs(
                 },
             ],
             'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+            'import/first': 'error',
         },
     },
-    prettier,
 );

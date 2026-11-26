@@ -763,26 +763,51 @@ export const componentPages: Record<string, ComponentPage> = {
     },
 };
 
+/**
+ * Convert a public component name into its URL slug.
+ * @param name
+ * @returns
+ */
 export function componentSlug(name: string): string {
     return name
         .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
         .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
         .toLowerCase();
 }
+
+/**
+ * Find the component page that owns a public component or primitive.
+ * @param name
+ * @returns
+ */
 export function componentPageOwner(name: string): string | undefined {
     return componentPages[name]
         ? name
         : Object.keys(componentPages).find((root) => componentPages[root].parts.includes(name));
 }
+
+/**
+ * Resolve the canonical API reference link for a component.
+ * @param name
+ * @returns
+ */
 export function componentReferenceLink(name: string): string {
     const owner = componentPageOwner(name);
+
     return owner
         ? componentPages[owner].base + '/reference#' + componentSlug(name)
         : '/components/api/' + componentSlug(name);
 }
+
+/**
+ * Build the redirect page for a retired component URL.
+ * @param name
+ * @returns
+ */
 export function componentLegacyPage(name: string): string {
     const owner = componentPageOwner(name);
     const target = owner === name ? componentPages[name].base : componentReferenceLink(name);
+
     return (
         '---\nsearch: false\nredirectTo: ' +
         JSON.stringify(target) +

@@ -44,7 +44,8 @@
         </div>
     </header>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { Tabs } from '@rat.md/miru';
 import { IconArrowUpRight, IconBook, IconCode } from '@tabler/icons-vue';
 import { useRouter } from 'vitepress';
@@ -53,12 +54,16 @@ import catalogue from '../component-catalogue.json';
 import { componentPages } from '../component-pages';
 import ComponentMeta from './ComponentMeta.vue';
 import SiteUi from './SiteUi.vue';
+
 const props = defineProps<{ name: string; active: 'overview' | 'reference' | 'guide' }>();
 const router = useRouter();
 const entry = computed(() => catalogue.find((item) => item.name === props.name));
 const config = computed(() => componentPages[props.name]);
 const sections = computed(() => {
-    if (!config.value) return [];
+    if (!config.value) {
+        return [];
+    }
+
     return [
         { value: config.value.base, label: 'Overview' },
         { value: `${config.value.base}/reference`, label: 'Reference' },
@@ -83,6 +88,7 @@ const activePath = computed(
     () => sections.value.find((section) => section.label.toLowerCase() === props.active)?.value,
 );
 </script>
+
 <style scoped>
 .component-page-header {
     position: relative;

@@ -1,4 +1,8 @@
-/** Reconcile VitePress's fallback head node with the live icon, without duplicates. */
+/**
+ * Reconcile VitePress's fallback head node with the live icon, without duplicates.
+ * @param document
+ * @param href
+ */
 export function setFaviconHref(document: Document, href: string): void {
     const candidates = [
         ...document.querySelectorAll<HTMLLinkElement>('link[rel~="icon"][type="image/svg+xml"]'),
@@ -14,8 +18,16 @@ export function setFaviconHref(document: Document, href: string): void {
     icon.id = 'miru-favicon';
     icon.type = 'image/svg+xml';
     icon.sizes.add('any');
-    for (const candidate of candidates) if (candidate !== icon) candidate.remove();
-    if (icon.getAttribute('href') !== href) icon.setAttribute('href', href);
+    for (const candidate of candidates) {
+        if (candidate !== icon) {
+            candidate.remove();
+        }
+    }
+    if (icon.getAttribute('href') !== href) {
+        icon.setAttribute('href', href);
+    }
     const icons = document.querySelectorAll('link[rel~="icon"]');
-    if (icons[icons.length - 1] !== icon) document.head.appendChild(icon);
+    if (icons[icons.length - 1] !== icon) {
+        document.head.appendChild(icon);
+    }
 }

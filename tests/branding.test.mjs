@@ -1,3 +1,7 @@
+/**
+ * Check shared SVG mark colors and favicon encoding.
+ */
+
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
@@ -32,6 +36,12 @@ test('favicon uses the actual native palette in dark and light appearances', () 
         '--ui-accent-950': '#042f2e',
         '--ui-accent-300': '#5eead4',
     };
+
+    /**
+     * Read the requested fixture or generated file.
+     * @param name
+     * @returns
+     */
     const read = (name) => tokens[name] || '';
     assert.equal(markColorsFromTokens(read, true).front, tokens['--ui-accent-400']);
     assert.equal(markColorsFromTokens(read, false).front, '#ffffff');

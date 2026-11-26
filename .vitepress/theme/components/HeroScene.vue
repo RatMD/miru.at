@@ -44,11 +44,13 @@
         </span>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { markArtwork, markPath } from '../branding/mark';
 import { colorPanelOpen } from '../colors/store';
 import Icon from './Icon.vue';
 import SiteUi from './SiteUi.vue';
+
 const artwork = markArtwork({
     front: 'var(--ui-accent-400)',
     side: 'var(--ui-accent-700)',

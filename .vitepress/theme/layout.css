@@ -1,4 +1,30 @@
 /* Header and documentation share one desktop frame, including on the homepage. */
+.not-found-main {
+    display: flex;
+    flex-direction: column;
+}
+.not-found-main > .lost-page {
+    flex: 1;
+}
+@media (min-width: 761px) {
+    .site-shell:not(.is-playground) {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+    .site-shell:not(.is-playground) > :is(main, .docs-shell) {
+        flex: 1 0 auto;
+        min-height: 0;
+    }
+    .site-shell > .docs-shell {
+        width: 100%;
+        margin-block: 0;
+    }
+    .site-shell > :is(.site-header, .site-footer) {
+        flex-shrink: 0;
+    }
+}
 .catalogue-header-region {
     position: relative;
     isolation: isolate;
@@ -28,6 +54,7 @@
     border-image: linear-gradient(var(--ui-border), var(--ui-border)) 1 / 1px 0 0 / 0 100vmax;
 }
 .catalogue-overview .catalogue-intro {
+    overflow: clip;
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: 36px;
@@ -45,7 +72,7 @@
 .catalogue-eyebrow svg {
     color: var(--ui-accent-text);
 }
-.prose .catalogue-intro h1 {
+.catalogue-overview .catalogue-intro h1 {
     margin: 24px 0 20px;
     font-size: clamp(40px, 4vw, 60px);
     font-weight: 650;
@@ -59,7 +86,7 @@
     background-clip: text;
     color: transparent;
 }
-.prose .catalogue-intro p {
+.catalogue-overview .catalogue-intro p {
     max-width: 460px;
     margin: 0;
     font-size: 14px;
@@ -525,6 +552,7 @@
     .themes-main {
         display: grid;
         grid-template-columns: var(--site-rail-width) minmax(0, 1fr) var(--site-rail-width);
+        width: 100%;
         max-width: var(--site-frame-width);
         margin-inline: auto;
     }
@@ -680,6 +708,27 @@
 }
 .header-center {
     display: contents;
+}
+@media (min-width: 761px) and (max-width: 1099px) {
+    .site-header {
+        gap: 14px;
+        padding-inline: 20px;
+    }
+    .site-header .brand {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    .site-header .primary-nav {
+        gap: 12px;
+    }
+    .site-header .header-actions {
+        gap: 8px;
+    }
+}
+@media (min-width: 761px) and (max-width: 900px) {
+    .site-header .version {
+        display: none;
+    }
 }
 /* Navigation shares the header baseline, with light instead of tab surfaces. */
 @media (min-width: 761px) {
@@ -1296,5 +1345,127 @@ html.dark.has-paw-cursor *,
 @media (min-width: 1100px) {
     .has-component-page .docs-columns > .doc-content {
         grid-row: 1 / span 2;
+    }
+}
+
+/* Shared collection frame and a quieter, animated invitation to the live gallery. */
+.collection-title-dot {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+    vertical-align: middle;
+    color: var(--ui-accent-text);
+}
+.collection-header--gallery .catalogue-art-board {
+    border-color: color-mix(in srgb, var(--ui-primary-500) 40%, var(--site-line));
+}
+.collection-header--gallery::before {
+    background:
+        radial-gradient(
+            ellipse at 85% 15%,
+            color-mix(in srgb, var(--ui-secondary-500) 12%, transparent),
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse at 20% 100%,
+            color-mix(in srgb, var(--ui-primary-500) 7%, transparent),
+            transparent 65%
+        );
+}
+.prose a.catalogue-gallery-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-top: 48px;
+    padding: 28px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-500) 22%, var(--site-line));
+    border-radius: 18px;
+    color: var(--site-text);
+    text-decoration: none;
+    background: linear-gradient(
+        115deg,
+        color-mix(in srgb, var(--ui-primary-500) 7%, var(--ui-background)),
+        color-mix(in srgb, var(--ui-accent-500) 4%, var(--ui-background))
+    );
+    transition:
+        border-color 250ms,
+        box-shadow 250ms;
+}
+.catalogue-gallery-symbol {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+    border-radius: 16px;
+    color: var(--ui-primary-text);
+    background: color-mix(in srgb, var(--ui-primary-500) 10%, transparent);
+    transition: transform 250ms;
+}
+.catalogue-gallery-copy {
+    display: grid;
+    gap: 7px;
+    flex: 1;
+    min-width: 0;
+}
+.catalogue-gallery-eyebrow {
+    font: 9px var(--ui-font-mono, monospace);
+    letter-spacing: 0.14em;
+    color: var(--ui-primary-text);
+}
+.catalogue-gallery-link strong {
+    color: var(--site-text);
+    font-size: 20px;
+    letter-spacing: -0.03em;
+}
+.catalogue-gallery-link small {
+    color: var(--site-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+.catalogue-gallery-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ui-primary-text);
+}
+.catalogue-gallery-action svg {
+    transition: transform 220ms;
+}
+.prose .catalogue-gallery-link:hover {
+    border-color: var(--ui-primary-500);
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--ui-primary-500) 7%, transparent);
+}
+.catalogue-gallery-link:hover .catalogue-gallery-symbol {
+    transform: rotate(-8deg);
+}
+.catalogue-gallery-link:hover .catalogue-gallery-action svg {
+    transform: translateX(4px);
+}
+.catalogue-gallery-link:focus-visible {
+    outline: 2px solid var(--ui-ring);
+    outline-offset: 4px;
+}
+@media (max-width: 650px) {
+    .prose a.catalogue-gallery-link {
+        flex-wrap: wrap;
+        padding: 22px;
+        gap: 16px;
+    }
+    .catalogue-gallery-action {
+        margin-left: 70px;
+    }
+    .catalogue-gallery-link strong {
+        font-size: 18px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .catalogue-gallery-link,
+    .catalogue-gallery-link * {
+        transition: none !important;
     }
 }

@@ -37,13 +37,15 @@
         </SiteTooltip>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { IconBook, IconBrandStorybook, IconExternalLink } from '@tabler/icons-vue';
 import { computed } from 'vue';
 import catalogue from '../component-catalogue.json';
 import { componentGuideFor } from '../component-guides';
 import SiteTooltip from './SiteTooltip.vue';
 import SiteUi from './SiteUi.vue';
+
 const props = withDefaults(defineProps<{ name: string; showGuide?: boolean }>(), {
     showGuide: true,
 });

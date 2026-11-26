@@ -1,3 +1,7 @@
+/**
+ * Check stored color profiles, palette contrast and early theme restoration.
+ */
+
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -54,13 +58,16 @@ test('stored short colors and surface tints are normalized before generating pal
 });
 
 test('every preset produces complete palettes and preserves the chosen base', () => {
-    for (const preset of presets)
+    for (const preset of presets) {
         for (const color of preset.colors) {
             const shades = palette(color);
             assert.equal(Object.keys(shades).length, 11);
             assert.equal(shades[600], color);
-            for (const shade of Object.values(shades)) assert.match(shade, /^#[\da-f]{6}$/);
+            for (const shade of Object.values(shades)) {
+                assert.match(shade, /^#[\da-f]{6}$/);
+            }
         }
+    }
     assert.equal(palette('#000000')[600], '#000000');
     assert.equal(palette('#ffffff')[600], '#ffffff');
 });
@@ -98,19 +105,28 @@ test('website palettes leave native Button and Badge styling to the package', ()
     }
 });
 test('automatic text color meets 4.5 contrast on every generated shade', () => {
+    /**
+     * Calculate relative luminance for an sRGB hex color.
+     * @param hex
+     * @returns
+     */
     function luminance(hex) {
         const c = [1, 3, 5]
             .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
             .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+
         return c[0] * 0.2126 + c[1] * 0.7152 + c[2] * 0.0722;
     }
-    for (const preset of presets)
-        for (const color of preset.colors)
+
+    for (const preset of presets) {
+        for (const color of preset.colors) {
             for (const shade of Object.values(palette(color))) {
                 const a = luminance(shade),
                     b = luminance(ink(shade));
                 assert.ok((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) >= 4.5);
             }
+        }
+    }
 });
 test('stored profiles reject malformed values and CSS injection', () => {
     assert.equal(validateProfile(null), null);
@@ -128,7 +144,7 @@ test('existing six-color settings migrate without losing visitor colors', () => 
     assert.equal(validateProfile({ ...presetProfile(), surface: 'red;}' }), null);
 });
 test('accent text and secondary text retain contrast on light and dark surfaces', () => {
-    for (const preset of presets.filter((preset) => preset.id !== 'original'))
+    for (const preset of presets.filter((preset) => preset.id !== 'original')) {
         for (const surface of [null, '#ff0000', '#000000', '#ffffff', '#00ffff']) {
             const css = themeCss({ ...presetProfile(preset.id), surface });
             for (const selector of [':root{', ':root.dark{']) {
@@ -153,8 +169,12 @@ test('accent text and secondary text retain contrast on light and dark surfaces'
                 }
             }
         }
-    for (const base of ['#ffffff', '#000000', '#ff00ff'])
-        for (const bg of ['#fffefe', '#121215']) assert.ok(contrast(readable(base, bg), bg) >= 4.5);
+    }
+    for (const base of ['#ffffff', '#000000', '#ff00ff']) {
+        for (const bg of ['#fffefe', '#121215']) {
+            assert.ok(contrast(readable(base, bg), bg) >= 4.5);
+        }
+    }
 });
 test('bootstrap restores authored schemes or a custom palette before the app mounts', () => {
     const schemes = Object.fromEntries(
@@ -184,10 +204,19 @@ test('bootstrap restores authored schemes or a custom palette before the app mou
         let style;
         const document = {
             head: {
+                /**
+                 * Append a fixture node to the simulated document head.
+                 * @param value
+                 */
                 appendChild(value) {
                     style = value;
                 },
             },
+
+            /**
+             * Create a minimal element fixture.
+             * @returns
+             */
             createElement() {
                 return {};
             },
@@ -195,12 +224,27 @@ test('bootstrap restores authored schemes or a custom palette before the app mou
         };
         vm.runInNewContext(bootstrapScript(schemes), {
             document,
-            localStorage: { getItem: () => raw },
+            localStorage: {
+                /**
+                 * Read the stored value from the test fixture.
+                 * @returns
+                 */
+
+                /**
+                 * Read the stored value from the test fixture.
+                 * @returns
+                 */
+                getItem: () => raw,
+            },
         });
         const expected = raw?.startsWith('{') ? validateProfile(JSON.parse(raw)) : presetProfile();
         assert.equal(document.documentElement.dataset.miruColors, expected.preset);
         assert.equal(style.textContent, themeCss(expected, miruDefaults, schemes));
-        if (expected.preset !== 'custom') assert.equal(style.textContent, schemes[expected.preset]);
-        for (const role of roles) assert.ok(style.textContent.includes(`--ui-${role}-950:`));
+        if (expected.preset !== 'custom') {
+            assert.equal(style.textContent, schemes[expected.preset]);
+        }
+        for (const role of roles) {
+            assert.ok(style.textContent.includes(`--ui-${role}-950:`));
+        }
     }
 });

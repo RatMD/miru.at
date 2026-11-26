@@ -1,30 +1,52 @@
+/**
+ * Type-check the copyable Vue and TypeScript examples against the built library.
+ *
+ * Reads the playground examples and documentation snippets, then writes isolated Vue fixtures to .qa/checked-examples.
+ *
+ * Runs vue-tsc on those fixtures. Invoked by npm run test:docs after its documentation tests.
+ * Legacy guide paths still require migration to the current authored documentation pages.
+ */
+
 import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { examples } from '../.vitepress/theme/playground/examples.ts';
 import { exampleSource } from '../.vitepress/theme/playground/source.ts';
+
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, '.qa/checked-examples');
 await mkdir(output, { recursive: true });
 const inputs = [];
+
+/**
+ * Write one Vue fixture for documentation type checking.
+ * @param name
+ * @param code
+ */
 async function sample(name, code) {
     const file = name + '.vue';
     inputs.push(file);
     await writeFile(path.join(output, file), code);
 }
-for (const name of Object.keys(examples)) await sample(name, exampleSource(name));
+
+for (const name of Object.keys(examples)) {
+    await sample(name, exampleSource(name));
+}
 const docs = path.resolve(root, '../package/src/docs');
 for (const section of ['composables', 'support']) {
     for (const name of await readdir(path.join(docs, section))) {
-        if (!name.endsWith('.mdx')) continue;
+        if (!name.endsWith('.mdx')) {
+            continue;
+        }
         const source = await readFile(path.join(docs, section, name), 'utf8');
         const blocks = [...source.matchAll(/```ts\n([\s\S]*?)\n```/g)];
-        for (const [index, block] of blocks.entries())
+        for (const [index, block] of blocks.entries()) {
             await sample(
                 section + '-' + name.slice(0, -4) + '-' + index,
                 `<script setup lang="ts">\n${block[1]}\n</script>\n<template><div /></template>`,
             );
+        }
     }
 }
 for (const name of [
@@ -42,8 +64,9 @@ for (const name of [
 }
 for (const name of ['validation', 'fields', 'layouts']) {
     const guide = await readFile(path.join(root, 'docs/forms', name + '.md'), 'utf8');
-    for (const [index, block] of [...guide.matchAll(/```vue\n([\s\S]*?)\n```/g)].entries())
+    for (const [index, block] of [...guide.matchAll(/```vue\n([\s\S]*?)\n```/g)].entries()) {
         await sample('forms-' + name + '-' + index, block[1]);
+    }
 }
 const adapterGuide = await readFile(path.join(docs, 'data-table-adapters.mdx'), 'utf8');
 for (const [index, block] of [

@@ -1,5 +1,4 @@
 import type { Role } from './engine';
-import { selectedThemeCss } from './styles';
 import { computed, ref } from 'vue';
 import {
     presetProfile,
@@ -9,6 +8,7 @@ import {
     validateProfile,
     normalizeHex,
 } from './engine';
+import { selectedThemeCss } from './styles';
 
 export const profile = ref(presetProfile());
 export const colorPanelOpen = ref(false);
@@ -17,6 +17,10 @@ export const schemeName = computed(
 );
 let initialized = false;
 let revision = 0;
+
+/**
+ * Apply the current state to the displayed preview.
+ */
 function apply() {
     let style = document.getElementById('miru-color-theme');
     if (!style) {
@@ -27,11 +31,18 @@ function apply() {
     style.textContent = selectedThemeCss(profile.value);
     // Explicit Playground edits stay after the shared theme.
     const previewOverrides = document.querySelector('[data-miru-preview-overrides]');
-    if (previewOverrides) previewOverrides.before(style);
-    else document.head.appendChild(style);
+    if (previewOverrides) {
+        previewOverrides.before(style);
+    } else {
+        document.head.appendChild(style);
+    }
     document.documentElement.dataset.miruColors = profile.value.preset;
     document.documentElement.dataset.miruColorRevision = String(++revision);
 }
+
+/**
+ * Write the current values to their configured destination.
+ */
 function save() {
     apply();
     try {
@@ -40,14 +51,22 @@ function save() {
         /* In-memory customization still works with blocked storage. */
     }
 }
+
+/**
+ * Restore the saved color scheme and install live theme updates.
+ */
 export function initializeColors() {
-    if (initialized || typeof window === 'undefined') return;
+    if (initialized || typeof window === 'undefined') {
+        return;
+    }
     initialized = true;
     try {
         profile.value =
             validateProfile(JSON.parse(localStorage.getItem(storageKey) || 'null')) ||
             presetProfile();
-        if (profile.value.preset === 'original') profile.value = presetProfile('original');
+        if (profile.value.preset === 'original') {
+            profile.value = presetProfile('original');
+        }
     } catch {
         profile.value = presetProfile();
     }
@@ -57,7 +76,9 @@ export function initializeColors() {
             try {
                 profile.value =
                     validateProfile(JSON.parse(event.newValue || 'null')) || presetProfile();
-                if (profile.value.preset === 'original') profile.value = presetProfile('original');
+                if (profile.value.preset === 'original') {
+                    profile.value = presetProfile('original');
+                }
                 apply();
             } catch {
                 /* Ignore invalid external storage. */
@@ -65,13 +86,26 @@ export function initializeColors() {
         }
     });
 }
+
+/**
+ * Apply a bundled color scheme to the editable profile.
+ * @param id
+ */
 export function selectPreset(id: string) {
     profile.value = presetProfile(id);
     save();
 }
+
+/**
+ * Update one semantic palette color in the current profile.
+ * @param role
+ * @param value
+ */
 export function setColor(role: Role, value: string) {
     const hex = normalizeHex(value);
-    if (hex === null) return;
+    if (hex === null) {
+        return;
+    }
     profile.value = {
         ...profile.value,
         preset: 'custom',
@@ -83,9 +117,16 @@ export function setColor(role: Role, value: string) {
     };
     save();
 }
+
+/**
+ * Update the neutral surface tint in the current profile.
+ * @param value
+ */
 export function setSurface(value: string | null) {
     const hex = normalizeHex(value);
-    if (value !== null && hex === null) return;
+    if (value !== null && hex === null) {
+        return;
+    }
     profile.value = {
         ...profile.value,
         preset: 'custom',

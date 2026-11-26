@@ -22,6 +22,11 @@ export const defaultMarkColors: MarkColors = {
     tile: '#042f2e',
 };
 
+/**
+ * Escape values before inserting them into SVG markup.
+ * @param value
+ * @returns
+ */
 function xml(value: string): string {
     return value.replace(
         /[&<>"']/g,
@@ -36,6 +41,11 @@ function xml(value: string): string {
     );
 }
 
+/**
+ * Render the shared mark paths using the selected colors.
+ * @param colors
+ * @returns
+ */
 export function markArtwork(colors: MarkColors): string {
     return `<g transform="translate(-2 -5) rotate(-12 64 72)">
     <path class="miru-mark-shadow" d="${markPath}" transform="translate(8 10)" fill="${xml(colors.shadow)}"/>
@@ -45,18 +55,46 @@ export function markArtwork(colors: MarkColors): string {
     <path class="miru-mark-edge" d="${markPath}" fill="none" stroke="${xml(colors.edge)}" stroke-width=".7" opacity=".28"/>
   </g>`;
 }
+
+/**
+ * Build the complete SVG mark with an optional background tile.
+ * @param colors
+ * @param tile
+ * @returns
+ */
 export function markSvg(colors: MarkColors = defaultMarkColors, tile = false): string {
     const artwork = tile
         ? `<path class="miru-mark-tile" d="${squirclePath}" fill="${xml(colors.tile || colors.shadow)}"/><g transform="translate(7 6) scale(.9)">${markArtwork(colors)}</g>`
         : markArtwork(colors);
+
     return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">${artwork}</svg>`;
 }
+
+/**
+ * Encode the selected SVG mark as a favicon data URL.
+ * @param colors
+ * @returns
+ */
 export function faviconDataUrl(colors: MarkColors): string {
     return 'data:image/svg+xml,' + encodeURIComponent(markSvg(colors, true));
 }
+
+/**
+ * Resolve mark colors from the active semantic tokens.
+ * @param read
+ * @param dark
+ * @returns
+ */
 export function markColorsFromTokens(read: (name: string) => string, dark: boolean): MarkColors {
+    /**
+     * Read a palette step or use its fallback color.
+     * @param step
+     * @param fallback
+     * @returns
+     */
     const color = (step: number, fallback: string) => {
         const value = read(`--ui-accent-${step}`).trim();
+
         return value && !value.includes('var(') ? value : fallback;
     };
     const ink = read('--ui-accent-text').trim();
@@ -70,6 +108,7 @@ export function markColorsFromTokens(read: (name: string) => string, dark: boole
             tile: ink && !ink.includes('var(') ? ink : color(700, '#0f766e'),
         };
     }
+
     return {
         front: color(400, defaultMarkColors.front),
         side: color(700, defaultMarkColors.side),

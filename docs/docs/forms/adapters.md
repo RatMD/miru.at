@@ -8,7 +8,7 @@ AJAX is the default. Set `adapter: 'ajax'` or pass an adapter object on a form. 
 
 ```ts
 import { createMiru } from '@rat.md/miru/miru';
-import { createAjaxFormAdapter } from '@rat.md/miru/adapters';
+import { createAjaxFormAdapter } from '@rat.md/miru/adapters/ajax';
 
 const formAdapter = createAjaxFormAdapter({ credentials: 'same-origin' });
 // During your existing application setup:
@@ -53,7 +53,7 @@ For shared visit defaults, import `createInertiaFormAdapter` from `@rat.md/miru/
 ## Custom adapters
 
 ```ts
-import type { FormAdapter } from '@rat.md/miru/adapters';
+import type { FormAdapter } from '@rat.md/miru';
 
 const adapter: FormAdapter = {
     async submit(context) {

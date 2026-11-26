@@ -103,7 +103,8 @@
         </p>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import {
     Button,
     Tabs,
@@ -128,6 +129,7 @@ import PreviewFrame from '../playground/PreviewFrame.vue';
 import { exampleSource } from '../playground/source';
 import ReadonlyCode from './ReadonlyCode.vue';
 import SiteTooltip from './SiteTooltip.vue';
+
 const props = withDefaults(
     defineProps<{ name: string; showPlayground?: boolean; code?: string }>(),
     {
@@ -199,13 +201,22 @@ const previewCss = computed(
         `\n.preview-runtime { background-color: ${background.value.color}; background-image: ${background.value.pattern}; background-size: 20px 20px; }` +
         (entry.value?.layout
             ? ''
-            : ['table', 'data-table', 'schedule'].includes(entry.value?.module ?? '')
+            : ['table', 'data-table', 'schedule', 'form', 'form-layout', 'generator'].includes(
+                    entry.value?.module ?? '',
+                )
               ? '\n.preview-runtime { display: block; } .preview-mount { display: block; width: 100%; max-width: none; min-width: 0; } .preview-mount > * { width: 100%; max-width: 100%; }'
               : '\n.preview-runtime { display: grid; place-items: center; } .preview-mount { display: grid; place-items: center; max-width: 680px; } .preview-mount > * { max-width: 100%; }'),
 );
 const available = computed(() => !!props.code || !!examples[props.name] || !!family.value);
+
+/**
+ * Convert a control name into its display label.
+ * @param name
+ * @returns
+ */
 const controlLabel = (name: string) => {
     const text = name.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+
     return text[0].toUpperCase() + text.slice(1);
 };
 </script>

@@ -14,6 +14,12 @@ export const componentGuides: ComponentGuide[] = [
     { title: 'EditorTinyMCE', link: '/components/editor-tinymce/guide' },
 ];
 
+/**
+ * Find the focused usage guide for a component family.
+ * @param name
+ * @param module
+ * @returns
+ */
 export function componentGuideFor(name: string, module?: string): ComponentGuide | undefined {
     const title =
         name === 'ApexChart'
@@ -33,5 +39,6 @@ export function componentGuideFor(name: string, module?: string): ComponentGuide
                         : name === 'Table' || module === 'table'
                           ? 'Table'
                           : undefined;
+
     return componentGuides.find((guide) => guide.title === title);
 }

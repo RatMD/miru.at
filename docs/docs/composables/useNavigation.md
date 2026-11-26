@@ -15,4 +15,4 @@ function openProjects() {
 
 `navigation.link` is the optional SPA link component. `visit(url, options)` accepts a method, data, scroll/state preferences, partial-reload keys and lifecycle callbacks. Each adapter implements the options it supports: the browser fallback performs full page visits, while the Inertia adapter uses its router.
 
-Install `inertiaAdapter()` through `createMiru({ adapter })` to share Inertia navigation with forms and DataTable. See [AJAX & Inertia](/docs/guide/adapters) for configuration. Applications own destination URLs and permissions.
+Install `inertiaAdapter()` through `createMiru({ adapter })` to share Inertia navigation with forms and DataTable. See [Adapters](/docs/guide/adapters) for configuration. Applications own destination URLs and permissions.

@@ -1,3 +1,7 @@
+/**
+ * Check formatting and source-block order for generated examples.
+ */
+
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { parse } from '@vue/compiler-sfc';
@@ -13,8 +17,9 @@ test('generated sources keep the package block order and readable tag brackets',
             descriptor.template.loc.start.offset < descriptor.scriptSetup.loc.start.offset,
             name,
         );
-        for (const style of descriptor.styles)
+        for (const style of descriptor.styles) {
             assert.ok(descriptor.scriptSetup.loc.start.offset < style.loc.start.offset, name);
+        }
         assert.doesNotMatch(source, /^\s*>/m, name);
     }
 });

@@ -1,10 +1,15 @@
+/**
+ * Discover the public library modules and their documentation ownership.
+ *
+ * Parses source exports and Storybook metadata to build component categories, primary-component flags and preview URLs.
+ *
+ * Imported by the API/documentation generators and inventory tests.
+ */
+
 import { readFile, readdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-export const packageSource = fileURLToPath(new URL('../../package/src/', import.meta.url));
-const require = createRequire(new URL('../../package/package.json', import.meta.url));
 import { componentSince } from '../../package/src/stories/component-documentation.ts';
 import {
     componentPages,
@@ -12,6 +17,10 @@ import {
     componentReferenceLink,
 } from '../.vitepress/theme/component-pages.ts';
 import { componentSummary } from './component-copy.mjs';
+
+export const packageSource = fileURLToPath(new URL('../../package/src/', import.meta.url));
+const require = createRequire(new URL('../../package/package.json', import.meta.url));
+
 const ts = require('typescript');
 export const categoryOrder = [
     'Components',
@@ -22,8 +31,16 @@ export const categoryOrder = [
     'Extensions',
     'Layouts',
 ];
+
+/**
+ * Collect source files with the requested suffix.
+ * @param directory
+ * @param suffix
+ * @returns
+ */
 export async function sourceFiles(directory, suffix) {
     const entries = await readdir(directory, { withFileTypes: true });
+
     return (
         await Promise.all(
             entries.map((entry) =>
@@ -38,9 +55,22 @@ export async function sourceFiles(directory, suffix) {
         .flat()
         .sort();
 }
+
+/**
+ * Parse a source module for static inventory inspection.
+ * @param source
+ * @returns
+ */
 export function parseSource(source) {
     return ts.createSourceFile('index.ts', source, ts.ScriptTarget.Latest, true);
 }
+
+/**
+ * Read public module export paths matching the requested prefix.
+ * @param source
+ * @param prefix
+ * @returns
+ */
 export function exportModules(source, prefix) {
     return [
         ...new Set(
@@ -57,16 +87,30 @@ export function exportModules(source, prefix) {
         ),
     ];
 }
+
+/**
+ * Remove syntax wrappers around a metadata expression.
+ * @param node
+ * @returns
+ */
 const unwrap = (node) => {
     while (
         node &&
         (ts.isAsExpression(node) ||
             ts.isSatisfiesExpression(node) ||
             ts.isParenthesizedExpression(node))
-    )
+    ) {
         node = node.expression;
+    }
+
     return node;
 };
+
+/**
+ * Extract the static title and component of a Storybook entry.
+ * @param source
+ * @returns
+ */
 export function storyMeta(source) {
     const file = parseSource(source);
     for (const statement of file.statements) {
@@ -77,7 +121,15 @@ export function storyMeta(source) {
               : [];
         for (const candidate of candidates) {
             const object = unwrap(candidate);
-            if (!object || !ts.isObjectLiteralExpression(object)) continue;
+            if (!object || !ts.isObjectLiteralExpression(object)) {
+                continue;
+            }
+
+            /**
+             * Find a named field in a Storybook metadata object.
+             * @param name
+             * @returns
+             */
             const property = (name) =>
                 object.properties.find(
                     (p) => ts.isPropertyAssignment(p) && p.name?.getText(file) === name,
@@ -94,14 +146,22 @@ export function storyMeta(source) {
             }
         }
     }
+
     return null;
 }
+
+/**
+ * Collect public Storybook components and their preview links.
+ * @returns
+ */
 export async function discoverStories() {
     const stories = [];
     for (const file of await sourceFiles(packageSource, '.stories.ts')) {
         const source = await readFile(file, 'utf8');
         const meta = storyMeta(source);
-        if (!meta) continue;
+        if (!meta) {
+            continue;
+        }
         const relative = path.relative(packageSource, file).replaceAll('\\', '/');
         const module = relative.startsWith('components/') ? relative.split('/')[1] : 'layouts';
         stories.push({
@@ -111,9 +171,11 @@ export async function discoverStories() {
                     (match) => match[1],
                 );
                 const story = exports.includes('Default') ? 'Default' : exports[0];
-                if (!story)
+                if (!story) {
                     return `https://storybook.miru.at/?path=/docs/${meta.id || meta.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}--docs`;
+                }
                 const storyId = story.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+
                 return `https://storybook.miru.at/?path=/story/${meta.id || meta.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}--${storyId}`;
             })(),
             module,
@@ -122,17 +184,15 @@ export async function discoverStories() {
             label: meta.title.split('/').at(-1),
         });
     }
-    stories.push({
-        title: 'Utilities/ContextProvider',
-        component: 'ContextProvider',
-        preview: 'https://storybook.miru.at/?path=/docs/utilities-contextprovider--docs',
-        module: 'provider',
-        file: 'docs/context-provider.mdx',
-        category: 'Utilities',
-        label: 'ContextProvider',
-    });
+
     return stories;
 }
+
+/**
+ * Build the public component inventory and documentation links.
+ * @param api
+ * @returns
+ */
 export async function buildComponentCatalogue(api) {
     const stories = await discoverStories();
     const { version } = JSON.parse(
@@ -156,6 +216,12 @@ export async function buildComponentCatalogue(api) {
                           !s.title.endsWith('/FormGenerator'),
                   );
         const family = stories.find((s) => s.module === module);
+        // A standalone export remains a component even without its own Storybook story.
+        const primary =
+            !!story ||
+            module === 'layouts' ||
+            module === 'provider' ||
+            (!family && api[module].length === 1);
         const category =
             story?.category || family?.category || (module === 'layouts' ? 'Layouts' : 'Utilities');
         const layout = category === 'Layouts';
@@ -163,20 +229,17 @@ export async function buildComponentCatalogue(api) {
             .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
             .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
             .toLowerCase();
+
         return {
             name: component.name,
             version,
             since: componentSince[component.name] || null,
             storybook: story?.preview || family?.preview || null,
-            description: componentSummary(
-                component.name,
-                module,
-                !!story || module === 'layouts' || module === 'provider',
-            ),
+            description: componentSummary(component.name, module, primary),
             title: story?.label || component.name,
             module,
             category,
-            primary: !!story || module === 'layouts' || module === 'provider',
+            primary,
             layout,
             story: story?.title || null,
             link:
@@ -192,5 +255,6 @@ export async function buildComponentCatalogue(api) {
             Number(b.primary) - Number(a.primary) ||
             a.title.localeCompare(b.title),
     );
+
     return catalogue;
 }

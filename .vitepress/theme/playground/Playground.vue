@@ -302,7 +302,8 @@
         </div>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import {
     Button,
     DropdownMenu,
@@ -338,8 +339,8 @@ import {
 } from '@tabler/icons-vue';
 import { useData } from 'vitepress';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import { selectedThemeCss } from '../colors/styles';
 import { profile } from '../colors/store';
+import { selectedThemeCss } from '../colors/styles';
 import catalogue from '../component-catalogue.json';
 import SiteTooltip from '../components/SiteTooltip.vue';
 import { siteExamples } from '../examples/catalogue';
@@ -391,10 +392,22 @@ const file = ref('component');
 const themeSource = ref('/* Custom CSS for this preview. */\n');
 const appliedThemeSource = ref(themeSource.value);
 const source = computed({
+    /**
+     * Read the current value exposed by the reactive model.
+     * @returns
+     */
     get: () => (file.value === 'theme' ? themeSource.value : code.value),
+
+    /**
+     * Update the value exposed by the reactive model.
+     * @param value
+     */
     set: (value: string) => {
-        if (file.value === 'theme') themeSource.value = value;
-        else code.value = value;
+        if (file.value === 'theme') {
+            themeSource.value = value;
+        } else {
+            code.value = value;
+        }
     },
 });
 const fileName = computed(() =>
@@ -413,6 +426,10 @@ const exportSource = computed(
 );
 const copied = ref(false);
 let copiedTimer: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * Copy the current playground source to the clipboard.
+ */
 async function copyCode() {
     try {
         await navigator.clipboard.writeText(exportSource.value);
@@ -426,6 +443,7 @@ async function copyCode() {
         note.value = 'Could not copy the Vue code. Please try again.';
     }
 }
+
 const dirty = computed(
     () => code.value !== appliedCode.value || themeSource.value !== appliedThemeSource.value,
 );
@@ -439,6 +457,7 @@ const previewCss = computed(() => {
               : background.value === 'checker'
                 ? 'repeating-conic-gradient(#ffffff0a 0% 25%, #00000012 0% 50%) 50% / 16px 16px, var(--ui-background)'
                 : 'var(--ui-page, var(--ui-background))';
+
     return `${selectedThemeCss(profile.value)}\n${starters.find((item) => item.id === preset.value)?.css || customCss.value}\n.preview-runtime, body { background: ${surface}; }\n${appliedThemeSource.value}`;
 });
 const title = computed(
@@ -485,6 +504,11 @@ const previewHeight = computed(() =>
               : 1024
           : Math.max(400, availableHeight.value / previewScale.value),
 );
+
+/**
+ * Select a preview device and its dimensions.
+ * @param value
+ */
 function setDevice(value: string) {
     device.value = value;
     requestedWidth.value =
@@ -498,25 +522,53 @@ function setDevice(value: string) {
                 ? 844
                 : 390;
 }
+
+/**
+ * Swap the current preview width and height.
+ */
 function rotate() {
     landscape.value = !landscape.value;
-    if (device.value === 'desktop') setWidth(landscape.value ? 1280 : 900);
-    else setDevice(device.value);
+    if (device.value === 'desktop') {
+        setWidth(landscape.value ? 1280 : 900);
+    } else {
+        setDevice(device.value);
+    }
 }
+
+/**
+ * Update the preview width from the selected control.
+ * @param value
+ */
 function setWidth(value: number) {
     requestedWidth.value = Math.max(320, Math.min(1920, Math.round(value)));
 }
+
+/**
+ * Open the component insertion palette.
+ * @returns
+ */
 async function openPalette() {
-    if (paletteOpen.value) return closePalette();
+    if (paletteOpen.value) {
+        return closePalette();
+    }
     returnFocus = document.activeElement as HTMLElement;
     paletteOpen.value = true;
     await nextTick();
     palette.value?.querySelector<HTMLInputElement>('input')?.focus();
 }
+
+/**
+ * Close the component insertion palette.
+ */
 function closePalette() {
     paletteOpen.value = false;
     returnFocus?.focus();
 }
+
+/**
+ * Keep keyboard focus inside the open insertion palette.
+ * @param event
+ */
 function trapPaletteFocus(event: KeyboardEvent) {
     const elements = [
         ...palette.value!.querySelectorAll<HTMLElement>(
@@ -533,11 +585,16 @@ function trapPaletteFocus(event: KeyboardEvent) {
         first?.focus();
     }
 }
+
 let serial = 0,
     initialized = false;
 let runTimer: ReturnType<typeof setTimeout> | undefined,
     persistTimer: ReturnType<typeof setTimeout> | undefined;
 let observer: ResizeObserver | undefined;
+
+/**
+ * Apply the current state to the displayed preview.
+ */
 function apply() {
     clearTimeout(runTimer);
     error.value = '';
@@ -545,15 +602,28 @@ function apply() {
     appliedThemeSource.value = themeSource.value;
     nextTick(() => frame.value?.run());
 }
+
+/**
+ * Handle the keyboard shortcut for running the preview.
+ * @param event
+ */
 function runShortcut(event: KeyboardEvent) {
-    if (event.defaultPrevented || event.key !== 'Enter' || !(event.ctrlKey || event.metaKey))
+    if (event.defaultPrevented || event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) {
         return;
+    }
     event.preventDefault();
     apply();
 }
+
+/**
+ * Replace the playground source with the selected preset.
+ * @param value
+ */
 function loadPreset(value: unknown) {
     const starter = starters.find((item) => item.id === String(value));
-    if (!starter) return;
+    if (!starter) {
+        return;
+    }
     preset.value = starter.id;
     customCss.value = '';
     themeSource.value = '/* Custom CSS for this preview. */\n';
@@ -563,6 +633,11 @@ function loadPreset(value: unknown) {
     note.value = '';
     apply();
 }
+
+/**
+ * Insert the selected component into the playground source.
+ * @param name
+ */
 function insert(name: string) {
     const item = catalogue.find((item) => item.name === name);
     const resolved = examples[name]
@@ -570,23 +645,46 @@ function insert(name: string) {
         : catalogue.find((entry) => entry.module === item?.module && examples[entry.name])?.name;
     if (!resolved) {
         note.value = 'This component needs its parent composition.';
+
         return;
     }
     try {
         code.value = insertExample(code.value, resolved, ++serial);
         closePalette();
-        if (autoRun.value) apply();
+        if (autoRun.value) {
+            apply();
+        }
     } catch (err) {
         note.value = (err as Error).message;
     }
 }
+
+/**
+ * Store the dragged component name on the drag event.
+ * @param event
+ * @param name
+ */
 function drag(event: DragEvent, name: string) {
     event.dataTransfer?.setData('application/x-miru-component', name);
-    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'copy';
+    if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = 'copy';
+    }
 }
+
+/**
+ * Allow a component to be dropped into the source editor.
+ * @param event
+ */
 function dragOver(event: DragEvent) {
-    if (event.dataTransfer?.types.includes('application/x-miru-component')) event.preventDefault();
+    if (event.dataTransfer?.types.includes('application/x-miru-component')) {
+        event.preventDefault();
+    }
 }
+
+/**
+ * Insert the component dropped into the source editor.
+ * @param event
+ */
 function drop(event: DragEvent) {
     const name = event.dataTransfer?.getData('application/x-miru-component');
     if (name && catalogue.some((item) => item.name === name)) {
@@ -594,6 +692,10 @@ function drop(event: DragEvent) {
         insert(name);
     }
 }
+
+/**
+ * Download the current playground as a Vue source file.
+ */
 function download() {
     const url = URL.createObjectURL(new Blob([exportSource.value], { type: 'text/plain' }));
     const link = document.createElement('a');
@@ -602,12 +704,21 @@ function download() {
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+/**
+ * Read a selected Vue source file into the playground.
+ * @param event
+ */
 async function importFile(event: Event) {
     const input = event.target as HTMLInputElement,
         uploaded = input.files?.[0];
-    if (!uploaded) return;
+    if (!uploaded) {
+        return;
+    }
     try {
-        if (uploaded.size > 1024 * 1024) throw new Error('Choose a Vue file smaller than 1 MB.');
+        if (uploaded.size > 1024 * 1024) {
+            throw new Error('Choose a Vue file smaller than 1 MB.');
+        }
         code.value = await uploaded.text();
         preset.value = 'custom';
         customTitle.value = uploaded.name;
@@ -624,10 +735,20 @@ async function importFile(event: Event) {
         input.value = '';
     }
 }
+
+/**
+ * Update the preview status and its feedback message.
+ * @param value
+ * @param message
+ */
 function updateStatus(value: string, message: string) {
     status.value = value;
     error.value = message;
 }
+
+/**
+ * Persist the current playground source and settings.
+ */
 function persist() {
     try {
         localStorage.setItem(
@@ -644,22 +765,36 @@ function persist() {
         );
     } catch {}
 }
+
 watch([code, themeSource], () => {
     copied.value = false;
-    if (!initialized) return;
+    if (!initialized) {
+        return;
+    }
     clearTimeout(runTimer);
-    if (autoRun.value) runTimer = setTimeout(apply, 650);
+    if (autoRun.value) {
+        runTimer = setTimeout(apply, 650);
+    }
     clearTimeout(persistTimer);
     persistTimer = setTimeout(persist, 600);
 });
 watch(autoRun, (value) => {
-    if (value) apply();
-    else clearTimeout(runTimer);
-    if (initialized) persist();
+    if (value) {
+        apply();
+    } else {
+        clearTimeout(runTimer);
+    }
+    if (initialized) {
+        persist();
+    }
 });
 watch(view, async (value, previous) => {
-    if (previous === 'editor') splitSize.value = editorPanel.value?.getSize() || 50;
-    if (value === 'preview') paletteOpen.value = false;
+    if (previous === 'editor') {
+        splitSize.value = editorPanel.value?.getSize() || 50;
+    }
+    if (value === 'preview') {
+        paletteOpen.value = false;
+    }
     await nextTick();
     editorPanel.value?.resize(
         value === 'code'
@@ -674,21 +809,27 @@ watch(view, async (value, previous) => {
 });
 onMounted(() => {
     panelsObserver = new ResizeObserver(([entry]) => {
-        if (!entry) return;
+        if (!entry) {
+            return;
+        }
         stacked.value = entry.contentRect.width < 720;
         panelAxisSize.value = Math.max(
             1,
             stacked.value ? entry.contentRect.height : entry.contentRect.width,
         );
     });
-    if (panels.value) panelsObserver.observe(panels.value);
+    if (panels.value) {
+        panelsObserver.observe(panels.value);
+    }
     observer = new ResizeObserver(([entry]) => {
         if (entry && entry.contentRect.width > 0) {
             availableWidth.value = Math.max(1, Math.floor(entry.contentRect.width));
             availableHeight.value = Math.max(400, Math.floor(entry.contentRect.height));
         }
     });
-    if (previewSurface.value) observer.observe(previewSurface.value);
+    if (previewSurface.value) {
+        observer.observe(previewSurface.value);
+    }
     const params = new URLSearchParams(window.location.search),
         requested = params.get('component'),
         requestedExample = params.get('example');
@@ -700,9 +841,9 @@ onMounted(() => {
         code.value = exampleSource(requested, family?.name);
         preset.value = 'custom';
         customTitle.value = item.title;
-    } else if (requestedExample && starters.some((item) => item.id === requestedExample))
+    } else if (requestedExample && starters.some((item) => item.id === requestedExample)) {
         loadPreset(requestedExample);
-    else {
+    } else {
         try {
             const saved = JSON.parse(localStorage.getItem('miru-playground-v3') || 'null');
             const legacy = saved
@@ -759,9 +900,12 @@ onUnmounted(() => {
     observer?.disconnect();
     clearTimeout(runTimer);
     clearTimeout(persistTimer);
-    if (initialized) persist();
+    if (initialized) {
+        persist();
+    }
 });
 </script>
+
 <style scoped>
 .studio {
     display: flex;

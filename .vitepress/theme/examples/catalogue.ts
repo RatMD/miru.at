@@ -11,6 +11,7 @@ export interface SiteExample {
     title: string;
     category: string;
     description: string;
+
     /** Self-contained Vue SFC, rendered by the shared preview runtime. */
     preview: string;
     files: ExampleFile[];

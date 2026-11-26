@@ -3,9 +3,11 @@
         <!-- Add a miru. component, or make something of your own. -->
     </main>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 // Import components from '@rat.md/miru'.
 </script>
+
 <style scoped>
 .canvas {
     width: 100%;

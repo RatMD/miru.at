@@ -4,6 +4,12 @@ import {
 } from './examples.ts';
 import { formattedExamples } from './formatted-examples.ts';
 
+/**
+ * Resolve a complete Vue source example for a component.
+ * @param name
+ * @param fallbackName
+ * @returns
+ */
 export function exampleSource(name: string, fallbackName?: string) {
     return (
         formattedExamples[name] ||

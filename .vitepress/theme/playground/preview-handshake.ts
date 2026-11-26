@@ -1,4 +1,8 @@
-/** Retry the iframe handshake until its runtime has installed the message listener. */
+/**
+ * Retry the iframe handshake until its runtime has installed the message listener.
+ * @param options
+ * @returns
+ */
 export function createPreviewHandshake(options: {
     probe: () => void;
     timeout: () => void;
@@ -8,6 +12,9 @@ export function createPreviewHandshake(options: {
     let retry: ReturnType<typeof setInterval> | undefined;
     let deadline: ReturnType<typeof setTimeout> | undefined;
 
+    /**
+     * Cancel pending preview connection retries and timeouts.
+     */
     function stop() {
         clearInterval(retry);
         clearTimeout(deadline);
@@ -15,6 +22,9 @@ export function createPreviewHandshake(options: {
         deadline = undefined;
     }
 
+    /**
+     * Request or retry a connection with the preview frame.
+     */
     function request() {
         // Run can also request readiness again after a previous timeout.
         if (retry === undefined) {

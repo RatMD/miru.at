@@ -7,10 +7,12 @@
         :style="{ visibility: painted ? 'visible' : 'hidden' }"
         @load="connect" />
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { withBase, useData } from 'vitepress';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { createPreviewHandshake } from './preview-handshake';
+
 const props = withDefaults(
     defineProps<{ code: string; css?: string; title?: string; dark?: boolean }>(),
     { css: '', title: 'Miru component preview', dark: undefined },
@@ -24,11 +26,20 @@ const painted = ref(false);
 const { isDark } = useData();
 let revision = 0;
 const handshake = createPreviewHandshake({
+    /**
+     * Ask the preview frame to report its readiness.
+     * @returns
+     */
     probe: () =>
         iframe.value?.contentWindow?.postMessage(
             { type: 'miru-preview-connect' },
             window.location.origin,
         ),
+
+    /**
+     * Report an expired preview connection deadline.
+     * @returns
+     */
     timeout: () =>
         emit(
             'status',
@@ -36,16 +47,26 @@ const handshake = createPreviewHandshake({
             'The preview took too long to start. Press Run to reconnect, or reload the page if the dev server is still starting.',
         ),
 });
+
+/**
+ * Start a connection with the isolated preview frame.
+ */
 function connect() {
-    if (ready.value) send();
-    else {
+    if (ready.value) {
+        send();
+    } else {
         emit('status', 'loading', '');
         handshake.request();
     }
 }
+
+/**
+ * Send the current source and settings to the preview frame.
+ */
 function send() {
     if (!ready.value) {
         connect();
+
         return;
     }
     revision++;
@@ -61,19 +82,28 @@ function send() {
         window.location.origin,
     );
 }
+
+/**
+ * Handle a message from the linked preview window.
+ * @param event
+ */
 function receive(event: MessageEvent) {
-    if (event.origin !== window.location.origin || event.source !== iframe.value?.contentWindow)
+    if (event.origin !== window.location.origin || event.source !== iframe.value?.contentWindow) {
         return;
+    }
     if (event.data?.type === 'miru-preview-ready') {
         handshake.acknowledge();
         ready.value = true;
         send();
     }
     if (event.data?.type === 'miru-preview-status' && event.data.revision === revision) {
-        if (event.data.status === 'ready' || event.data.status === 'error') painted.value = true;
+        if (event.data.status === 'ready' || event.data.status === 'error') {
+            painted.value = true;
+        }
         emit('status', event.data.status, event.data.message || '');
     }
 }
+
 watch(() => [props.code, props.css, props.dark, isDark.value], send);
 onMounted(() => {
     window.addEventListener('message', receive);

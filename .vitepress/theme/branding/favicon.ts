@@ -3,11 +3,21 @@ import { faviconDataUrl, markColorsFromTokens } from './mark';
 
 let initialized = false;
 let cleanup: (() => void) | undefined;
+
+/**
+ * Synchronize favicon colors with the document theme and route changes.
+ */
 export function initializeFavicon() {
-    if (initialized || typeof window === 'undefined' || window.self !== window.top) return;
+    if (initialized || typeof window === 'undefined' || window.self !== window.top) {
+        return;
+    }
     initialized = true;
     let pending = false;
     let frame = 0;
+
+    /**
+     * Refresh the displayed data from its current source.
+     */
     function refresh() {
         pending = false;
         frame = 0;
@@ -19,8 +29,14 @@ export function initializeFavicon() {
         );
         setFaviconHref(document, href);
     }
+
+    /**
+     * Coalesce pending updates into the next animation frame.
+     */
     const schedule = () => {
-        if (pending) return;
+        if (pending) {
+            return;
+        }
         pending = true;
         frame = requestAnimationFrame(refresh);
     };
@@ -42,7 +58,9 @@ export function initializeFavicon() {
     cleanup = () => {
         rootObserver.disconnect();
         headObserver.disconnect();
-        if (frame) cancelAnimationFrame(frame);
+        if (frame) {
+            cancelAnimationFrame(frame);
+        }
         initialized = false;
     };
 }
@@ -52,5 +70,8 @@ if (import.meta.hot) {
         data.active = initialized;
         cleanup?.();
     });
-    if (import.meta.hot.data.active) initializeFavicon();
+
+    if (import.meta.hot.data.active) {
+        initializeFavicon();
+    }
 }

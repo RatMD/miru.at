@@ -114,7 +114,8 @@
         </div>
     </section>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { presets } from '../colors/engine';
 import { profile, schemeName, selectPreset } from '../colors/store';
 import Icon from './Icon.vue';
@@ -128,6 +129,7 @@ const paletteStyle = {
     '--theme-ink': 'var(--ui-primary-950)',
 };
 </script>
+
 <style scoped>
 .themes-stage {
     position: relative;

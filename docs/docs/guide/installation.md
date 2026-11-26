@@ -92,7 +92,7 @@ createInertiaApp({
 });
 ```
 
-Install Inertia in the host application first. Its explicit adapter supplies form submission, navigation, links and optional locale and notification page props. Backend list conventions are configured separately: see [Adonis & Laravel](/docs/guide/backends) and [AJAX & Inertia](/docs/guide/adapters).
+Install Inertia in the host application first. Its explicit adapter supplies form submission, navigation, links and optional locale and notification page props. Backend list conventions are configured separately: see [Adapters](/docs/guide/adapters).
 
 Here, `miru.wrap(App, props)` forwards Inertia’s application props to `App` while keeping PageRoot outside the changing pages.
 

@@ -1,6 +1,7 @@
 ---
-title: Components
+title: Layouts
 catalogue: true
+description: Explore miru's Vue layouts and the full component collection for dashboards, pages and application interfaces.
 ---
 
 # Small pieces. Big possibilities.

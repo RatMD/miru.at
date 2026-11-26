@@ -1,3 +1,7 @@
+/**
+ * Check documentation coverage, canonical navigation and component examples.
+ */
+
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -17,7 +21,14 @@ import {
     packageSource,
     storyMeta,
 } from '../scripts/package-inventory.mjs';
+
 const root = fileURLToPath(new URL('../', import.meta.url));
+
+/**
+ * Read and parse a JSON fixture.
+ * @param file
+ * @returns
+ */
 const json = async (file) => JSON.parse(await readFile(path.join(root, file), 'utf8'));
 
 test('retired documentation URLs resolve to current pages and preserve reference sections', () => {
@@ -56,16 +67,20 @@ test('the catalogue covers public exports and follows each current Storybook cat
     assert.equal(catalogue.length, Object.values(api).flat().length);
     assert.equal(new Set(catalogue.map((item) => item.link)).size, catalogue.length);
     for (const story of await discoverStories()) {
-        if (!story.component || !catalogue.some((item) => item.name === story.component)) continue;
-        if (story.title === 'Forms/Generator' || story.title === 'Extensions/FormGenerator')
+        if (!story.component || !catalogue.some((item) => item.name === story.component)) {
             continue;
+        }
+        if (story.title === 'Forms/Generator' || story.title === 'Extensions/FormGenerator') {
+            continue;
+        }
         const entry = catalogue.find((item) => item.name === story.component);
         assert.equal(entry.category, story.category, story.title);
         assert.ok(entry.primary, story.title);
     }
     assert.equal(catalogue.find((item) => item.name === 'FormSectionRenderer').category, 'Forms');
-    for (const name of ['AuthPage', 'DashboardPage', 'PageRoot', 'FloatingAppBar'])
+    for (const name of ['AuthPage', 'DashboardPage', 'PageRoot', 'FloatingAppBar']) {
         assert.ok(catalogue.find((item) => item.name === name)?.layout, name);
+    }
 });
 test('every primary component and layout has a complete composition example', async () => {
     const catalogue = await json('.vitepress/theme/component-catalogue.json');
@@ -85,9 +100,11 @@ test('every primary component and layout has a complete composition example', as
             assert.match(page, new RegExp(`<ComponentMeta name="${item.name}"`), item.name);
             assert.ok(page.indexOf('## Preview') < page.indexOf('## API'), item.name);
         }
-        if (item.name === 'ContextProvider')
+        if (item.name === 'ContextProvider') {
             assert.match(page, /```vue[\s\S]*<ContextProvider/, item.name);
-        else assert.match(page, new RegExp(`<ComponentExample name="${item.name}"`), item.name);
+        } else {
+            assert.match(page, new RegExp(`<ComponentExample name="${item.name}"`), item.name);
+        }
         assert.doesNotMatch(page, /::: details Props/, item.name);
     }
 });
@@ -99,15 +116,17 @@ test('documentation navigation covers all public composable/support modules and 
     ]) {
         const source = await readFile(path.join(packageSource, module, 'index.ts'), 'utf8');
         const links = groups.find((group) => group.title === title).items.map((item) => item.link);
-        for (const name of exportModules(source, './'))
+        for (const name of exportModules(source, './')) {
             assert.ok(links.includes(`/docs/${module}/${name}`), name);
+        }
     }
-    for (const file of await sourceFiles(path.join(packageSource, 'docs/plugins'), '.mdx'))
+    for (const file of await sourceFiles(path.join(packageSource, 'docs/plugins'), '.mdx')) {
         assert.ok(
             groups
                 .find((group) => group.title === 'Plugins')
                 .items.some((item) => item.link.endsWith('/' + path.basename(file, '.mdx'))),
         );
+    }
 });
 test('source guides keep balanced copyable code fences', async () => {
     for (const file of await sourceFiles(path.join(packageSource, 'docs'), '.mdx')) {

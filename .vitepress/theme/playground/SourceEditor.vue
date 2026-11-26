@@ -7,7 +7,8 @@
         <div ref="host" />
     </ScrollArea>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { indentWithTab } from '@codemirror/commands';
 import { css } from '@codemirror/lang-css';
 import { vue } from '@codemirror/lang-vue';
@@ -18,6 +19,7 @@ import { tags } from '@lezer/highlight';
 import { ScrollArea } from '@rat.md/miru';
 import { EditorView, basicSetup } from 'codemirror';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
+
 const props = withDefaults(defineProps<{ modelValue: string; language?: string }>(), {
     language: 'vue',
 });
@@ -93,15 +95,28 @@ onMounted(() => {
                     indentWithTab,
                     {
                         key: 'Mod-Enter',
+
+                        /**
+                         * Run the requested preview action.
+                         * @returns
+                         */
                         run: () => {
                             emit('run');
+
                             return true;
                         },
                     },
                     {
                         key: 'Escape',
+
+                        /**
+                         * Run the requested preview action.
+                         * @param view
+                         * @returns
+                         */
                         run: (view) => {
                             view.contentDOM.blur();
+
                             return true;
                         },
                     },
@@ -114,31 +129,41 @@ onMounted(() => {
                     spellcheck: 'false',
                 }),
                 EditorView.updateListener.of((update) => {
-                    if (update.docChanged) emit('update:modelValue', update.state.doc.toString());
+                    if (update.docChanged) {
+                        emit('update:modelValue', update.state.doc.toString());
+                    }
                 }),
             ],
         }),
     });
     const viewport = host.value!.closest<HTMLElement>('[data-slot="scroll-area-viewport"]');
+
+    /**
+     * Measure and apply the current source editor height.
+     */
     function measureHeight() {
         if (viewport && viewport.clientHeight > 0) {
             host.value!.style.setProperty('--source-editor-height', `${viewport.clientHeight}px`);
             editor?.requestMeasure();
         }
     }
+
     resizeObserver = new ResizeObserver(measureHeight);
-    if (viewport) resizeObserver.observe(viewport);
+    if (viewport) {
+        resizeObserver.observe(viewport);
+    }
     measureHeight();
 });
 watch(
     () => props.modelValue,
     (value) => {
-        if (editor && editor.state.doc.toString() !== value)
+        if (editor && editor.state.doc.toString() !== value) {
             editor.dispatch({
                 changes: { from: 0, to: editor.state.doc.length, insert: value },
                 selection: { anchor: 0 },
                 scrollIntoView: true,
             });
+        }
     },
 );
 watch(

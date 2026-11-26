@@ -42,7 +42,7 @@ For more variations and a fuller set of controls, pop over to [Storybook](https:
 
 ## Where to go next
 
-For your first project, follow [Installation](/docs/guide/installation), then choose a component and try it in place. If you are joining an existing application, [Adonis & Laravel](/docs/guide/backends) and [AJAX & Inertia](/docs/guide/adapters) explain how Miru fits around your backend and transport.
+For your first project, follow [Installation](/docs/guide/installation), then choose a component and try it in place. If you are joining an existing application, [Adapters](/docs/guide/adapters) explain how Miru fits around your backend and transport.
 
 When the task grows beyond a single component, the [Forms](/docs/forms/introduction) and [DataTable](/docs/data-table/introduction) sections walk through the moving parts with practical examples. Composables, plugins and support helpers have their own references in the sidebar whenever you need a closer look.
 

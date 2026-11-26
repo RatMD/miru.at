@@ -10,6 +10,11 @@ import { Compartment, EditorState } from '@codemirror/state';
 import { EditorView, lineNumbers } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 
+/**
+ * Select syntax support for the requested code language.
+ * @param language
+ * @returns
+ */
 function languageSupport(language: string): Extension {
     switch (language.toLowerCase()) {
         case 'vue':
@@ -75,6 +80,15 @@ const theme = EditorView.theme({
     },
 });
 
+/**
+ * Mount a read-only code editor with accessible labeling.
+ * @param parent
+ * @param code
+ * @param language
+ * @param numbered
+ * @param label
+ * @returns
+ */
 export function createReadonlyEditor(
     parent: HTMLElement,
     code: string,
@@ -104,7 +118,14 @@ export function createReadonlyEditor(
             ],
         }),
     });
+
     return {
+        /**
+         * Update the mounted editor content and presentation.
+         * @param next
+         * @param nextLanguage
+         * @param nextNumbered
+         */
         update(next: string, nextLanguage: string, nextNumbered: boolean) {
             view.dispatch({
                 ...(view.state.doc.toString() !== next
@@ -116,6 +137,10 @@ export function createReadonlyEditor(
                 ],
             });
         },
+
+        /**
+         * Release the mounted editor and its resources.
+         */
         destroy() {
             view.destroy();
         },

@@ -1,3 +1,11 @@
+/**
+ * Synchronize generated documentation indexes, references and component examples.
+ *
+ * Combines the public API, shared summaries and reference sources with the authored VitePress component pages.
+ *
+ * Writes navigation groups, catalogue metadata and the search index. Run through npm run docs:sync.
+ */
+
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -50,13 +58,13 @@ import {
     componentPageOwner,
     componentReferenceLink,
 } from '../.vitepress/theme/component-pages.ts';
+import { canonicalDocumentationUrl } from '../.vitepress/theme/legacy-routes.ts';
 import {
     examples,
     exampleSource,
     workspaceSource,
 } from '../.vitepress/theme/playground/examples.ts';
 import { componentCopy } from './component-copy.mjs';
-import { canonicalDocumentationUrl } from '../.vitepress/theme/legacy-routes.ts';
 import { createExampleFormatter } from './format-examples.mjs';
 import { buildComponentCatalogue } from './package-inventory.mjs';
 
@@ -65,10 +73,20 @@ const docs = path.join(root, 'docs');
 const source = path.resolve(root, '../package/src');
 const format = await createExampleFormatter();
 const exampleCache = new Map();
+
+/**
+ * Format and cache the source example for a component.
+ * @param name
+ * @returns
+ */
 async function formattedExample(name) {
-    if (!exampleCache.has(name)) exampleCache.set(name, format(exampleSource(name)));
+    if (!exampleCache.has(name)) {
+        exampleCache.set(name, format(exampleSource(name)));
+    }
+
     return exampleCache.get(name);
 }
+
 const componentApi = JSON.parse(
     await readFile(path.join(root, '.vitepress/theme/component-api.json'), 'utf8'),
 );
@@ -84,6 +102,12 @@ await writeFile(
         JSON.stringify(formattedSources, null, 2) +
         ';\n',
 );
+
+/**
+ * Escape text before inserting it into generated HTML.
+ * @param value
+ * @returns
+ */
 const escapeHtml = (value) =>
     String(value ?? '')
         .replaceAll('&', '&amp;')
@@ -92,12 +116,25 @@ const escapeHtml = (value) =>
         .replaceAll('"', '&quot;')
         .replaceAll('|', '&#124;')
         .replaceAll('\n', ' ');
+
+/**
+ * Format a property type for the generated API table.
+ * @param value
+ * @returns
+ */
 function apiType(value) {
     const type = String(value ?? '');
+
     return type.length > 100
         ? `<details class="api-type"><summary>${escapeHtml(type.slice(0, 90))}…</summary><code>${escapeHtml(type)}</code></details>`
         : `<code>${escapeHtml(type || '—')}</code>`;
 }
+
+/**
+ * Write a generated documentation page using canonical paths.
+ * @param relative
+ * @param content
+ */
 async function write(relative, content) {
     // Link generated helper references directly to the authored documentation.
     content = content.replace(
@@ -108,6 +145,13 @@ async function write(relative, content) {
     await mkdir(path.dirname(target), { recursive: true });
     await writeFile(target, content);
 }
+
+/**
+ * Collect files with the requested extension.
+ * @param directory
+ * @param extension
+ * @returns
+ */
 async function files(directory, extension) {
     const entries = await readdir(directory, { withFileTypes: true });
     const lists = await Promise.all(
@@ -119,8 +163,10 @@ async function files(directory, extension) {
                   : [],
         ),
     );
+
     return lists.flat();
 }
+
 const guides = [];
 for (const file of await files(path.join(source, 'docs'), '.mdx')) {
     const relative = path
@@ -128,11 +174,15 @@ for (const file of await files(path.join(source, 'docs'), '.mdx')) {
         .replaceAll('\\', '/')
         .replace(/\.mdx$/, '');
     // Other guides have been migrated to authored website pages.
-    if (!/^(composables|plugins|support)\//.test(relative)) continue;
+    if (!/^(composables|plugins|support)\//.test(relative)) {
+        continue;
+    }
     const raw = await readFile(file, 'utf8');
     // Drop Storybook's ESM/Meta preamble, preserving imports inside fenced examples.
     const heading = raw.search(/^# /m);
-    if (heading < 0) throw new Error(`Guide has no heading: ${relative}`);
+    if (heading < 0) {
+        throw new Error(`Guide has no heading: ${relative}`);
+    }
     let content = raw
         .slice(heading)
         .replace(/^<(?:Canvas|Meta)\b[^\n]*\/>\s*$/gm, '')
@@ -140,7 +190,9 @@ for (const file of await files(path.join(source, 'docs'), '.mdx')) {
     // Full Vue samples in guides use the same conventions as component examples.
     for (const match of [...content.matchAll(/```vue\n([\s\S]*?)\n```/g)].reverse()) {
         const code = match[1];
-        if (!/^\s*<(?:script\b|template>)/.test(code)) continue;
+        if (!/^\s*<(?:script\b|template>)/.test(code)) {
+            continue;
+        }
         const formatted = '```vue\n' + (await format(code)) + '```';
         content =
             content.slice(0, match.index) +
@@ -182,13 +234,15 @@ for (const [section, group] of ['composables', 'plugins', 'support'].map((sectio
 }
 for (const item of componentCatalogue) {
     // Reviewed component overviews, references and guides are authored pages.
-    if (componentPageOwner(item.name)) continue;
+    if (componentPageOwner(item.name)) {
+        continue;
+    }
     const api = componentApi[item.module].find((component) => component.name === item.name);
     const related = componentCatalogue.filter(
         (component) => component.module === item.module && component.name !== item.name,
     );
     let content = `---\ntitle: ${JSON.stringify(item.title)}\ncomponent: ${item.name}\n---\n\n# ${item.title}\n\n<ComponentMeta name="${item.name}" />\n\n${item.description}\n\n## Preview\n\n<ComponentExample name="${item.name}" />\n\n## API\n\nProps, emitted events and slots come from the current package source. Native attributes and inherited contracts also apply.\n`;
-    if (item.name === 'Table')
+    if (item.name === 'Table') {
         content = content.replace(
             '## Preview',
             '## When to use Table\n\n' +
@@ -197,21 +251,25 @@ for (const item of componentCatalogue) {
                 tableDependencyMarkdown() +
                 '\n\n## Preview',
         );
-    if (['field', 'form', 'input-group', 'label'].includes(item.module))
+    }
+    if (['field', 'form', 'input-group', 'label'].includes(item.module)) {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + formComponentDependencies(item.name) + '\n\n## Preview',
         );
-    if (item.module in overlayModules)
+    }
+    if (item.module in overlayModules) {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + overlayDependencyMarkdown(item.name) + '\n\n## Preview',
         );
-    if (item.module in formFieldModules)
+    }
+    if (item.module in formFieldModules) {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + formFieldDependencyMarkdown(item.name) + '\n\n## Preview',
         );
+    }
     const navigationDependencies = {
         marker: markerDependencyMarkdown,
         pagination: paginationDependencyMarkdown,
@@ -222,11 +280,12 @@ for (const item of componentCatalogue) {
         separator: separatorDependencyMarkdown,
         tabs: tabsDependencyMarkdown,
     };
-    if (navigationDependencies[item.module])
+    if (navigationDependencies[item.module]) {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + navigationDependencies[item.module]() + '\n\n## Preview',
         );
+    }
     if (['code', 'code-panel', 'item', 'kbd'].includes(item.module)) {
         const dependencies =
             item.module === 'item'
@@ -239,22 +298,25 @@ for (const item of componentCatalogue) {
             '## Dependencies\n\n' + dependencies + '\n\n## Preview',
         );
     }
-    if (item.module === 'card' || item.module === 'card-chart')
+    if (item.module === 'card' || item.module === 'card-chart') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + cardDependencyMarkdown(item.name) + '\n\n## Preview',
         );
-    if (item.module === 'breadcrumb')
+    }
+    if (item.module === 'breadcrumb') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + breadcrumbDependencyMarkdown() + '\n\n## Preview',
         );
-    if (['Button', 'ButtonAction', 'ButtonGroup', 'ButtonShadow'].includes(item.name))
+    }
+    if (['Button', 'ButtonAction', 'ButtonGroup', 'ButtonShadow'].includes(item.name)) {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + buttonDependencyMarkdown(item.name) + '\n\n## Preview',
         );
-    if (item.module === 'badge' || item.module === 'badge-copy')
+    }
+    if (item.module === 'badge' || item.module === 'badge-copy') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' +
@@ -263,7 +325,8 @@ for (const item of componentCatalogue) {
                     : badgeDependencyMarkdown()) +
                 '\n\n## Preview',
         );
-    if (item.module === 'avatar')
+    }
+    if (item.module === 'avatar') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' +
@@ -272,7 +335,8 @@ for (const item of componentCatalogue) {
                     : avatarDependencyMarkdown()) +
                 '\n\n## Preview',
         );
-    if (item.module === 'attachment')
+    }
+    if (item.module === 'attachment') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' +
@@ -281,43 +345,54 @@ for (const item of componentCatalogue) {
                     : attachmentDependencyMarkdown()) +
                 '\n\n## Preview',
         );
-    if (item.module === 'anchor')
+    }
+    if (item.module === 'anchor') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + anchorDependencyMarkdown() + '\n\n## Preview',
         );
-    if (item.module === 'alert')
+    }
+    if (item.module === 'alert') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + alertDependencyMarkdown() + '\n\n## Preview',
         );
-    if (item.module === 'accordion')
+    }
+    if (item.module === 'accordion') {
         content = content.replace(
             '## Preview',
             '## Dependencies\n\n' + accordionDependencyMarkdown() + '\n\n## Preview',
         );
-    if (api.props.length)
+    }
+    if (api.props.length) {
         content += `\n### Props\n\n| Prop | Type | Default | Required |\n| --- | --- | --- | --- |\n${api.props.map((prop) => `| <code>${escapeHtml(prop.name)}</code>${prop.description ? `<br/>${escapeHtml(prop.description)}` : ''} | ${apiType(prop.type)} | ${apiType(prop.default)} | ${prop.required ? 'Yes' : '—'} |`).join('\n')}\n`;
-    if (api.events.length)
+    }
+    if (api.events.length) {
         content += `\n### Emitted events\n\n| Event | Payload | Description |\n| --- | --- | --- |\n${api.events.map((event) => `| <code>${escapeHtml(event.name)}</code> | ${apiType(event.type)} | ${escapeHtml(event.description) || '—'} |`).join('\n')}\n`;
-    if (api.slots.length)
+    }
+    if (api.slots.length) {
         content += `\n### Slots\n\n| Slot | Scope | Description |\n| --- | --- | --- |\n${api.slots.map((slot) => `| <code>${escapeHtml(slot.name)}</code> | ${apiType(slot.type)} | ${escapeHtml(slot.description) || '—'} |`).join('\n')}\n`;
+    }
     const models = api.events.filter(
         (event) =>
             event.name.startsWith('update:') &&
             api.props.some((prop) => prop.name === event.name.slice(7)),
     );
-    if (models.length)
+    if (models.length) {
         content += `\n### Models\n\n| Binding | Prop | Update event | Description |\n| --- | --- | --- | --- |\n${models
             .map((event) => {
                 const prop = event.name.slice(7);
+
                 return `| <code>${prop === 'modelValue' ? 'v-model' : 'v-model:' + escapeHtml(prop)}</code> | <code>${escapeHtml(prop)}</code> | <code>${escapeHtml(event.name)}</code> | ${escapeHtml(api.props.find((item) => item.name === prop)?.description) || '—'} |`;
             })
             .join('\n')}\n`;
-    if (api.exposed?.length)
+    }
+    if (api.exposed?.length) {
         content += `\n### Template ref\n\n| Exposed member | Type | Description |\n| --- | --- | --- |\n${api.exposed.map((member) => `| <code>${escapeHtml(member.name)}</code> | ${apiType(member.type)} | ${escapeHtml(member.description) || '—'} |`).join('\n')}\n`;
-    if (item.module === 'table' && item.name !== 'Table')
+    }
+    if (item.module === 'table' && item.name !== 'Table') {
         content += '\n## Dependencies\n\n' + tableDependencyMarkdown() + '\n';
+    }
     for (const note of (item.module === 'table' && item.name !== 'Table') ||
     (item.module === 'form' && !['Form', 'FormSectionRenderer'].includes(item.name)) ||
     (item.module in overlayModules && item.name !== overlayModules[item.module]) ||
@@ -325,17 +400,19 @@ for (const item of componentCatalogue) {
         item.name !== formFieldModules[item.module] &&
         item.name !== 'Combobox')
         ? []
-        : componentNotes[item.module] || [])
+        : componentNotes[item.module] || []) {
         content += `\n## ${note.title}\n\n${note.text}\n`;
-    if (['field', 'form', 'input-group', 'label'].includes(item.module))
+    }
+    if (['field', 'form', 'input-group', 'label'].includes(item.module)) {
         content +=
             '\n## Forms documentation\n\n[Start with the Forms introduction](/docs/forms/introduction).\n';
-    else if (componentGuideFor(item.name, item.module)) {
+    } else if (componentGuideFor(item.name, item.module)) {
         const componentGuide = componentGuideFor(item.name, item.module);
         content += `\n## Component guide\n\n[Read the ${componentGuide.title} guide](${componentGuide.link}).\n`;
     }
-    if (related.length)
+    if (related.length) {
         content += `\n## Related primitives\n\n${related.map((component) => `- [${component.title}](${component.link})`).join('\n')}\n`;
+    }
     await write(item.link.slice(1) + '.md', content);
 }
 await writeFile(
@@ -344,9 +421,13 @@ await writeFile(
 );
 for (const file of await files(docs, '.md')) {
     const raw = await readFile(file, 'utf8');
-    if (/^search: false$/m.test(raw)) continue;
+    if (/^search: false$/m.test(raw)) {
+        continue;
+    }
     let title = raw.match(/^title: (.+)$/m)?.[1] || raw.match(/^# (.+)$/m)?.[1];
-    if (!title) continue;
+    if (!title) {
+        continue;
+    }
     if (title.startsWith('"')) {
         try {
             title = JSON.parse(title);

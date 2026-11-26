@@ -49,7 +49,8 @@
         </Card>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import {
     Badge,
     Button,
@@ -64,6 +65,7 @@ import { ref } from 'vue';
 
 const saved = ref(false);
 </script>
+
 <style scoped>
 .welcome-canvas {
     max-width: 900px;

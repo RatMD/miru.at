@@ -53,9 +53,11 @@
         </table>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { computed } from 'vue';
 import componentApi from '../component-api.json';
+
 type Row = {
     name: string;
     type: string;
@@ -86,9 +88,13 @@ const columns = computed(
 );
 const rows = computed<Row[]>(() => {
     const entry = component.value;
-    if (!entry) return [];
-    if (props.section !== 'models')
+    if (!entry) {
+        return [];
+    }
+    if (props.section !== 'models') {
         return [...entry[props.section]].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
     return entry.events
         .filter(
             (event) =>
@@ -97,6 +103,7 @@ const rows = computed<Row[]>(() => {
         )
         .map((event) => {
             const prop = event.name.slice(7);
+
             return {
                 name: prop === 'modelValue' ? 'v-model' : `v-model:${prop}`,
                 prop,
@@ -107,6 +114,7 @@ const rows = computed<Row[]>(() => {
         });
 });
 </script>
+
 <style scoped>
 .component-api-scroll {
     width: 100%;

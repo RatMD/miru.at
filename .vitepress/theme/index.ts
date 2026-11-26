@@ -8,11 +8,17 @@ import Layout from './Layout.vue';
 
 export default {
     Layout,
+
+    /**
+     * Register the documentation widgets and initialize shared browser services.
+     * @param app
+     */
     async enhanceApp({ app }) {
         // The iframe mounts its own miru. application. Documentation widgets are
         // unnecessary here and otherwise delay its readiness during a cold start.
         if (!import.meta.env.SSR && window.location.pathname.endsWith('/playground/preview')) {
             initializeColors();
+
             return;
         }
         const { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } =

@@ -871,7 +871,8 @@ const legacyRoutes: Record<string, [to: string, part?: string]> = {
     '/forms/layouts': ['/docs/forms/layouts'],
     '/forms/validation': ['/docs/forms/validation'],
     '/guide/adapters': ['/docs/guide/adapters'],
-    '/guide/backends': ['/docs/guide/backends'],
+    '/guide/backends': ['/docs/guide/adapters'],
+    '/docs/guide/backends': ['/docs/guide/adapters'],
     '/guide/inertia': ['/docs/guide/adapters'],
     '/guide/installation': ['/docs/guide/installation'],
     '/guide/introduction': ['/docs/welcome'],
@@ -1093,6 +1094,11 @@ const legacyRoutes: Record<string, [to: string, part?: string]> = {
     '/reference/validation': ['/docs/forms/validation'],
 };
 
+/**
+ * Resolve the current destination of a retired documentation URL.
+ * @param url
+ * @returns
+ */
 export function legacyDocumentationRedirect(url: string): DocumentationRedirect | undefined {
     const path = url
         .split(/[?#]/)[0]
@@ -1100,21 +1106,34 @@ export function legacyDocumentationRedirect(url: string): DocumentationRedirect 
         .replace(/\/index$/, '/')
         .replace(/\/$/, '');
     const entry = legacyRoutes[path];
+
     return entry ? { to: entry[0], part: entry[1] } : undefined;
 }
 
+/**
+ * Normalize a documentation URL to its canonical destination.
+ * @param url
+ * @returns
+ */
 export function canonicalDocumentationUrl(url: string): string {
     const redirect = legacyDocumentationRedirect(url);
-    if (!redirect) return url;
+    if (!redirect) {
+        return url;
+    }
     const hash = url.split('#')[1];
     let next = redirect.to;
     if (hash && redirect.part) {
         if (['props', 'emitted-events', 'slots', 'models', 'template-ref', 'api'].includes(hash)) {
             next = componentReferenceLink(redirect.part) + (hash === 'api' ? '' : '-' + hash);
-        } else if (componentPageOwner(redirect.part) === redirect.part) next += '#' + hash;
-        else if (componentPageOwner(redirect.part))
+        } else if (componentPageOwner(redirect.part) === redirect.part) {
+            next += '#' + hash;
+        } else if (componentPageOwner(redirect.part)) {
             next = componentReferenceLink(redirect.part) + '-' + hash;
-    } else if (hash && !next.includes('#')) next += '#' + hash;
+        }
+    } else if (hash && !next.includes('#')) {
+        next += '#' + hash;
+    }
     const query = url.match(/\?[^#]*/)?.[0] || '';
+
     return next.replace(/(#|$)/, query + '$1');
 }

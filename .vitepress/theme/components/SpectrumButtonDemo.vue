@@ -173,7 +173,8 @@
     </span>
     <slot v-else />
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import {
     Button,
     Badge,
@@ -215,6 +216,7 @@ import {
 import { IconInfoCircle, IconListCheck, IconLayoutSidebarRight } from '@tabler/icons-vue';
 import { ref, computed, watch, onUnmounted } from 'vue';
 import Icon from './Icon.vue';
+
 defineProps<{ variant: string }>();
 const emit = defineEmits<{
     busy: [value: boolean];
@@ -236,26 +238,49 @@ const tourCopy = [
     'And left. That’s the grand tour.',
 ];
 let tourTimer: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * Stop the automated button color tour.
+ */
 function stopTour() {
     clearTimeout(tourTimer);
     tourOpen.value = false;
     emit('busy', false);
 }
+
+/**
+ * Start the automated button color tour.
+ */
 function startTour() {
     stopTour();
     tourIndex.value = 0;
     tourOpen.value = true;
     emit('busy', true);
+
+    /**
+     * Advance the demonstration to its next step.
+     * @returns
+     */
     function step() {
-        if (tourIndex.value === sides.length - 1) return stopTour();
+        if (tourIndex.value === sides.length - 1) {
+            return stopTour();
+        }
         tourIndex.value++;
         tourTimer = setTimeout(step, 1250);
     }
+
     tourTimer = setTimeout(step, 1250);
 }
+
+/**
+ * Open the contextual actions for the demonstration.
+ * @param event
+ */
 function openContext(event: MouseEvent) {
     const trigger = (event.target as Element).closest('button');
-    if (!trigger) return;
+    if (!trigger) {
+        return;
+    }
     const rect = trigger.getBoundingClientRect();
     trigger.dispatchEvent(
         new MouseEvent('contextmenu', {
@@ -266,14 +291,22 @@ function openContext(event: MouseEvent) {
         }),
     );
 }
+
+/**
+ * Show feedback for a demonstration action.
+ * @param title
+ * @param description
+ */
 function feedback(title: string, description: string) {
     emit('feedback', title, description);
 }
+
 onUnmounted(() => {
     clearTimeout(tourTimer);
     emit('busy', false);
 });
 </script>
+
 <style scoped>
 .spectrum-demo-anchor {
     display: inline-flex;

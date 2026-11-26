@@ -20,4 +20,4 @@ createApp({ render: () => miru.wrap(App) })
 
 Use `configure({ app, options })` for app-specific setup. `plugins: false` disables automatic plugins; individual i18n/validation/directives flags are also supported. Import CSS once.
 
-Transport and backend conventions are independent: use `adapter: inertiaAdapter()` for Inertia forms and navigation, and `dataTable: adonisAdapter()` or `laravelAdapter()` for list payloads. See [AJAX & Inertia](/docs/guide/adapters) and [Adonis & Laravel](/docs/guide/backends).
+Transport and backend conventions are independent: use `adapter: inertiaAdapter()` for Inertia forms and navigation, and `dataTable: adonisAdapter()` or `laravelAdapter()` for list payloads. See [Adapters](/docs/guide/adapters).

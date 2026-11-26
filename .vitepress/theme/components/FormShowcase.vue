@@ -72,8 +72,8 @@
                         <span>
                             <strong>Room for every screen.</strong>
                             <small>
-                                Form adapts your schema to every device and screen size,
-                                keeping your clients as happy as you are.
+                                Form adapts your schema to every device and screen size, keeping
+                                your clients as happy as you are.
                             </small>
                             <Anchor
                                 href="/docs/forms/layouts"
@@ -272,7 +272,7 @@
     </PageRoot>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { FormSectionDefinition } from '@rat.md/miru';
 import {
     PageRoot,
@@ -306,6 +306,7 @@ import { z } from 'zod';
 import catalogue from '../component-catalogue.json';
 import DataShowcase from './DataShowcase.vue';
 import Icon from './Icon.vue';
+
 const formFieldCount = catalogue.filter(
     (item) => item.category === 'FormFields' && item.primary,
 ).length;
@@ -347,6 +348,7 @@ const schema = z.object({
     json: z.string().refine((value) => {
         try {
             JSON.parse(value);
+
             return true;
         } catch {
             return false;
@@ -359,6 +361,12 @@ const controller = useForm({
     submit: '/local-demo',
     mode: 'json',
 });
+
+/**
+ * Convert label values into selectable options.
+ * @param items
+ * @returns
+ */
 const options = (items: string[]) =>
     items.map((value) => ({
         value,
@@ -493,6 +501,10 @@ const sections: FormSectionDefinition[] = [
         ],
     },
 ];
+
+/**
+ * Validate the current input before applying changes.
+ */
 async function validate() {
     await controller.form.validate('submit');
     for (const name of ['name', 'email', 'json'] as const) {
@@ -508,7 +520,9 @@ async function validate() {
                 ? 'content'
                 : 'project';
         feedback.value = 'A little attention needed. Check the highlighted fields.';
-    } else feedback.value = 'Looking good. Your form is valid — preview only, no request sent.';
+    } else {
+        feedback.value = 'Looking good. Your form is valid — preview only, no request sent.';
+    }
 }
 </script>
 

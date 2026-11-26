@@ -1,3 +1,7 @@
+/**
+ * Check preview compilation, component insertion and saved-draft migrations.
+ */
+
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -11,12 +15,23 @@ import {
 import { insertExample } from '../.vitepress/theme/playground/insert.ts';
 import { refreshCustomerSummary } from '../.vitepress/theme/playground/refresh-customer-summary.ts';
 
+/**
+ * Resolve a module explicitly allowed in the preview.
+ * @param name
+ * @returns
+ */
 const resolve = (name) =>
     name === 'vue'
         ? Vue
         : new Proxy(
               {},
               {
+                  /**
+                   * Read the current value exposed by the reactive model.
+                   * @param _target
+                   * @param key
+                   * @returns
+                   */
                   get: (_target, key) => (key === '__esModule' ? true : { name: String(key) }),
               },
           );
@@ -54,8 +69,9 @@ test('old saved customer tables become cards without losing other draft edits', 
     let draft = current
         .replace(cards, oldTable)
         .replace('North & Meadow Studio', 'My custom studio');
-    for (const name of ['Card', 'CardHeader', 'CardDescription', 'CardTitle'])
+    for (const name of ['Card', 'CardHeader', 'CardDescription', 'CardTitle']) {
         draft = draft.replace(`    ${name},\n`, '');
+    }
     const restored = refreshCustomerSummary(draft, current);
     assert.doesNotMatch(restored, /<Table class="customer-summary"/);
     assert.equal((restored.match(/<Card>/g) || []).length, 3);
@@ -156,14 +172,13 @@ test('all catalogue entries have unique routes and include the requested familie
         'FormLayout',
         'Toast',
         'OverlayDetails',
-    ])
+    ]) {
         assert.ok(
             catalogue.some((item) => item.name === name && item.primary),
             name,
         );
-    assert.ok(
-        catalogue.find((item) => item.name === 'FormLayout').link.startsWith('/components/'),
-    );
+    }
+    assert.ok(catalogue.find((item) => item.name === 'FormLayout').link.startsWith('/components/'));
     const api = JSON.parse(
         readFileSync(new URL('../.vitepress/theme/component-api.json', import.meta.url)),
     );

@@ -244,7 +244,8 @@
         </FormLayout>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import type { FormSectionDefinition } from '@rat.md/miru';
 import {
     Alert,
@@ -280,8 +281,18 @@ import { computed, defineComponent, h, ref } from 'vue';
 import { z } from 'zod';
 
 // Icons are inline so this self-contained example needs only Vue, miru. and Zod.
+
+/**
+ * Create an icon component from the supplied SVG path.
+ * @param path
+ * @returns
+ */
 const icon = (path: string) =>
     defineComponent({
+        /**
+         * Create reactive state and handlers for the component.
+         * @returns
+         */
         setup: () => () =>
             h(
                 'svg',
@@ -421,8 +432,18 @@ const { form, loading, formError, submitForm } = useForm({
     submit: '/demo/customer',
     // Local adapter: validate and save a snapshot without making a request.
     adapter: {
+        /**
+         * Handle the locally submitted form values.
+         * @param submitted
+         * @returns
+         */
         submit: async ({ values: submitted }) => ({ status: 'success', result: submitted }),
     },
+
+    /**
+     * Apply the successfully submitted form values.
+     * @param submitted
+     */
     onSuccess: ({ values: submitted }) => {
         feedbackVariant.value = 'success';
         savedCustomer = structuredClone({ ...submitted, password: '', confirmPassword: '' });
@@ -437,8 +458,23 @@ const initials = computed(
         `${values.value.firstName.charAt(0)}${values.value.lastName.charAt(0)}`.toUpperCase() ||
         'CU',
 );
+
+/**
+ * Convert label values into selectable options.
+ * @param items
+ * @returns
+ */
 const options = (items: [string, string][]) =>
     items.map(([value, label]) => ({ value, label: literal(label) }));
+
+/**
+ * Build a text-field definition for the demonstration form.
+ * @param name
+ * @param label
+ * @param span
+ * @param extra
+ * @returns
+ */
 const input = (name: string, label: string, span = 6, extra = {}) => ({
     type: 'input' as const,
     name,
@@ -447,6 +483,15 @@ const input = (name: string, label: string, span = 6, extra = {}) => ({
     showValidation: true,
     ...extra,
 });
+
+/**
+ * Build a select-field definition for the demonstration form.
+ * @param name
+ * @param label
+ * @param items
+ * @param span
+ * @returns
+ */
 const select = (name: string, label: string, items: [string, string][], span = 6) => ({
     type: 'select' as const,
     name,
@@ -668,14 +713,38 @@ const actions = computed(() => [
         icon: LockIcon,
     },
 ]);
+
+/**
+ * Find a form section by its stable identifier.
+ * @param id
+ * @returns
+ */
 function sectionFor(id?: string) {
     return sections.find((section) => section.id === id) || sections[0]!;
 }
+
+/**
+ * Resolve the stable key of an address record.
+ * @param address
+ * @returns
+ */
 function addressKey(address: Customer['addresses'][number]) {
     return address.id;
 }
+
+/**
+ * Build the form section for one address record.
+ * @param index
+ * @returns
+ */
 function addressSection(index: number): FormSectionDefinition {
+    /**
+     * Build a unique field name for the current record.
+     * @param key
+     * @returns
+     */
     const name = (key: string) => `addresses[${index}].${key}`;
+
     return {
         id: `address-${index}`,
         label: literal('Address'),
@@ -715,6 +784,10 @@ function addressSection(index: number): FormSectionDefinition {
         ],
     };
 }
+
+/**
+ * Append an editable address record.
+ */
 function addAddress() {
     form.setFieldValue('addresses', [
         ...values.value.addresses,
@@ -737,13 +810,26 @@ function addAddress() {
     ]);
     feedback.value = '';
 }
+
+/**
+ * Remove the selected address record.
+ * @param index
+ */
 function removeAddress(index: number) {
     const next = values.value.addresses.filter((_, itemIndex) => itemIndex !== index);
-    if (next.length && !next.some((item) => item.primary)) next[0] = { ...next[0]!, primary: true };
+    if (next.length && !next.some((item) => item.primary)) {
+        next[0] = { ...next[0]!, primary: true };
+    }
     form.setFieldValue('addresses', next);
     feedbackVariant.value = 'info';
     feedback.value = 'Address removed. Save the customer to keep this change.';
 }
+
+/**
+ * Update the primary address selection.
+ * @param index
+ * @param enabled
+ */
 function setPrimary(index: number, enabled: boolean) {
     form.setFieldValue(
         'addresses',
@@ -753,20 +839,35 @@ function setPrimary(index: number, enabled: boolean) {
         })),
     );
 }
+
+/**
+ * Run the requested demonstration form action.
+ * @param id
+ */
 function runAction(id: string) {
-    if (id !== 'block') return;
+    if (id !== 'block') {
+        return;
+    }
     form.setFieldValue('blocked', !values.value.blocked);
     feedbackVariant.value = 'success';
     feedback.value = values.value.blocked
         ? ''
         : 'Customer unblocked. Account access is restored in this demo.';
 }
+
+/**
+ * Restore the last saved demonstration values.
+ */
 function discard() {
     form.reset(structuredClone(savedCustomer));
     formError.value = undefined;
     feedbackVariant.value = 'info';
     feedback.value = 'Unsaved changes discarded. Back to the last saved customer.';
 }
+
+/**
+ * Write the current values to their configured destination.
+ */
 async function save() {
     feedback.value = '';
     await submitForm();
@@ -776,13 +877,16 @@ async function save() {
         const section = sections.find((item) =>
             item.fields.some((definition) => 'name' in definition && definition.name === field),
         );
-        if (section) active.value = section.id;
+        if (section) {
+            active.value = section.id;
+        }
         feedbackVariant.value = 'warning';
         feedback.value =
             'A few details need your attention. Check the highlighted fields before saving.';
     }
 }
 </script>
+
 <style scoped>
 .customer-page {
     width: 100%;

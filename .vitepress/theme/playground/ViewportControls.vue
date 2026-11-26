@@ -61,7 +61,8 @@
         </div>
     </div>
 </template>
-<script setup lang="ts">
+
+<script lang="ts" setup>
 import { Button, Slider } from '@rat.md/miru';
 import {
     IconBackground,
@@ -73,6 +74,7 @@ import {
     IconSun,
 } from '@tabler/icons-vue';
 import SiteTooltip from '../components/SiteTooltip.vue';
+
 const props = defineProps<{
     label: string;
     device: string;
@@ -88,6 +90,10 @@ const emit = defineEmits<{
     dark: [value: boolean];
     background: [value: string];
 }>();
+
+/**
+ * Select the next preview background.
+ */
 function cycleBackground() {
     const backgrounds = ['canvas', 'light', 'dark', 'checker'];
     emit(
@@ -95,12 +101,14 @@ function cycleBackground() {
         backgrounds[(backgrounds.indexOf(props.background || 'canvas') + 1) % backgrounds.length]!,
     );
 }
+
 const devices = [
     { id: 'mobile', label: 'Mobile', icon: IconDeviceMobile },
     { id: 'tablet', label: 'Tablet', icon: IconDeviceTablet },
     { id: 'desktop', label: 'Desktop', icon: IconDeviceDesktop },
 ];
 </script>
+
 <style scoped>
 .studio-controls {
     display: flex;
