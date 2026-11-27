@@ -38,6 +38,22 @@ test('all reference entries keep a short intro and a link to their complete Vite
                 file,
             );
             assert.doesNotMatch(snapshot, /```|^## /m, file);
+            assert.match(
+                snapshot,
+                /^# .+ <a className="miru-doc-badge" href="https:\/\/miru\.at\/docs\//m,
+                file,
+            );
         }
+    }
+});
+
+test('Storybook component title links resolve to existing VitePress pages', async () => {
+    const links = JSON.parse(
+        await readFile(new URL('src/stories/documentation-links.json', packageRoot), 'utf8'),
+    );
+    for (const [title, href] of Object.entries(links)) {
+        const url = new URL(href);
+        assert.equal(url.origin, 'https://miru.at', title);
+        await readFile(new URL('../docs' + url.pathname + '.md', import.meta.url), 'utf8');
     }
 });
