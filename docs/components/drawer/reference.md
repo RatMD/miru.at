@@ -90,3 +90,13 @@ Supporting text associated with the drawer for assistive technology.
 
 <ComponentApi name="DrawerDescription" section="slots" />
 
+
+## Inherited building blocks
+
+These public exports use the Reka UI contract directly and are composed inside this component family. Their inherited props, events and slots are documented upstream.
+
+| Export | Purpose | Contract |
+| --- | --- | --- |
+| `DrawerTrigger` | Opens the drawer; use as-child for a custom trigger. | [Reka UI DrawerTrigger](https://reka-ui.com/docs/components/drawer) |
+| `DrawerClose` | Closes the drawer. | [Reka UI DrawerClose](https://reka-ui.com/docs/components/drawer) |
+| `DrawerHandle` | Provides the drawer’s drag handle. | [Reka UI DrawerHandle](https://reka-ui.com/docs/components/drawer) |

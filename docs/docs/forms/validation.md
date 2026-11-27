@@ -93,7 +93,7 @@ For a local validation preview, call `await form.validate('submit')`; this sends
 
 ## Reusable validation rules
 
-You can use ordinary Zod schemas, including asynchronous refinements and transformations. Miru’s `useValidation()` also provides localised factories for email addresses, GTINs, IBANs and card numbers, plus application-registered factories. See [Validation factories](/docs/forms/validation) for their registration and typing.
+You can use ordinary Zod schemas, including asynchronous refinements and transformations. Miru’s `useValidation()` also provides localised factories for email addresses, GTINs, IBANs and card numbers, plus application-registered factories. See [Validation factories](/docs/plugins/validation) for their registration and typing.
 
 Next: [Form generator](/docs/forms/generator) or [Submission adapters](/docs/forms/adapters).
 

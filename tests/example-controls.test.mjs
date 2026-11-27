@@ -75,3 +75,57 @@ test('Accordion orientation remains documented without suggesting a horizontal p
         1,
     );
 });
+
+test('Popover controls position its content and toggle the default arrow', () => {
+    const source = exampleSource('Popover');
+    const controls = exampleControls(source, 'Popover', [
+        { name: 'side', type: '"top" | "right" | "bottom" | "left"' },
+        { name: 'align', type: '"start" | "center" | "end"' },
+        { name: 'avoidCollisions', type: 'boolean | undefined' },
+    ]);
+    assert.equal(controls.find((item) => item.name === 'side').value, 'bottom');
+    assert.equal(controls.find((item) => item.name === 'showArrow').value, true);
+    assert.equal(controls.find((item) => item.name === 'avoidCollisions').value, true);
+    const updated = controlledExample(source, 'Popover', {
+        side: 'left',
+        align: 'end',
+        showArrow: false,
+    });
+    assert.match(updated, /<PopoverContent[^>]*side="left"[^>]*align="end"/);
+    assert.match(updated, /<PopoverArrow v-if="false"/);
+    assert.doesNotMatch(updated, /show-arrow/);
+    assert.match(updated, /<PopoverTrigger as-child>/);
+    assert.deepEqual(parse(updated).errors, []);
+});
+
+test('Tooltip controls update the content position and arrow', () => {
+    const source = exampleSource('Tooltip');
+    const updated = controlledExample(source, 'Tooltip', {
+        side: 'left',
+        align: 'start',
+        showArrow: false,
+    });
+    assert.match(
+        updated,
+        /<TooltipContent[^>]*side="left"[^>]*align="start"[^>]*:show-arrow="false"/,
+    );
+    assert.match(updated, /<TooltipTrigger as-child>/);
+    assert.deepEqual(parse(updated).errors, []);
+});
+
+test('Toast controls select notification type without changing the trigger variant', () => {
+    const source = exampleSource('Toast');
+    const controls = exampleControls(source, 'Toast', [
+        { name: 'appearance', type: '"flat" | "frost" | "graphite"' },
+    ]);
+    assert.ok(controls.find((control) => control.name === 'toastType').options.includes('error'));
+    const updated = controlledExample(source, 'Toast', {
+        toastType: 'error',
+        appearance: 'graphite',
+    });
+    assert.match(updated, /toast.error\(/);
+    assert.match(updated, /<Toast[^>]*appearance="graphite"/);
+    assert.match(updated, /<Button variant="primary"/);
+    assert.doesNotMatch(updated, /toast-type=/);
+    assert.deepEqual(parse(updated).errors, []);
+});

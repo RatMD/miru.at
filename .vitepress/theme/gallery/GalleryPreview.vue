@@ -14,7 +14,20 @@ import * as Miru from '@rat.md/miru';
 import * as Composables from '@rat.md/miru/composables';
 import * as Layouts from '@rat.md/miru/layouts';
 import * as Support from '@rat.md/miru/support';
-import { IconBell, IconMail } from '@tabler/icons-vue';
+import {
+    IconBell,
+    IconMail,
+    IconPackage,
+    IconTruck,
+    IconCheck,
+    IconLetterCaseUpper,
+    IconBrackets,
+    IconRefresh,
+    IconHome,
+    IconArrowLeft,
+    IconPlus,
+    IconSearch,
+} from '@tabler/icons-vue';
 import * as Vue from 'vue';
 import { markRaw, onErrorCaptured, onUnmounted, ref, shallowRef, watch } from 'vue';
 import * as Zod from 'zod';
@@ -29,6 +42,20 @@ const modules: Record<string, unknown> = {
     '@rat.md/miru/layouts': Layouts,
     '@rat.md/miru/composables': Composables,
     '@rat.md/miru/support': Support,
+    '@tabler/icons-vue': {
+        IconBell,
+        IconMail,
+        IconPackage,
+        IconTruck,
+        IconCheck,
+        IconLetterCaseUpper,
+        IconBrackets,
+        IconRefresh,
+        IconHome,
+        IconArrowLeft,
+        IconPlus,
+        IconSearch,
+    },
     zod: Zod,
 };
 let style: HTMLStyleElement | undefined;

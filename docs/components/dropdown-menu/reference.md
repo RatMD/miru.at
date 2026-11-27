@@ -222,3 +222,11 @@ An optional decorative pointer between the menu and its trigger.
 
 <ComponentApi name="DropdownMenuArrow" section="props" />
 
+
+## Inherited building blocks
+
+These public exports use the Reka UI contract directly and are composed inside this component family. Their inherited props, events and slots are documented upstream.
+
+| Export | Purpose | Contract |
+| --- | --- | --- |
+| `DropdownMenuPortal` | Teleports menu content outside the local layout. | [Reka UI DropdownMenuPortal](https://reka-ui.com/docs/components/dropdown-menu) |

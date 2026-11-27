@@ -170,3 +170,12 @@ The scrollable viewport for combobox options.
 
 <ComponentApi name="ComboboxViewport" section="slots" />
 
+
+## Inherited building blocks
+
+These public exports use the Reka UI contract directly and are composed inside this component family. Their inherited props, events and slots are documented upstream.
+
+| Export | Purpose | Contract |
+| --- | --- | --- |
+| `ComboboxTrigger` | Opens the options popup. | [Reka UI ComboboxTrigger](https://reka-ui.com/docs/components/combobox) |
+| `ComboboxCancel` | Clears the current selection. | [Reka UI ComboboxCancel](https://reka-ui.com/docs/components/combobox) |

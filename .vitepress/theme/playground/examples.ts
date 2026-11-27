@@ -45,7 +45,7 @@ export const examples: Record<string, Example> = {
     Editable: ex(
         `<Editable v-model="projectTitle" :save="saveTitle" aria-label="Project title" /><p>Saved value: {{ projectTitle }}</p>`,
         `const projectTitle = ref('My project')
-async function saveTitle(value) { await new Promise(resolve => setTimeout(resolve, 400)); return value.trim() }`,
+async function saveTitle(value: string) { await new Promise(resolve => setTimeout(resolve, 400)); return value.trim() }`,
     ),
     Rating: ex(
         `<Rating v-model="score" :length="5" :step="0.5" variant="warning" show-value aria-label="Your rating" /><Rating v-model="vote" mode="like-dislike" aria-label="Feedback" />`,
@@ -165,11 +165,16 @@ const tableItems = [
         `<FilterBar :items="[{key:'status',label:'Active',selected:true,removable:true},{key:'team',label:'Design',selected:true,removable:true}]" />`,
     ),
     Marker: ex(
-        `<Marker><Badge variant="success">Ready</Badge><span>One small detail. A clearer interface.</span></Marker>`,
+        `<ol role="list" style="width: min(600px, calc(100vw - 64px)); max-width: 100%; margin: 0; padding: 0; list-style: none"><li v-for="(entry, index) in history" :key="entry.id" style="position: relative" :style="{ paddingBottom: index < history.length - 1 ? '24px' : '0' }"><span v-if="index < history.length - 1" aria-hidden="true" style="position: absolute; top: 32px; bottom: 0; left: 16px; border-left: 1px solid var(--ui-border)" /><Marker><MarkerIcon :style="{ color: entry.color, borderColor: entry.color }"><component :is="entry.icon" /></MarkerIcon><MarkerContent><strong>{{ entry.title }}</strong><p style="color: var(--ui-muted-foreground); margin: 4px 0 8px">{{ entry.description }}</p></MarkerContent><MarkerMeta :date="entry.date" :author="entry.author" /></Marker></li></ol>`,
+        `const history = [
+    { id: 'created', icon: IconPackage, color: 'var(--ui-info)', title: 'Order created', description: 'Order SH-2026-001 has been received.', date: '2026-11-27T09:15:00Z', author: 'Sam Taylor' },
+    { id: 'shipped', icon: IconTruck, color: 'var(--ui-primary)', title: 'Out for delivery', description: 'The order is on its way to the customer.', date: '2026-11-27T11:30:00Z', author: 'Alex Morgan' },
+    { id: 'completed', icon: IconCheck, color: 'var(--ui-success)', title: 'Delivery completed', description: 'The customer has received the order.', date: '2026-11-27T14:45:00Z', author: 'Sam Taylor' },
+]`,
     ),
     Pagination: ex(`<Pagination :total="120" :items-per-page="10" :sibling-count="1" />`),
     Progress: ex(
-        `<div class="stack"><Progress :model-value="progressValue" variant="primary" aria-label="Project completion"/><Button variant="outline" @click="progressValue = (progressValue + 10) % 110">Progress: {{ progressValue }}%</Button></div>`,
+        `<div class="stack" style="width: min(420px, calc(100vw - 64px)); max-width: 100%"><Progress :model-value="progressValue" variant="primary" aria-label="Project completion"/><Button variant="outline" @click="progressValue = (progressValue + 10) % 110">Progress: {{ progressValue }}%</Button></div>`,
         `const progressValue = ref(60)`,
     ),
     Field: ex(
@@ -205,11 +210,11 @@ const tableItems = [
         `const comboboxChoice = ref('studio')`,
     ),
     EditorJson: ex(
-        `<EditorJson v-model="jsonDocument" label="Project configuration"/>`,
+        `<EditorJson v-model="jsonDocument" aria-label="Project configuration"/>`,
         `const jsonDocument = ref(JSON.stringify({name: 'Miru', ready: true}, null, 2))`,
     ),
     EditorMarkdown: ex(
-        `<EditorMarkdown v-model="markdownDocument" label="Project notes"/>`,
+        `<EditorMarkdown v-model="markdownDocument" aria-label="Project notes"/>`,
         `const markdownDocument = ref(['# Something wonderful', '', 'It starts with a **good idea**.'].join(String.fromCharCode(10)))`,
     ),
     Editor: ex(
@@ -229,8 +234,21 @@ const tableItems = [
         `const sliderValue = ref([20, 80])`,
     ),
     EditorFrame: ex(
-        `<EditorFrame v-model="frameText" label="Notes" counter/>`,
-        `const frameText = ref('A shared place for your next idea.')`,
+        `<EditorFrame v-model="frameText" aria-label="Text editor" :extensions="frameExtensions" counter/>`,
+        `import type { EditorFrameExtension } from '@rat.md/miru';
+const initialFrameText = 'Select some text and try the toolbar commands.';
+const frameText = ref(initialFrameText);
+const frameExtensions: EditorFrameExtension[] = [{
+    id: 'demo',
+    commands: [
+        { id: 'uppercase', label: 'Uppercase', icon: IconLetterCaseUpper, run: (api) => api.setValue(api.value.toUpperCase()) },
+        { id: 'wrap', label: 'Wrap selection', icon: IconBrackets, run: (api) => {
+            const selection = api.getSelection();
+            return api.replaceSelection('[' + selection.value.slice(selection.start, selection.end) + ']');
+        } },
+        { id: 'reset', label: 'Reset text', icon: IconRefresh, run: (api) => api.setValue(initialFrameText) },
+    ],
+}];`,
     ),
     InputFile: ex(`<InputFile aria-label="Choose a project file"/>`),
     InputNumber: ex(
@@ -274,7 +292,7 @@ const tableItems = [
         `const switchValue = ref(true)`,
     ),
     Textarea: ex(
-        `<Textarea v-model="notesValue" aria-label="Project notes" placeholder="Every good idea starts somewhere."/>`,
+        `<Textarea v-model="notesValue" aria-aria-label="Project notes" placeholder="Every good idea starts somewhere."/>`,
         `const notesValue = ref('Small details. Better interfaces.')`,
     ),
     Toggle: ex(
@@ -315,7 +333,8 @@ const tableList = {results:{data:[{id:1,name:'Miru website',status:'In progress'
         `const overlayVisible = ref(false)`,
     ),
     OverlayChoice: ex(
-        `<OverlayChoice title="Ready to begin?" description="Create a little space for your next big idea." trigger-label="Make a choice" :close-on-confirm="true"/>`,
+        `<Button variant="primary" @click="choiceOpen = true">Make a choice</Button><OverlayChoice v-model:open="choiceOpen" title="Ready to begin?" description="Create a little space for your next big idea." :primary="{ label: 'Begin' }" :close-on-confirm="true" @confirm="choiceFeedback = 'Confirmed. Ready to begin!'" @cancel="choiceFeedback = 'Cancelled.'"/><p v-if="choiceFeedback" role="status">{{ choiceFeedback }}</p>`,
+        `const choiceOpen = ref(false); const choiceFeedback = ref('')`,
     ),
     OverlayDetails: ex(
         `<Button variant="outline" @click="detailsVisible = true">View details</Button><OverlayDetails v-model:open="detailsVisible" title="Project configuration" :sections="[{id:'project',label:'Project',language:'json',value:{name:'Miru',ready:true}}]"/>`,
@@ -326,38 +345,39 @@ const tableList = {results:{data:[{id:1,name:'Miru website',status:'In progress'
         `const noticeVisible = ref(false)`,
     ),
     Popover: ex(
-        `<Popover><PopoverTrigger as-child><Button variant="outline">A little more detail</Button></PopoverTrigger><PopoverContent><h3>Your signature.</h3><p class="muted">The small choices that make an interface yours.</p></PopoverContent></Popover>`,
+        `<Popover><PopoverTrigger as-child><Button variant="outline">A little more detail</Button></PopoverTrigger><PopoverContent side="bottom" align="center" :avoid-collisions="true" :hide-when-detached="false"><h3>Your signature.</h3><p class="muted">The small choices that make an interface yours.</p><PopoverArrow v-if="true" /></PopoverContent></Popover>`,
     ),
     Schedule: ex(`<Schedule :events="[]" readonly/>`),
     Sheet: ex(
-        `<Sheet><SheetTrigger as-child><Button variant="outline">Open settings</Button></SheetTrigger><SheetContent><SheetHeader><SheetTitle>Make it yours.</SheetTitle><SheetDescription>A little space for your preferences.</SheetDescription></SheetHeader><div class="stack"><Label for="sheet-studio">Studio name</Label><Input id="sheet-studio" placeholder="Your studio"/></div></SheetContent></Sheet>`,
+        `<Sheet><SheetTrigger as-child><Button variant="outline">Open settings</Button></SheetTrigger><SheetContent side="right"><SheetHeader><SheetTitle>Make it yours.</SheetTitle><SheetDescription>A little space for your preferences.</SheetDescription></SheetHeader><div class="stack"><Label for="sheet-studio">Studio name</Label><Input id="sheet-studio" placeholder="Your studio"/></div></SheetContent></Sheet>`,
     ),
     Tabs: ex(
         `<Tabs v-model="tabValue" :tabs="[{value:'overview',label:'Overview'},{value:'details',label:'Details'},{value:'activity',label:'Activity'}]"><template #overview><p>A clear starting point.</p></template><template #details><p>The little things that matter.</p></template><template #activity><p>A little momentum goes a long way.</p></template></Tabs>`,
         `const tabValue = ref('overview')`,
     ),
     Toast: ex(
-        `<Toast/><Button variant="primary" @click="toast.success('Something wonderful is ready.')">Show a toast</Button>`,
+        `<Toast appearance="frost" position="bottom-right" :rich-colors="true" close-button/><Button variant="primary" @click="toast.success('Something wonderful is ready.')">Show a toast</Button>`,
         '',
         ['toast'],
     ),
     Tooltip: ex(
-        `<TooltipProvider><Tooltip><TooltipTrigger as-child><Button variant="outline">A little hint</Button></TooltipTrigger><TooltipContent>Good details make a difference.</TooltipContent></Tooltip></TooltipProvider>`,
+        `<TooltipProvider><Tooltip><TooltipTrigger as-child><Button variant="outline">A little hint</Button></TooltipTrigger><TooltipContent side="top" align="center" :show-arrow="true" :avoid-collisions="true">Good details make a difference.</TooltipContent></Tooltip></TooltipProvider>`,
     ),
     FloatingAppBar: ex(
-        `<FloatingAppBar label="Project actions"><template #primary><ButtonShadow label="Create project">+</ButtonShadow></template><template #left><Button variant="ghost">Save</Button></template><template #right><Button variant="ghost">Preview</Button></template></FloatingAppBar>`,
+        `<TooltipProvider><div style="display: grid; place-items: center; gap: 16px; min-height: 300px; width: 100%"><FloatingAppBar label="Project actions" :fixed="false" variant="five" appearance="gradient"><template #left><Tooltip><TooltipTrigger as-child><Button variant="ghost" icon-only aria-label="Home" @click="appBarStatus = 'Workspace opened'"><IconHome /></Button></TooltipTrigger><TooltipContent>Home</TooltipContent></Tooltip><Tooltip><TooltipTrigger as-child><Button variant="ghost" icon-only aria-label="Go back" @click="appBarStatus = 'Back to the project list'"><IconArrowLeft /></Button></TooltipTrigger><TooltipContent>Go back</TooltipContent></Tooltip></template><template #primary><Tooltip><TooltipTrigger as-child><Button variant="primary" icon-only aria-label="Create project" @click="projectCount++; appBarStatus = 'Project ' + projectCount + ' created'"><IconPlus class="size-7" /></Button></TooltipTrigger><TooltipContent>Create project</TooltipContent></Tooltip></template><template #right><Tooltip><TooltipTrigger as-child><Button variant="ghost" icon-only aria-label="Search" @click="appBarStatus = 'Search selected'"><IconSearch /></Button></TooltipTrigger><TooltipContent>Search</TooltipContent></Tooltip><Tooltip><TooltipTrigger as-child><Button variant="ghost" icon-only aria-label="Save changes" @click="appBarStatus = 'Changes saved'"><IconCheck /></Button></TooltipTrigger><TooltipContent>Save changes</TooltipContent></Tooltip></template></FloatingAppBar><p role="status" style="min-height: 24px; margin: 0; text-align: center; color: var(--ui-muted-foreground)">{{ appBarStatus }}</p></div></TooltipProvider>`,
+        `const projectCount = ref(0); const appBarStatus = ref('Try an action from the toolbar.');`,
     ),
     ApexChart: ex(
         `<ApexChart type="area" :height="240" :series="[{name:'Ideas',data:[12,24,18,38,30,52,68]}]" :options="{chart:{toolbar:{show:false},background:'transparent'},colors:['#df5d49'],xaxis:{categories:['Mon','Tue','Wed','Thu','Fri','Sat','Sun']},dataLabels:{enabled:false},stroke:{curve:'smooth'}}"/>`,
     ),
     AspectRatio: ex(
-        `<AspectRatio :ratio="16/9"><div class="demo-tile">A little perspective. 16 : 9</div></AspectRatio>`,
+        `<div style="width: min(280px, calc((100vh - 64px) * 0.75), calc(100vw - 64px)); max-width: 100%"><AspectRatio ratio="16:9"><div style="display: grid; place-items: center; height: 100%; padding: 16px; border-radius: var(--ui-radius); background: var(--ui-muted); text-align: center">A little perspective.</div></AspectRatio></div>`,
     ),
     CodePanel: ex(
         `<CodePanel :value="{name:'Miru',framework:'Vue 3',ready:true}" language="json"/>`,
     ),
     Collapsible: ex(
-        `<Collapsible><CollapsibleTrigger as-child><Button variant="outline">Show the little details</Button></CollapsibleTrigger><CollapsibleContent><Card><CardContent>A good interface has room for the details.</CardContent></Card></CollapsibleContent></Collapsible>`,
+        `<Collapsible style="width: min(420px, calc(100vw - 64px)); max-width: 100%"><CollapsibleTrigger class="cursor-pointer">Show the little details</CollapsibleTrigger><CollapsibleContent><p class="mt-3">A good interface has room for the details.</p></CollapsibleContent></Collapsible>`,
     ),
     Copy: ex(
         `<Copy content="npm install @rat.md/miru"><Button as="span" variant="outline">Copy the install command</Button></Copy>`,
@@ -366,13 +386,13 @@ const tableList = {results:{data:[{id:1,name:'Miru website',status:'In progress'
         `<DropdownMenu><DropdownMenuTrigger as-child><Button variant="outline">Project actions</Button></DropdownMenuTrigger><DropdownMenuContent><DropdownMenuLabel>Your workspace</DropdownMenuLabel><DropdownMenuSeparator/><DropdownMenuItem>New project</DropdownMenuItem><DropdownMenuItem>Workspace settings</DropdownMenuItem><DropdownMenuItem>Invite your team</DropdownMenuItem></DropdownMenuContent></DropdownMenu>`,
     ),
     ScrollArea: ex(
-        `<ScrollArea style="height:220px"><div class="stack"><Card v-for="index in 12" :key="index"><CardContent>Idea {{ index }} · Something wonderful</CardContent></Card></div></ScrollArea>`,
+        `<ScrollArea style="height: 220px; width: min(420px, calc(100vw - 64px)); max-width: 100%"><div class="pr-4"><template v-for="index in 12" :key="index"><p class="py-3">Idea {{ index }} · Something wonderful</p><Separator v-if="index < 12" /></template></div></ScrollArea>`,
     ),
     Separator: ex(
-        `<div class="stack"><h3>Small details.</h3><Separator/><p class="muted">Better interfaces.</p></div>`,
+        `<div class="stack"><h3>Small details.</h3><Separator/><p class="muted">Better interfaces.</p><div class="row" style="height: 32px"><span>Overview</span><Separator orientation="vertical" /><span>Activity</span><Separator orientation="vertical" /><span>Settings</span></div></div>`,
     ),
     Skeleton: ex(
-        `<div class="stack"><Skeleton style="width:60px;height:60px;border-radius:50%"/><Skeleton style="width:70%;height:18px"/><Skeleton style="width:100%;height:14px"/><Skeleton style="width:85%;height:14px"/></div>`,
+        `<div style="display: flex; align-items: center; gap: 20px; width: min(420px, calc(100vw - 64px)); max-width: 100%"><Skeleton style="width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0" /><div style="display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 0"><Skeleton style="width: 70%; height: 18px" /><Skeleton style="width: 100%; height: 14px" /><Skeleton style="width: 85%; height: 14px" /></div></div>`,
     ),
     FormLayout: ex(
         `<FormLayout :tabs="[{value:'profile',label:'Profile'},{value:'preferences',label:'Preferences'}]" primary-label="Save changes" secondary-label="Reset" actions-label="Workspace actions"><template #header><div><h2>Your studio.</h2><p class="muted">A home for your next idea.</p></div></template><template #default="{ tab }"><Card><CardHeader><CardTitle>{{ tab?.label || 'Profile' }}</CardTitle><CardDescription>Make this workspace feel like you.</CardDescription></CardHeader><CardContent><div class="stack"><Field><FieldLabel for="layout-name">Studio name</FieldLabel><Input id="layout-name" placeholder="Something wonderful"/></Field><div class="row"><Switch id="layout-updates"/><Label for="layout-updates">A little inspiration</Label></div></div></CardContent></Card></template></FormLayout>`,
@@ -415,7 +435,7 @@ export function importsFor(example: Example) {
             ...Array.from(example.template.matchAll(/<\/?([A-Z]\w*)/g), (match) => match[1]),
             ...(example.imports || []),
         ]),
-    ];
+    ].filter((name) => !/^Icon[A-Z]/.test(name));
 }
 
 /**
@@ -433,6 +453,17 @@ export function exampleSource(name: string, fallbackName?: string) {
         new RegExp(`\\b${name}\\(`).test(example.setup || ''),
     );
     const vueImports = helpers.length ? `import { ${helpers.join(', ')} } from 'vue'\n` : '';
+    const icons = [
+        ...new Set(
+            Array.from(
+                (example.template + ' ' + (example.setup || '')).matchAll(/\b(Icon[A-Z]\w*)\b/g),
+                (match) => match[1],
+            ),
+        ),
+    ];
+    const iconImport = icons.length
+        ? `import { ${icons.join(', ')} } from '@tabler/icons-vue'\n`
+        : '';
     const formImport = example.setup?.includes('useForm(')
         ? `import { useForm } from '@rat.md/miru/composables'\nimport { z } from 'zod'\n`
         : '';
@@ -447,7 +478,7 @@ export function exampleSource(name: string, fallbackName?: string) {
         })
         .join('\n');
 
-    return `<template>\n${example.template}\n</template>\n\n<script setup lang="ts">\n${vueImports}import { ${importsFor(example).join(', ')} } from '@rat.md/miru'\n${formImport}${example.setup ? '\n' + example.setup + '\n' : ''}</script>\n${styles ? `\n<style scoped>\n${styles}\n</style>\n` : ''}`;
+    return `<template>\n${example.template}\n</template>\n\n<script setup lang="ts">\n${vueImports}import { ${importsFor(example).join(', ')} } from '@rat.md/miru'\n${iconImport}${formImport}${example.setup ? '\n' + example.setup + '\n' : ''}</script>\n${styles ? `\n<style scoped>\n${styles}\n</style>\n` : ''}`;
 }
 
 export const workspaceSource = `<script setup lang="ts">

@@ -8,7 +8,8 @@ Configure normalization and query serialization once for the application:
 import { createMiru } from '@rat.md/miru/miru';
 import { adonisAdapter } from '@rat.md/miru/adapters/adonis';
 
-app.use(createMiru({ dataTable: adonisAdapter({ perPageKey: 'limit' }) }));
+const miru = createMiru({ dataTable: adonisAdapter({ perPageKey: 'limit' }) });
+// Install in your application entry point with app.use(miru).
 ```
 
 This uses the default AJAX transport. Add `adapter: inertiaAdapter()` from

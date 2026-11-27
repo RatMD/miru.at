@@ -23,6 +23,16 @@
                     <IconBackground :size="16" />
                 </ButtonAction>
             </SiteTooltip>
+            <SiteTooltip v-if="available && controls.length" text="Reset Preview">
+                <ButtonAction
+                    size="sm"
+                    variant="default"
+                    borderless="yes"
+                    aria-label="Reset Preview"
+                    @click="values = {}">
+                    <IconRefresh :size="16" />
+                </ButtonAction>
+            </SiteTooltip>
             <Button
                 v-if="showPlayground"
                 as="a"
@@ -61,8 +71,20 @@
                 label="Vue example source" />
             <div v-if="controls.length" class="example-controls">
                 <template v-for="control in controls" :key="control.name">
+                    <div
+                        v-if="name === 'Backdrop' && control.name === 'faded'"
+                        class="inline-flex items-center gap-2">
+                        <Switch
+                            :id="`example-${name}-${control.name}`"
+                            size="sm"
+                            :model-value="Boolean(values[control.name] ?? control.value)"
+                            @update:model-value="values[control.name] = Boolean($event)" />
+                        <Label :for="`example-${name}-${control.name}`">
+                            {{ controlLabel(control.name) }}
+                        </Label>
+                    </div>
                     <Checkbox
-                        v-if="control.kind === 'boolean'"
+                        v-else-if="control.kind === 'boolean'"
                         size="sm"
                         :model-value="Boolean(values[control.name] ?? control.value)"
                         :label="controlLabel(control.name)"
@@ -89,7 +111,6 @@
                         </Select>
                     </Field>
                 </template>
-                <Button size="sm" variant="ghost" @click="values = {}">Reset</Button>
             </div>
             <p v-if="error" role="alert" class="example-error">{{ error }}</p>
             <p v-if="!examples[name]" class="example-family-note">
@@ -115,10 +136,12 @@ import {
     SelectContent,
     SelectItem,
     Checkbox,
+    Switch,
+    Label,
     Field,
     FieldLabel,
 } from '@rat.md/miru';
-import { IconBackground } from '@tabler/icons-vue';
+import { IconBackground, IconRefresh } from '@tabler/icons-vue';
 import { computed, ref, watch } from 'vue';
 import { useAppearance } from '../colors/appearance';
 import componentApi from '../component-api.json';
@@ -181,7 +204,13 @@ const controls = computed(() =>
               props.name,
               Object.values(componentApi)
                   .flat()
-                  .find((item) => item.name === props.name)?.props || [],
+                  .find(
+                      (item) =>
+                          item.name ===
+                          (['Popover', 'Sheet', 'Tooltip'].includes(props.name)
+                              ? `${props.name}Content`
+                              : props.name),
+                  )?.props || [],
           ),
 );
 const values = ref<Record<string, string | boolean>>({});
@@ -201,11 +230,25 @@ const previewCss = computed(
         `\n.preview-runtime { background-color: ${background.value.color}; background-image: ${background.value.pattern}; background-size: 20px 20px; }` +
         (entry.value?.layout
             ? ''
-            : ['table', 'data-table', 'schedule', 'form', 'form-layout', 'generator'].includes(
-                    entry.value?.module ?? '',
-                )
+            : [
+                    'table',
+                    'data-table',
+                    'schedule',
+                    'form',
+                    'form-layout',
+                    'generator',
+                    'stepper',
+                    'editor-json',
+                    'editor-markdown',
+                    'editor-frame',
+                    'editor',
+                    'upload-zone',
+                ].includes(entry.value?.module ?? '')
               ? '\n.preview-runtime { display: block; } .preview-mount { display: block; width: 100%; max-width: none; min-width: 0; } .preview-mount > * { width: 100%; max-width: 100%; }'
-              : '\n.preview-runtime { display: grid; place-items: center; } .preview-mount { display: grid; place-items: center; max-width: 680px; } .preview-mount > * { max-width: 100%; }'),
+              : entry.value?.category === 'FormFields' ||
+                  ['field', 'input-group'].includes(entry.value?.module ?? '')
+                ? '\n.preview-runtime { display: grid; place-items: center; } .preview-mount { display: grid; gap: 16px; width: 420px; max-width: 100%; min-width: 0; } .preview-mount > * { min-width: 0; max-width: 100%; } .preview-mount [data-slot=select-trigger] { width: 100%; }'
+                : '\n.preview-runtime { display: grid; place-items: center; } .preview-mount { display: grid; place-items: center; max-width: 680px; } .preview-mount > * { max-width: 100%; }'),
 );
 const available = computed(() => !!props.code || !!examples[props.name] || !!family.value);
 
@@ -215,6 +258,9 @@ const available = computed(() => !!props.code || !!examples[props.name] || !!fam
  * @returns
  */
 const controlLabel = (name: string) => {
+    if (props.name === 'Backdrop' && name === 'faded') {
+        return 'Radial fade';
+    }
     const text = name.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
 
     return text[0].toUpperCase() + text.slice(1);

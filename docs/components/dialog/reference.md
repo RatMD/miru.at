@@ -78,3 +78,12 @@ A layout for dialog actions, with an optional top border.
 
 <ComponentApi name="DialogFooter" section="slots" />
 
+
+## Inherited building blocks
+
+These public exports use the Reka UI contract directly and are composed inside this component family. Their inherited props, events and slots are documented upstream.
+
+| Export | Purpose | Contract |
+| --- | --- | --- |
+| `DialogTrigger` | Opens the dialog; use as-child to compose a Miru Button. | [Reka UI DialogTrigger](https://reka-ui.com/docs/components/dialog) |
+| `DialogClose` | Closes the dialog; use as-child for a custom close control. | [Reka UI DialogClose](https://reka-ui.com/docs/components/dialog) |

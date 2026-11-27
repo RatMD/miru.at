@@ -134,3 +134,13 @@ A visual divider between autocomplete suggestions or groups.
 
 <ComponentApi name="AutoCompleteSeparator" section="slots" />
 
+
+## Inherited building blocks
+
+These public exports use the Reka UI contract directly and are composed inside this component family. Their inherited props, events and slots are documented upstream.
+
+| Export | Purpose | Contract |
+| --- | --- | --- |
+| `AutoCompleteTrigger` | Opens the suggestion list. | [Reka UI AutoCompleteTrigger](https://reka-ui.com/docs/components/autocomplete) |
+| `AutoCompleteCancel` | Clears the input value. | [Reka UI AutoCompleteCancel](https://reka-ui.com/docs/components/autocomplete) |
+| `AutoCompleteLabel` | Provides an associated label. | [Reka UI AutoCompleteLabel](https://reka-ui.com/docs/components/autocomplete) |

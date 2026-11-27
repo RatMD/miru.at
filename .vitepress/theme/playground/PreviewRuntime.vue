@@ -14,6 +14,20 @@ import * as Miru from '@rat.md/miru';
 import * as Composables from '@rat.md/miru/composables';
 import { createMiru } from '@rat.md/miru/miru';
 import * as Support from '@rat.md/miru/support';
+import {
+    IconBell,
+    IconMail,
+    IconPackage,
+    IconTruck,
+    IconCheck,
+    IconLetterCaseUpper,
+    IconBrackets,
+    IconRefresh,
+    IconHome,
+    IconArrowLeft,
+    IconPlus,
+    IconSearch,
+} from '@tabler/icons-vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import * as Vue from 'vue';
 import * as Zod from 'zod';
@@ -30,6 +44,20 @@ const modules: Record<string, unknown> = {
     '@rat.md/miru': Miru,
     '@rat.md/miru/composables': Composables,
     '@rat.md/miru/support': Support,
+    '@tabler/icons-vue': {
+        IconBell,
+        IconMail,
+        IconPackage,
+        IconTruck,
+        IconCheck,
+        IconLetterCaseUpper,
+        IconBrackets,
+        IconRefresh,
+        IconHome,
+        IconArrowLeft,
+        IconPlus,
+        IconSearch,
+    },
     zod: Zod,
 };
 

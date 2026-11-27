@@ -171,3 +171,36 @@ test('dependency lists sort every group by name on both documentation sites', as
         }
     }
 });
+
+test('every generated API member has descriptive copy', async () => {
+    const api = await json('.vitepress/theme/component-api.json');
+    for (const component of Object.values(api).flat()) {
+        for (const kind of ['props', 'events', 'slots', 'exposed']) {
+            for (const member of component[kind]) {
+                assert.ok(member.description?.trim(), `${component.name}.${member.name}`);
+            }
+        }
+    }
+});
+
+test('direct Reka building blocks are documented in their family reference', async () => {
+    for (const family of ['auto-complete', 'combobox', 'dialog', 'drawer', 'dropdown-menu']) {
+        const source = await readFile(
+            path.join(packageSource, 'components', family, 'index.ts'),
+            'utf8',
+        );
+        const reference = await readFile(
+            path.join(root, 'docs/components', family, 'reference.md'),
+            'utf8',
+        );
+        for (const block of source.matchAll(/export\s*\{([^}]+)\}\s*from\s*'reka-ui'/g)) {
+            for (const item of block[1]
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean)) {
+                const name = item.split(/\s+as\s+/).at(-1);
+                assert.ok(reference.includes('`' + name + '`'), name);
+            }
+        }
+    }
+});

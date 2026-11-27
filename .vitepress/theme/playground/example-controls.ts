@@ -34,6 +34,13 @@ const editable = new Set([
     'loop',
     'multiple',
     'clearable',
+    'avoidCollisions',
+    'hideWhenDetached',
+    'showArrow',
+    'position',
+    'richColors',
+    'closeButton',
+    'expand',
 ]);
 
 /**
@@ -108,15 +115,20 @@ function propName(prop: ElementNode['props'][number]) {
  * @returns
  */
 export function exampleControls(source: string, name: string, props: ApiProp[]): ExampleControl[] {
-    const element = target(source, name);
+    const element = target(
+        source,
+        ['Popover', 'Sheet', 'Tooltip'].includes(name) ? `${name}Content` : name,
+    );
     if (!element) {
         return [];
     }
 
-    return props
+    const controls = props
         .filter(
             (prop) =>
-                editable.has(prop.name) && !(name === 'Accordion' && prop.name === 'orientation'),
+                (editable.has(prop.name) || (name === 'Backdrop' && prop.name === 'faded')) &&
+                !(name === 'Accordion' && prop.name === 'orientation') &&
+                !(name === 'Backdrop' && prop.name === 'position'),
         )
         .flatMap<ExampleControl>((prop) => {
             const attr = element.node.props.find(
@@ -164,7 +176,33 @@ export function exampleControls(source: string, name: string, props: ApiProp[]):
                 },
             ];
         })
-        .slice(0, 6);
+        .slice(0, name === 'Popover' ? 5 : 6);
+    if (name === 'Popover') {
+        controls.push({ name: 'showArrow', kind: 'boolean', options: [], value: true });
+        controls.sort((a, b) => Number(a.kind === 'select') - Number(b.kind === 'select'));
+    }
+
+    if (name === 'AspectRatio') {
+        controls.push({
+            name: 'ratio',
+            kind: 'select',
+            options: ['16:9', '4:3', '1:1', '3:4', '21:9'],
+            value: '16:9',
+        });
+    }
+    if (name === 'Toast') {
+        controls.push({
+            name: 'toastType',
+            kind: 'select',
+            options: ['message', 'success', 'info', 'warning', 'error', 'loading'],
+            value: 'success',
+        });
+    }
+    if (name === 'Tooltip' || name === 'Toast') {
+        controls.sort((a, b) => Number(a.kind === 'select') - Number(b.kind === 'select'));
+    }
+
+    return controls;
 }
 
 /**
@@ -179,7 +217,30 @@ export function controlledExample(
     name: string,
     values: Record<string, string | boolean>,
 ) {
-    const element = target(source, name);
+    if (name === 'Toast' && 'toastType' in values) {
+        const type = values.toastType;
+        if (
+            typeof type === 'string' &&
+            ['message', 'success', 'info', 'warning', 'error', 'loading'].includes(type)
+        ) {
+            source = source.replace(
+                /toast\.(message|success|info|warning|error|loading)\(/,
+                `toast.${type}(`,
+            );
+        }
+        values = Object.fromEntries(Object.entries(values).filter(([key]) => key !== 'toastType'));
+    }
+    if (name === 'Popover' && 'showArrow' in values) {
+        source = source.replace(
+            /(<PopoverArrow\b[^>]*?)v-if="[^"]*"/,
+            `$1v-if="${values.showArrow === true}"`,
+        );
+        values = Object.fromEntries(Object.entries(values).filter(([key]) => key !== 'showArrow'));
+    }
+    const element = target(
+        source,
+        ['Popover', 'Sheet', 'Tooltip'].includes(name) ? `${name}Content` : name,
+    );
     if (!element || !Object.keys(values).length) {
         return source;
     }

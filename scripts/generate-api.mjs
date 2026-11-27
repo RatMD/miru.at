@@ -209,6 +209,13 @@ const documentationCopy = {
     ...alertApiCopy,
     ...anchorApiCopy,
     ...attachmentApiCopy,
+    SortableImageGallery: {
+        ...attachmentApiCopy.AttachmentList,
+        props: {
+            ...attachmentApiCopy.AttachmentList.props,
+            modelValue: 'The ordered UploadImage collection; updates replace the array.',
+        },
+    },
     ...avatarApiCopy,
     ...badgeApiCopy,
     ...breadcrumbApiCopy,

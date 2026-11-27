@@ -4,7 +4,6 @@
  * Reads the playground examples and documentation snippets, then writes isolated Vue fixtures to .qa/checked-examples.
  *
  * Runs vue-tsc on those fixtures. Invoked by npm run test:docs after its documentation tests.
- * Legacy guide paths still require migration to the current authored documentation pages.
  */
 
 import { spawnSync } from 'node:child_process';
@@ -41,6 +40,13 @@ for (const section of ['composables', 'support']) {
         }
         const source = await readFile(path.join(docs, section, name), 'utf8');
         const blocks = [...source.matchAll(/```ts\n([\s\S]*?)\n```/g)];
+        if (name === 'useToast.mdx') {
+            await sample(
+                'composables-useToast',
+                `<script setup lang="ts">\n${blocks.map((block) => block[1]).join('\n')}\n</script><template><div /></template>`,
+            );
+            continue;
+        }
         for (const [index, block] of blocks.entries()) {
             await sample(
                 section + '-' + name.slice(0, -4) + '-' + index,
@@ -50,7 +56,6 @@ for (const section of ['composables', 'support']) {
     }
 }
 for (const name of [
-    'data-table-guide',
     'plugins/click-outside',
     'plugins/dayjs',
     'plugins/filesize',
@@ -63,12 +68,12 @@ for (const name of [
     await sample('guide-' + name.replaceAll('/', '-'), block[1]);
 }
 for (const name of ['validation', 'fields', 'layouts']) {
-    const guide = await readFile(path.join(root, 'docs/forms', name + '.md'), 'utf8');
+    const guide = await readFile(path.join(root, 'docs/docs/forms', name + '.md'), 'utf8');
     for (const [index, block] of [...guide.matchAll(/```vue\n([\s\S]*?)\n```/g)].entries()) {
         await sample('forms-' + name + '-' + index, block[1]);
     }
 }
-const adapterGuide = await readFile(path.join(docs, 'data-table-adapters.mdx'), 'utf8');
+const adapterGuide = await readFile(path.join(root, 'docs/docs/data-table/adapters.md'), 'utf8');
 for (const [index, block] of [
     ...adapterGuide.matchAll(/```(vue|ts)\n([\s\S]*?)\n```/g),
 ].entries()) {

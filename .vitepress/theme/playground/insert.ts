@@ -83,6 +83,17 @@ export function insertExample(source: string, name: string, serial: number) {
     }
 
     addImports('@rat.md/miru', importsFor(example));
+    const icons = [
+        ...new Set(
+            Array.from(
+                (example.template + ' ' + (example.setup || '')).matchAll(/\b(Icon[A-Z]\w*)\b/g),
+                (match) => match[1],
+            ),
+        ),
+    ];
+    if (icons.length) {
+        addImports('@tabler/icons-vue', icons);
+    }
     const vueHelpers = ['ref', 'computed', 'h', 'defineComponent'].filter((name) =>
         new RegExp(`\\b${name}\\(`).test(setup),
     );
